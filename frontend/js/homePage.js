@@ -1,18 +1,13 @@
-(() => {
+document.addEventListener('DOMContentLoaded', function() {
     // Mobile menu toggle
     const mobileMenuButton = document.getElementById('mobile-menu-button');
     const mobileMenu = document.getElementById('mobile-menu');
 
-    mobileMenuButton.addEventListener('click', () => {
-        mobileMenu.classList.toggle('hidden');
-    });
-
-    // Close mobile menu when clicking outside
-    document.addEventListener('click', (event) => {
-        if (!mobileMenu.contains(event.target) && !mobileMenuButton.contains(event.target)) {
-            mobileMenu.classList.add('hidden');
-        }
-    });
+    if (mobileMenuButton && mobileMenu) {
+        mobileMenuButton.addEventListener('click', function() {
+            mobileMenu.classList.toggle('hidden');
+        });
+    }
 
     // Carousel functionality
     const carousel = document.querySelector('.carousel');
@@ -21,70 +16,64 @@
     const nextBtn = document.getElementById('next-btn');
     const dots = document.querySelectorAll('.carousel-dot');
     
-    let currentIndex = 0;
-    let autoScrollInterval;
-
-    function updateCarousel() {
-        carousel.style.scrollBehavior = 'smooth';
-        carousel.scrollLeft = currentIndex * carousel.offsetWidth;
-
+    if (carousel && carouselItems.length > 0) {
+        let currentIndex = 0;
+        const itemWidth = carousel.clientWidth;
+        
+        // Initialize carousel
+        function updateCarousel() {
+            carousel.scrollLeft = currentIndex * itemWidth;
+            
+            // Update dots
+            dots.forEach((dot, index) => {
+                if (index === currentIndex) {
+                    dot.classList.add('bg-yellow-300');
+                    dot.classList.remove('bg-black');
+                } else {
+                    dot.classList.remove('bg-yellow-300');
+                    dot.classList.add('bg-black');
+                }
+            });
+        }
+        
+        // Event listeners for buttons
+        if (prevBtn) {
+            prevBtn.addEventListener('click', function() {
+                currentIndex = (currentIndex > 0) ? currentIndex - 1 : carouselItems.length - 1;
+                updateCarousel();
+            });
+        }
+        
+        if (nextBtn) {
+            nextBtn.addEventListener('click', function() {
+                currentIndex = (currentIndex < carouselItems.length - 1) ? currentIndex + 1 : 0;
+                updateCarousel();
+            });
+        }
+        
+        // Event listeners for dots
         dots.forEach((dot, index) => {
-            dot.classList.toggle('bg-accent', index === currentIndex);
-            dot.classList.toggle('bg-gray-300', index !== currentIndex);
+            dot.addEventListener('click', function() {
+                currentIndex = index;
+                updateCarousel();
+            });
         });
-    }
-
-    function changeSlide(step) {
-        currentIndex = (currentIndex + step + carouselItems.length) % carouselItems.length;
-        updateCarousel();
-        resetAutoScroll(); // Reset auto-scroll timer on manual interaction
-    }
-
-    prevBtn.addEventListener('click', () => changeSlide(-1));
-    nextBtn.addEventListener('click', () => changeSlide(1));
-
-    dots.forEach((dot, index) => {
-        dot.addEventListener('click', () => {
-            currentIndex = index;
+        
+        // Auto-advance carousel every 5 seconds
+        setInterval(function() {
+            currentIndex = (currentIndex < carouselItems.length - 1) ? currentIndex + 1 : 0;
             updateCarousel();
-            resetAutoScroll();
-        });
-    });
-
-    // Auto-scroll carousel with throttling
-    function startAutoScroll() {
-        autoScrollInterval = setInterval(() => {
-            changeSlide(1);
         }, 5000);
     }
 
-    function resetAutoScroll() {
-        clearInterval(autoScrollInterval);
-        startAutoScroll();
-    }
-
-    // Initialize carousel
-    updateCarousel();
-    startAutoScroll();
-
-    // Smooth scrolling for navigation links
-    document.addEventListener('click', (e) => {
-        const anchor = e.target.closest('a[href^="#"]');
-        if (!anchor) return;
-
-        e.preventDefault();
-        const targetId = anchor.getAttribute('href');
-        if (targetId === '#') return;
-
-        const targetElement = document.querySelector(targetId);
-        if (targetElement) {
-            window.scrollTo({
-                top: targetElement.offsetTop - 80,
-                behavior: 'smooth'
-            });
-
-            // Close mobile menu if open
-            mobileMenu.classList.add('hidden');
+    // Check if user is logged in and update UI accordingly
+    const userData = localStorage.getItem('cookbook_user');
+    if (userData) {
+        // User is logged in, update the user icon to show they're logged in
+        const userIcon = document.querySelector('.fa-user-circle');
+        if (userIcon) {
+            userIcon.classList.add('text-yellow-300');
+            userIcon.classList.remove('text-text');
         }
-    });
-})();
+    }
+});
