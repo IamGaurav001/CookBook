@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../img/logo.png" sizes="62x62">
+    <title>CookBook | My Recipes</title>
+    <link rel="stylesheet" href="../src/output.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap');
+        
+        .sidebar-link {
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar-link:hover {
+            background-color: rgba(255, 215, 0, 0.1);
+        }
+        
+        .sidebar-link.active {
+            border-left: 3px solid #FFD700;
+            background-color: rgba(255, 215, 0, 0.1);
+        }
+        
+        .recipe-card {
+            transition: all 0.3s ease;
+        }
+        
+        .recipe-card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .recipe-card:hover .recipe-overlay {
+            opacity: 1;
+        }
+        
+        .recipe-overlay {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            background: rgba(28, 28, 28, 0.7);
+        }
+        
+        /* Modal Animation */
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .modal-animation {
+            animation: modalFadeIn 0.3s ease forwards;
+        }
+    </style>
+</head>
+<body class="font-sans bg-white text-text min-h-screen flex flex-col">
+    <div class="flex flex-col md:flex-row min-h-screen">
+        <!-- Left Sidebar Navigation -->
+        <aside class="bg-black text-white w-full md:w-64 flex-shrink-0 md:flex flex-col hidden">
+            <div class="p-4 border-b border-gray-800">
+                <h2 class="font-serif text-2xl font-bold text-yellow-300"><a href="./homepage.html">CookBook</a></h2>
+            </div>
+            
+            <nav class="flex-grow py-4">
+                <ul class="space-y-1">
+                    <li>
+                        <a href="./dashboard.html" class="sidebar-link flex items-center px-6 py-3 text-gray-300 hover:text-white">
+                            <i class="fas fa-home mr-3 text-yellow-300"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="./add-recipe.html" class="sidebar-link active flex items-center px-6 py-3 text-gray-300 hover:text-white">
+                            <i class="fas fa-book mr-3 text-yellow-300"></i>
+                            <span>My Recipes</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="./meal-plan.html" class="sidebar-link flex items-center px-6 py-3 text-gray-300 hover:text-white">
+                            <i class="fas fa-calendar-alt mr-3 text-yellow-300"></i>
+                            <span>Meal Plans</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="./shopping-list.html" class="sidebar-link flex items-center px-6 py-3 text-gray-300 hover:text-white">
+                            <i class="fas fa-shopping-basket mr-3 text-yellow-300"></i>
+                            <span>Shopping List</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="p-4 border-t border-gray-800">
+                <a href="#" class="flex items-center text-gray-300 hover:text-white">
+                    <i class="fas fa-sign-out-alt mr-3 text-yellow-300"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </aside>
+        
+        <!-- Mobile Sidebar Toggle -->
+        <div class="md:hidden bg-black text-white p-4 flex justify-between items-center">
+            <h2 class="font-serif text-xl font-bold text-yellow-300">CookBook</h2>
+            <button id="mobile-menu-button" class="text-white focus:outline-none">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
+        </div>
+        
+        <!-- Mobile Sidebar Menu (Hidden by default) -->
+        <div id="mobile-menu" class="md:hidden hidden bg-black text-white w-full absolute z-50 top-16 left-0 shadow-lg">
+            <nav class="py-2">
+                <ul>
+                    <li>
+                        <a href="./dashboard.html" class="sidebar-link flex items-center px-6 py-3 text-gray-300 hover:text-white">
+                            <i class="fas fa-home mr-3 text-yellow-300"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="./add-recipe.html" class="sidebar-link active flex items-center px-6 py-3 text-gray-300 hover:text-white">
+                            <i class="fas fa-book mr-3 text-yellow-300"></i>
+                            <span>My Recipes</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="sidebar-link flex items-center px-6 py-3 text-gray-300 hover:text-white">
+                            <i class="fas fa-calendar-alt mr-3 text-yellow-300"></i>
+                            <span>Meal Plans</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="sidebar-link flex items-center px-6 py-3 text-gray-300 hover:text-white">
+                            <i class="fas fa-shopping-basket mr-3 text-yellow-300"></i>
+                            <span>Shopping List</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="sidebar-link flex items-center px-6 py-3 text-gray-300 hover:text-white">
+                            <i class="fas fa-sign-out-alt mr-3 text-yellow-300"></i>
+                            <span>Logout</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        
+        <!-- Main Content Area -->
+        <div class="flex-grow flex flex-col">
+            <!-- Top Navigation Bar -->
+            <header class="bg-white shadow-sm p-4 flex justify-between items-center">
+                <div class="flex items-center">
+                    <h1 class="text-xl font-medium text-black hidden md:block">My Recipes</h1>
+                </div>
+                
+                <div class="flex items-center">
+                    <span class="mr-4 text-text">Welcome, <span class="font-medium">Gaurav Kumar Dubey</span>!</span>
+                    <div class="relative">
+                        <button id="user-menu-button" class="flex items-center focus:outline-none">
+                            <div class="w-10 h-10 rounded-full bg-yellow-300 text-black flex items-center justify-center font-medium mr-2">
+                                GKD
+                            </div>
+                            <i class="fas fa-chevron-down text-xs text-text"></i>
+                        </button>
+                        
+                        <!-- User Dropdown Menu (Hidden by default) -->
+                        <div id="user-menu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                            <a href="#" class="block px-4 py-2 text-sm text-text hover:bg-white">Your Profile</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-text hover:bg-white">Settings</a>
+                            <div class="border-t border-gray-200"></div>
+                            <a href="#" class="block px-4 py-2 text-sm text-text hover:bg-white">Logout</a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- My Recipes Content -->
+            <main class="flex-grow p-6 overflow-auto">
+                <!-- Recipe Categories and Add Recipe Button -->
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+                    <div class="flex flex-wrap gap-2 mb-4 md:mb-0">
+                        <button class="bg-gray-200 text-black px-4 py-2 rounded-lg font-medium">All Recipes</button>
+                    </div>
+                    <button id="add-recipe-btn" class="bg-black text-white px-6 py-2 rounded-lg font-medium flex items-center">
+                        <i class="fas fa-plus mr-2"></i>
+                        Add Recipe
+                    </button>
+                </div>
+                
+                <!-- My Recipes Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="recipes-container">
+                    <!-- Recipe Card 1 -->
+                    <div class="recipe-card bg-white rounded-xl shadow-md overflow-hidden cursor-pointer" data-recipe="1">
+                        <div class="relative h-48">
+                            <img src="../img/salad.png" alt="Mediterranean Salad" class="w-full h-full object-cover">
+                            <div class="recipe-overlay absolute inset-0 flex items-center justify-center">
+                                <div class="flex space-x-2">
+                                    <button class="bg-yellow-300 text-black px-3 py-1 rounded-lg font-medium">View</button>
+                                    <button class="bg-white text-black px-3 py-1 rounded-lg font-medium">Edit</button>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        <div class="p-4">
+                            <h3 class="font-bold text-black">Mediterranean Salad</h3>
+                            <div class="flex items-center mt-2">
+                                <div class="flex text-yellow-300">
+                                    <i class="fas fa-star text-xs"></i>
+                                    <i class="fas fa-star text-xs"></i>
+                                    <i class="fas fa-star text-xs"></i>
+                                    <i class="fas fa-star text-xs"></i>
+                                    <i class="fas fa-star-half-alt text-xs"></i>
+                                </div>
+                                <span class="text-xs text-text ml-2">4.5</span>
+                            </div>
+                            <div class="flex items-center justify-between mt-3">
+                                <div class="flex items-center text-xs text-text">
+                                    <i class="far fa-clock mr-1"></i>
+                                    <span>15 mins</span>
+                                </div>
+                                <div class="flex items-center text-xs text-text">
+                                    <i class="fas fa-fire mr-1"></i>
+                                    <span>320 cal</span>
+                                </div>
+                                <span class="text-xs px-2 py-1 bg-yellow-300 bg-opacity-20 text-black rounded-full">Vegetarian</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Recipe Card 2 -->
+                    <div class="recipe-card bg-white rounded-xl shadow-md overflow-hidden cursor-pointer" data-recipe="2">
+                        <div class="relative h-48">
+                            <img src="../img/salmon.png" alt="Grilled Salmon" class="w-full h-full object-cover">
+                            <div class="recipe-overlay absolute inset-0 flex items-center justify-center">
+                                <div class="flex space-x-2">
+                                    <button class="bg-yellow-300 text-black px-3 py-1 rounded-lg font-medium">View</button>
+                                    <button class="bg-white text-black px-3 py-1 rounded-lg font-medium">Edit</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <h3 class="font-bold text-black">Grilled Salmon</h3>
+                            <div class="flex items-center mt-2">
+                                <div class="flex text-yellow-300">
+                                    <i class="fas fa-star text-xs"></i>
+                                    <i class="fas fa-star text-xs"></i>
+                                    <i class="fas fa-star text-xs"></i>
+                                    <i class="fas fa-star text-xs"></i>
+                                    <i class="fas fa-star text-xs"></i>
+                                </div>
+                                <span class="text-xs text-text ml-2">5.0</span>
+                            </div>
+                            <div class="flex items-center justify-between mt-3">
+                                <div class="flex items-center text-xs text-text">
+                                    <i class="far fa-clock mr-1"></i>
+                                    <span>25 mins</span>
+                                </div>
+                                <div class="flex items-center text-xs text-text">
+                                    <i class="fas fa-fire mr-1"></i>
+                                    <span>450 cal</span>
+                                </div>
+                                <span class="text-xs px-2 py-1 bg-yellow-300 bg-opacity-20 text-black rounded-full">Pescatarian</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Recipe Card 3 -->
+                    <div class="recipe-card bg-white rounded-xl shadow-md overflow-hidden cursor-pointer" data-recipe="3">
+                        <div class="relative h-48">
+                            <img src="../img/fry.png" alt="Vegetable Stir Fry" class="w-full h-full object-cover">
+                            <div class="recipe-overlay absolute inset-0 flex items-center justify-center">
+                                <div class="flex space-x-2">
+                                    <button class="bg-yellow-300 text-black px-3 py-1 rounded-lg font-medium">View</button>
+                                    <button class="bg-white text-black px-3 py-1 rounded-lg font-medium">Edit</button>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        <div class="p-4">
+                            <h3 class="font-bold text-black">Vegetable Stir Fry</h3>
+                            <div class="flex items-center mt-2">
+                                <div class="flex text-yellow-300">
+                                    <i class="fas fa-star text-xs"></i>
+                                    <i class="fas fa-star text-xs"></i>
+                                    <i class="fas fa-star text-xs"></i>
+                                    <i class="fas fa-star text-xs"></i>
+                                    <i class="far fa-star text-xs"></i>
+                                </div>
+                                <span class="text-xs text-text ml-2">4.0</span>
+                            </div>
+                            <div class="flex items-center justify-between mt-3">
+                                <div class="flex items-center text-xs text-text">
+                                    <i class="far fa-clock mr-1"></i>
+                                    <span>20 mins</span>
+                                </div>
+                                <div class="flex items-center text-xs text-text">
+                                    <i class="fas fa-fire mr-1"></i>
+                                    <span>280 cal</span>
+                                </div>
+                                <span class="text-xs px-2 py-1 bg-yellow-300 bg-opacity-20 text-black rounded-full">Vegan</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Recipe Card 4 -->
+                    <div class="recipe-card bg-white rounded-xl shadow-md overflow-hidden cursor-pointer" data-recipe="4">
+                        <div class="relative h-48">
+                            <img src="../img/Alfredo.png" alt="Chicken Alfredo" class="w-full h-full object-cover">
+                            <div class="recipe-overlay absolute inset-0 flex items-center justify-center">
+                                <div class="flex space-x-2">
+                                    <button class="bg-yellow-300 text-black px-3 py-1 rounded-lg font-medium">View</button>
+                                    <button class="bg-white text-black px-3 py-1 rounded-lg font-medium">Edit</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <h3 class="font-bold text-black">Chicken Alfredo</h3>
+                            <div class="flex items-center mt-2">
+                                <div class="flex text-yellow-300">
+                                    <i class="fas fa-star text-xs"></i>
+                                    <i class="fas fa-star text-xs"></i>
+                                    <i class="fas fa-star text-xs"></i>
+                                    <i class="fas fa-star text-xs"></i>
+                                    <i class="fas fa-star-half-alt text-xs"></i>
+                                </div>
+                                <span class="text-xs text-text ml-2">4.5</span>
+                            </div>
+                            <div class="flex items-center justify-between mt-3">
+                                <div class="flex items-center text-xs text-text">
+                                    <i class="far fa-clock mr-1"></i>
+                                    <span>30 mins</span>
+                                </div>
+                                <div class="flex items-center text-xs text-text">
+                                    <i class="fas fa-fire mr-1"></i>
+                                    <span>520 cal</span>
+                                </div>
+                                <span class="text-xs px-2 py-1 bg-yellow-300 bg-opacity-20 text-black rounded-full">High Protein</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Load More Button
+                <div class="flex justify-center mt-8">
+                    <button class="bg-white border border-gray-200 text-text px-6 py-2 rounded-lg font-medium hover:bg-gray-50">
+                        Load More
+                    </button>
+                </div> -->
+            </main>
+        </div>
+    </div>
+    
+    <!-- Add Recipe Modal (Hidden by default) -->
+    <div id="add-recipe-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl shadow-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto modal-animation p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-serif font-bold text-black">Add New Recipe</h2>
+                <button id="close-add-modal" class="text-gray-400 hover:text-black focus:outline-none">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <form id="add-recipe-form">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <label for="recipe-name" class="block text-sm font-medium text-gray-700 mb-1">Recipe Name</label>
+                        <input type="text" id="recipe-name" name="recipe-name" class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-yellow-300" placeholder="Enter recipe name" required>
+                    </div>
+                    
+                    <div>
+                        <label for="recipe-category" class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                        <select id="recipe-category" name="recipe-category" class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-yellow-300" required>
+                            <option value="">Select a category</option>
+                            <option value="breakfast">Breakfast</option>
+                            <option value="lunch">Lunch</option>
+                            <option value="dinner">Dinner</option>
+                            <option value="dessert">Dessert</option>
+                            <option value="snack">Snack</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="prep-time" class="block text-sm font-medium text-gray-700 mb-1">Preparation Time (minutes)</label>
+                        <input type="number" id="prep-time" name="prep-time" class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-yellow-300" placeholder="e.g. 30" required>
+                    </div>
+                    
+                    <div>
+                        <label for="servings" class="block text-sm font-medium text-gray-700 mb-1">Servings</label>
+                        <input type="number" id="servings" name="servings" class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-yellow-300" placeholder="e.g. 4" required>
+                    </div>
+                    
+                    <div>
+                        <label for="calories" class="block text-sm font-medium text-gray-700 mb-1">Calories (per serving)</label>
+                        <input type="number" id="calories" name="calories" class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-yellow-300" placeholder="e.g. 350">
+                    </div>
+                    
+                    <div>
+                        <label for="diet-type" class="block text-sm font-medium text-gray-700 mb-1">Diet Type</label>
+                        <select id="diet-type" name="diet-type" class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-yellow-300">
+                            <option value="">Select diet type</option>
+                            <option value="vegetarian">Vegetarian</option>
+                            <option value="vegan">Vegan</option>
+                            <option value="pescatarian">Pescatarian</option>
+                            <option value="keto">Keto</option>
+                            <option value="high-protein">High Protein</option>
+                            <option value="low-carb">Low Carb</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <label for="recipe-image" class="block text-sm font-medium text-gray-700 mb-1">Recipe Image</label>
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                        <div class="mb-3">
+                            <i class="fas fa-cloud-upload-alt text-3xl text-gray-400"></i>
+                        </div>
+                        <p class="text-sm text-gray-500 mb-2">Drag and drop an image here, or click to select a file</p>
+                        <p class="text-xs text-gray-400">PNG, JPG or JPEG (max. 5MB)</p>
+                        <input type="file" id="recipe-image" name="recipe-image" class="hidden" accept="image/*">
+                        <button type="button" id="upload-trigger" class="mt-4 bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm hover:bg-gray-200">Select Image</button>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-3">Ingredients</label>
+                    <div id="ingredients-container">
+                        <div class="flex items-center gap-2 mb-2">
+                            <input type="text" name="ingredient[]" class="flex-grow px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-yellow-300" placeholder="e.g. 2 cups flour" required>
+                            <button type="button" class="remove-ingredient bg-red-100 text-red-500 p-2 rounded-lg hover:bg-red-200 hidden">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="button" id="add-ingredient" class="mt-2 text-yellow-300 hover:text-yellow-400 text-sm flex items-center">
+                        <i class="fas fa-plus mr-1"></i> Add Another Ingredient
+                    </button>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-3">Instructions</label>
+                    <div id="instructions-container">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="bg-yellow-300 text-black w-6 h-6 rounded-full flex items-center justify-center font-medium">1</span>
+                            <textarea name="instruction[]" rows="2" class="flex-grow px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-yellow-300" placeholder="e.g. Preheat oven to 350°F" required></textarea>
+                            <button type="button" class="remove-instruction bg-red-100 text-red-500 p-2 rounded-lg hover:bg-red-200 hidden">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="button" id="add-instruction" class="mt-2 text-yellow-300 hover:text-yellow-400 text-sm flex items-center">
+                        <i class="fas fa-plus mr-1"></i> Add Another Instruction
+                    </button>
+                </div>
+                
+                <div class="mb-6">
+                    <label for="recipe-notes" class="block text-sm font-medium text-gray-700 mb-1">Notes (Optional)</label>
+                    <textarea id="recipe-notes" name="recipe-notes" rows="3" class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-yellow-300" placeholder="Any additional notes or tips for this recipe"></textarea>
+                </div>
+                
+                <div class="flex justify-end gap-3">
+                    <button type="button" id="cancel-add-recipe" class="bg-white border border-gray-200 text-text px-6 py-2 rounded-lg font-medium hover:bg-gray-50">
+                        Cancel
+                    </button>
+                    <button type="submit" class="bg-yellow-300 text-black px-6 py-2 rounded-lg font-medium hover:bg-yellow-400">
+                        Save Recipe
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- View Recipe Modal (Hidden by default) -->
+    <div id="view-recipe-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl shadow-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto modal-animation">
+            <div class="relative">
+                <div class="h-64 md:h-80 w-full">
+                    <img id="modal-image" src="../img/salad.png" alt="Recipe" class="w-full h-full object-cover">
+                </div>
+                <button id="close-view-modal" class="absolute top-4 right-4 bg-white rounded-full p-2 shadow-md text-black hover:text-yellow-300 focus:outline-none">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="p-6">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+                    <div>
+                        <h2 id="modal-title" class="text-2xl font-serif font-bold text-black"></h2>
+                        <div class="flex items-center mt-2">
+                            <span id="modal-rating" class="text-sm text-text ml-2"></span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-white rounded-lg p-4 flex flex-col items-center justify-center">
+                        <div class="text-yellow-300 mb-1">
+                            <i class="far fa-clock text-xl"></i>
+                        </div>
+                        <p class="text-sm text-text">Prep Time</p>
+                        <p id="modal-prep-time" class="font-bold text-black"></p>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg p-4 flex flex-col items-center justify-center">
+                        <div class="text-yellow-300 mb-1">
+                            <i class="fas fa-fire text-xl"></i>
+                        </div>
+                        <p class="text-sm text-text">Calories</p>
+                        <p id="modal-calories" class="font-bold text-black"></p>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg p-4 flex flex-col items-center justify-center">
+                        <div class="text-yellow-300 mb-1">
+                            <i class="fas fa-utensils text-xl"></i>
+                        </div>
+                        <p class="text-sm text-text">Servings</p>
+                        <p id="modal-servings" class="font-bold text-black">4 servings</p>
+                    </div>
+                </div>
+                
+                <div class="mb-8">
+                    <h3 class="text-xl font-bold text-black mb-4">Ingredients</h3>
+                    <ul id="modal-ingredients" class="space-y-2 pl-5 list-disc">
+                        <!-- Ingredients will be populated by JavaScript -->
+                    </ul>
+                </div>
+                
+                <div class="mb-8">
+                    <h3 class="text-xl font-bold text-black mb-4">Instructions</h3>
+                    <ol id="modal-instructions" class="space-y-4 pl-5 list-decimal">
+                        <!-- Instructions will be populated by JavaScript -->
+                    </ol>
+                </div>
+                
+                <div class="flex justify-between">
+                    <button class="bg-black hover:bg-opacity-90 text-white font-medium py-2 px-6 rounded-lg shadow-md transition duration-300 ease-in-out">
+                        Add to Meal Plan
+                    </button>
+                    <button class="bg-yellow-300 hover:bg-opacity-90 text-black font-medium py-2 px-6 rounded-lg shadow-md transition duration-300 ease-in-out">
+                        Add to Shopping List
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/add-recipe.js"></script>
+</body>
+</html>
