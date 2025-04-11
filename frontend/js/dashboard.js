@@ -7,7 +7,6 @@ document.addEventListener('DOMContentLoaded', function() {
       mobileMenu.classList.toggle('hidden');
   });
   
-  // User menu toggle
   const userMenuButton = document.getElementById('user-menu-button');
   const userMenu = document.getElementById('user-menu');
   
@@ -15,7 +14,6 @@ document.addEventListener('DOMContentLoaded', function() {
       userMenu.classList.toggle('hidden');
   });
   
-  // Close menus when clicking outside
   document.addEventListener('click', function(event) {
       if (!mobileMenuButton.contains(event.target) && !mobileMenu.contains(event.target)) {
           mobileMenu.classList.add('hidden');
@@ -31,7 +29,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const viewRecipeModal = document.getElementById('view-recipe-modal');
     const closeModal = document.getElementById('close-view-modal');
 
-    // Add click event to recipe cards
     recipeCards.forEach(card => {
         card.addEventListener('click', function() {
             const recipeId = this.getAttribute('data-recipe');
@@ -39,14 +36,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Close modal when clicking the close button
     if (closeModal) {
         closeModal.addEventListener('click', function() {
             viewRecipeModal.classList.add('hidden');
         });
     }
 
-    // Close modal when clicking outside the modal
     window.addEventListener('click', function(e) {
         if (e.target === recipeModal) {
             viewRecipeModal.classList.add('hidden');
@@ -54,10 +49,8 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     function fetchRecipeDetails(recipeId) {
-        // Add console logging to help debug
         console.log("Fetching recipe details for ID:", recipeId)
     
-        // Make sure we're using the correct URL format
         fetch(`add-recipe.php?id=${recipeId}`)
           .then((response) => {
             console.log("Response status:", response.status)
@@ -80,11 +73,9 @@ document.addEventListener('DOMContentLoaded', function() {
             alert("Failed to load recipe details. Please try again.")
           })
       }
-    // Populate the modal with recipe details
     function populateRecipeModal(recipe) {
         console.log("Populating modal with recipe:", recipe)
     
-        // Basic recipe details with error checking
         document.getElementById("modal-title").textContent = recipe.name || "Untitled Recipe"
         document.getElementById("modal-prep-time").textContent = (recipe.prep_time || "N/A") + " minutes"
         document.getElementById("modal-calories").textContent = recipe.calories
@@ -92,7 +83,6 @@ document.addEventListener('DOMContentLoaded', function() {
           : "Not specified"
         document.getElementById("modal-servings").textContent = (recipe.servings || "N/A") + " servings"
     
-        // Format category with proper capitalization if it exists
         if (recipe.category) {
           document.getElementById("modal-category").textContent =
             recipe.category.charAt(0).toUpperCase() + recipe.category.slice(1)
@@ -100,7 +90,6 @@ document.addEventListener('DOMContentLoaded', function() {
           document.getElementById("modal-category").textContent = "Uncategorized"
         }
     
-        // Set image with fallback
         const modalImage = document.getElementById("modal-image")
         if (recipe.image_path) {
           modalImage.src = "../" + recipe.image_path
@@ -123,7 +112,6 @@ document.addEventListener('DOMContentLoaded', function() {
           ingredientsList.appendChild(li)
         }
     
-        // Populate instructions with error checking
         const instructionsList = document.getElementById("modal-instructions")
         instructionsList.innerHTML = ""
         if (recipe.instructions && recipe.instructions.length > 0) {
@@ -138,7 +126,6 @@ document.addEventListener('DOMContentLoaded', function() {
           instructionsList.appendChild(li)
         }
     
-        // Show/hide notes
         const notesContainer = document.getElementById("modal-notes-container")
         const notesContent = document.getElementById("modal-notes")
         if (recipe.notes) {

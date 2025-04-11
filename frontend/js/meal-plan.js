@@ -1,23 +1,19 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // Mobile menu toggle
   document.getElementById("mobile-menu-button").addEventListener("click", () => {
     const mobileMenu = document.getElementById("mobile-menu")
     mobileMenu.classList.toggle("hidden")
   })
 
-  // User menu toggle
   document.getElementById("user-menu-button").addEventListener("click", () => {
     const userMenu = document.getElementById("user-menu")
     userMenu.classList.toggle("hidden")
   })
 
-  // Create Plan Modal
   const createPlanBtn = document.getElementById("create-plan-btn")
   const createPlanModal = document.getElementById("create-plan-modal")
   const closeCreateModal = document.getElementById("close-create-modal")
   const cancelCreatePlan = document.getElementById("cancel-create-plan")
 
-  // Check if empty state button exists
   const emptyCreatePlanBtn = document.getElementById("empty-create-plan-btn")
   if (emptyCreatePlanBtn) {
     emptyCreatePlanBtn.addEventListener("click", () => {
@@ -77,26 +73,20 @@ document.addEventListener("DOMContentLoaded", () => {
     })
   }
 
-  // Recipe selection
   const recipeItems = document.querySelectorAll(".meal-item[data-recipe-id]")
 
   recipeItems.forEach((item) => {
     item.addEventListener("click", function () {
-      // Remove selected class from all items
       recipeItems.forEach((i) => i.classList.remove("border-yellow-300", "bg-yellow-50"))
 
-      // Add selected class to clicked item
       this.classList.add("border-yellow-300", "bg-yellow-50")
 
-      // Set selected recipe ID
       selectedRecipeId.value = this.getAttribute("data-recipe-id")
 
-      // Enable submit button
       confirmAddMeal.disabled = false
     })
   })
 
-  // Recipe search
   const recipeSearch = document.getElementById("recipe-search")
 
   if (recipeSearch) {
@@ -115,7 +105,6 @@ document.addEventListener("DOMContentLoaded", () => {
     })
   }
 
-  // Remove meal buttons
   const removeMealBtns = document.querySelectorAll(".remove-meal-btn")
 
   removeMealBtns.forEach((btn) => {
@@ -129,7 +118,6 @@ document.addEventListener("DOMContentLoaded", () => {
     })
   })
 
-  // Function to remove a meal from the plan
   function removeMeal(slotId) {
     fetch(window.location.href, {
       method: "POST",
@@ -141,7 +129,6 @@ document.addEventListener("DOMContentLoaded", () => {
       .then((response) => response.json())
       .then((data) => {
         if (data.success) {
-          // Reload the page to show updated meal plan
           location.reload()
         } else {
           showToast(data.message || "Error removing meal from plan", "error")
@@ -153,29 +140,24 @@ document.addEventListener("DOMContentLoaded", () => {
       })
   }
 
-  // Function to show toast notifications
   function showToast(message, type = "success") {
     const toast = document.getElementById("toast")
     toast.textContent = message
     toast.className = `toast ${type}`
 
-    // Show the toast
     setTimeout(() => {
       toast.classList.add("show")
     }, 100)
 
-    // Hide the toast after 3 seconds
     setTimeout(() => {
       toast.classList.remove("show")
 
-      // Remove the toast from DOM after animation
       setTimeout(() => {
         toast.className = "toast"
       }, 300)
     }, 3000)
   }
 
-  // Close modals when clicking outside
   window.addEventListener("click", (e) => {
     if (e.target === createPlanModal) {
       createPlanModal.classList.add("hidden")
@@ -185,7 +167,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   })
 
-  // Set default dates for create plan form
   const startDateInput = document.getElementById("start-date")
   const endDateInput = document.getElementById("end-date")
 
@@ -197,14 +178,12 @@ document.addEventListener("DOMContentLoaded", () => {
     startDateInput.valueAsDate = today
     endDateInput.valueAsDate = nextWeek
 
-    // Auto-generate plan name based on dates
     const planNameInput = document.getElementById("plan-name")
     if (planNameInput) {
       const startFormatted = today.toLocaleDateString("en-US", { month: "short", day: "numeric" })
       const endFormatted = nextWeek.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
       planNameInput.value = `Weekly Plan (${startFormatted} - ${endFormatted})`
 
-      // Update plan name when dates change
       startDateInput.addEventListener("change", updatePlanName)
       endDateInput.addEventListener("change", updatePlanName)
 
@@ -218,7 +197,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Handle form submission with AJAX
   if (addMealForm) {
     addMealForm.addEventListener("submit", function (e) {
       e.preventDefault()
@@ -240,13 +218,10 @@ document.addEventListener("DOMContentLoaded", () => {
         .then((response) => response.json())
         .then((data) => {
           if (data.success) {
-            // Close modal
             addMealModal.classList.add("hidden")
 
-            // Show success message
             showToast("Meal added to plan successfully!")
 
-            // Reload the page to show updated meal plan
             location.reload()
           } else {
             showToast(data.message || "Error adding meal to plan", "error")
@@ -259,7 +234,6 @@ document.addEventListener("DOMContentLoaded", () => {
     })
   }
 
-  // Delete meal plan functionality
   const deletePlanBtns = document.querySelectorAll(".delete-plan-btn")
 
   deletePlanBtns.forEach((btn) => {
@@ -273,7 +247,6 @@ document.addEventListener("DOMContentLoaded", () => {
     })
   })
 
-  // Function to delete a meal plan
   function deleteMealPlan(planId) {
     fetch(window.location.href, {
       method: "POST",
