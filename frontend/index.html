@@ -1,8 +1,3 @@
-
-<?php
-session_start();
-$isLoggedIn = isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true;
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -59,11 +54,7 @@ $isLoggedIn = isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true;
             </div>
             <div class="flex items-center">
                 <button class="p-2 rounded-full text-text hover:text-yellow-300 focus:outline-none">
-                    <?php if($isLoggedIn): ?>
-                        <a href="./pages/dashboard.php"><i class="fas fa-user-circle text-2xl"></i></a>
-                    <?php else: ?>
-                        <a href="./pages/auth.php"><i class="fas fa-user-circle text-2xl"></i></a>
-                    <?php endif; ?>
+                    <a href="./pages/auth.php" id="user-icon"><i class="fas fa-user-circle text-2xl"></i></a>
                 </button>
                 <div class="sm:hidden ml-4">
                     <button id="mobile-menu-button" class="inline-flex items-center justify-center p-2 rounded-md text-[#375A64] hover:text-yellow-400 focus:outline-none">
@@ -87,12 +78,8 @@ $isLoggedIn = isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true;
                     Welcome to CookBook, where your culinary journey transforms into a masterpiece. Store your favorite recipes, plan meals effortlessly, generate shopping lists, track nutrition, and connect with a community of food enthusiasts.
                 </p>
                 <div class="flex flex-col sm:flex-row gap-4 animate-fade-in" style="animation-delay: 0.6s;">
-                    <button class="bg-[#375A64] hover:bg-opacity-90 text-white font-medium py-3 px-6 rounded-lg shadow-md ">
-                        <?php if($isLoggedIn): ?>
-                            <a href="./pages/dashboard.php">Go to Dashboard</a>
-                        <?php else: ?>
-                            <a href="./pages/auth.php">Get Started</a>
-                        <?php endif; ?>
+                    <button class="bg-[#375A64] hover:bg-opacity-90 text-white font-medium py-3 px-6 rounded-lg shadow-md">
+                        <a href="./pages/auth.php" id="cta-button">Get Started</a>
                     </button>
                 </div>
             </div>
@@ -361,7 +348,6 @@ $isLoggedIn = isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true;
         </div>
     </div>
 </footer>
-
 <script src="./js/homePage.js"></script>
 </body>
 </html>
