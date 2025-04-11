@@ -1,23 +1,19 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // Mobile menu toggle
   document.getElementById("mobile-menu-button").addEventListener("click", () => {
     const mobileMenu = document.getElementById("mobile-menu")
     mobileMenu.classList.toggle("hidden")
   })
 
-  // User menu toggle
   document.getElementById("user-menu-button").addEventListener("click", () => {
     const userMenu = document.getElementById("user-menu")
     userMenu.classList.toggle("hidden")
   })
 
-  // Add Recipe Modal
   const addRecipeBtn = document.getElementById("add-recipe-btn")
   const addRecipeModal = document.getElementById("add-recipe-modal")
   const closeAddModal = document.getElementById("close-add-modal")
   const cancelAddRecipe = document.getElementById("cancel-add-recipe")
 
-  // Check if empty state button exists
   const emptyAddRecipeBtn = document.getElementById("empty-add-recipe-btn")
   if (emptyAddRecipeBtn) {
     emptyAddRecipeBtn.addEventListener("click", () => {
@@ -37,13 +33,11 @@ document.addEventListener("DOMContentLoaded", () => {
     addRecipeModal.classList.add("hidden")
   })
 
-  // View Recipe Modal
   const recipeCards = document.querySelectorAll(".recipe-card")
   const viewRecipeModal = document.getElementById("view-recipe-modal")
   const closeViewModal = document.getElementById("close-view-modal")
 
   recipeCards.forEach((card) => {
-    // Add click handler for the view recipe button
     const viewButton = card.querySelector(".view-recipe")
     if (viewButton) {
       viewButton.addEventListener("click", (e) => {
@@ -53,9 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
       })
     }
 
-    // Keep the card click handler for clicking anywhere else on the card
     card.addEventListener("click", function (e) {
-      // Only open the view modal if not clicking on delete button
       if (!e.target.closest(".delete-recipe") && !e.target.closest(".view-recipe")) {
         const recipeId = this.getAttribute("data-recipe")
         fetchRecipeDetails(recipeId)
@@ -67,7 +59,6 @@ document.addEventListener("DOMContentLoaded", () => {
     viewRecipeModal.classList.add("hidden")
   })
 
-  // Close modals when clicking outside
   window.addEventListener("click", (e) => {
     if (e.target === addRecipeModal) {
       addRecipeModal.classList.add("hidden")
@@ -77,7 +68,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   })
 
-  // Add ingredient field
   const addIngredientBtn = document.getElementById("add-ingredient")
   const ingredientsContainer = document.getElementById("ingredients-container")
 
@@ -97,18 +87,15 @@ document.addEventListener("DOMContentLoaded", () => {
       ingredientsContainer.querySelector(".remove-ingredient").classList.remove("hidden")
     }
 
-    // Add event listener to remove button
     newIngredient.querySelector(".remove-ingredient").addEventListener("click", () => {
       newIngredient.remove()
 
-      // Hide remove button for first ingredient if there's only one left
       if (ingredientsContainer.children.length === 1) {
         ingredientsContainer.querySelector(".remove-ingredient").classList.add("hidden")
       }
     })
   })
 
-  // Add instruction field
   const addInstructionBtn = document.getElementById("add-instruction")
   const instructionsContainer = document.getElementById("instructions-container")
 
@@ -125,26 +112,21 @@ document.addEventListener("DOMContentLoaded", () => {
           `
     instructionsContainer.appendChild(newInstruction)
 
-    // Show remove button for first instruction if there's more than one
     if (instructionsContainer.children.length > 1) {
       instructionsContainer.querySelector(".remove-instruction").classList.remove("hidden")
     }
 
-    // Add event listener to remove button
     newInstruction.querySelector(".remove-instruction").addEventListener("click", () => {
       newInstruction.remove()
 
-      // Hide remove button for first instruction if there's only one left
       if (instructionsContainer.children.length === 1) {
         instructionsContainer.querySelector(".remove-instruction").classList.add("hidden")
       }
 
-      // Update step numbers
       updateStepNumbers()
     })
   })
 
-  // Update step numbers for instructions
   function updateStepNumbers() {
     const steps = instructionsContainer.querySelectorAll(".bg-yellow-300")
     steps.forEach((step, index) => {
@@ -152,27 +134,23 @@ document.addEventListener("DOMContentLoaded", () => {
     })
   }
 
-  // Image upload
   const uploadTrigger = document.getElementById("upload-trigger")
   const fileInput = document.getElementById("recipe-image")
 
   uploadTrigger.addEventListener("click", () => {
-    fileInput.click() // Opens the file picker when the button is clicked
+    fileInput.click() 
   })
 
   fileInput.addEventListener("change", (event) => {
     if (event.target.files.length > 0) {
       const fileName = event.target.files[0].name
-      uploadTrigger.textContent = `Selected: ${fileName}` // Display selected file name
+      uploadTrigger.textContent = `Selected: ${fileName}` 
     }
   })
 
-  // Fetch recipe details for view modal
   function fetchRecipeDetails(recipeId) {
-    // Add console logging to help debug
     console.log("Fetching recipe details for ID:", recipeId)
 
-    // Make sure we're using the correct URL format
     fetch(`add-recipe.php?id=${recipeId}`)
       .then((response) => {
         console.log("Response status:", response.status)
@@ -196,11 +174,9 @@ document.addEventListener("DOMContentLoaded", () => {
       })
   }
 
-  // Populate recipe modal with data
   function populateRecipeModal(recipe) {
     console.log("Populating modal with recipe:", recipe)
 
-    // Basic recipe details with error checking
     document.getElementById("modal-title").textContent = recipe.name || "Untitled Recipe"
     document.getElementById("modal-prep-time").textContent = (recipe.prep_time || "N/A") + " minutes"
     document.getElementById("modal-calories").textContent = recipe.calories
@@ -208,12 +184,10 @@ document.addEventListener("DOMContentLoaded", () => {
       : "Not specified"
     document.getElementById("modal-servings").textContent = (recipe.servings || "N/A") + " servings"
 
-    // Nutrition information
     document.getElementById("modal-protein").textContent = recipe.protein ? recipe.protein + " g" : "Not specified"
     document.getElementById("modal-carbs").textContent = recipe.carbs ? recipe.carbs + " g" : "Not specified"
     document.getElementById("modal-fiber").textContent = recipe.fiber ? recipe.fiber + " g" : "Not specified"
 
-    // Format category with proper capitalization if it exists
     if (recipe.category) {
       document.getElementById("modal-category").textContent =
         recipe.category.charAt(0).toUpperCase() + recipe.category.slice(1)
@@ -221,7 +195,6 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("modal-category").textContent = "Uncategorized"
     }
 
-    // Set image with fallback
     const modalImage = document.getElementById("modal-image")
     if (recipe.image_path) {
       modalImage.src = "../" + recipe.image_path
@@ -229,7 +202,6 @@ document.addEventListener("DOMContentLoaded", () => {
       modalImage.src = "../img/Alfredo.png"
     }
 
-    // Populate ingredients with error checking
     const ingredientsList = document.getElementById("modal-ingredients")
     ingredientsList.innerHTML = ""
     if (recipe.ingredients && recipe.ingredients.length > 0) {
@@ -244,7 +216,6 @@ document.addEventListener("DOMContentLoaded", () => {
       ingredientsList.appendChild(li)
     }
 
-    // Populate instructions with error checking
     const instructionsList = document.getElementById("modal-instructions")
     instructionsList.innerHTML = ""
     if (recipe.instructions && recipe.instructions.length > 0) {
@@ -259,7 +230,6 @@ document.addEventListener("DOMContentLoaded", () => {
       instructionsList.appendChild(li)
     }
 
-    // Show/hide notes
     const notesContainer = document.getElementById("modal-notes-container")
     const notesContent = document.getElementById("modal-notes")
     if (recipe.notes) {
@@ -270,22 +240,18 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Add this to your existing JavaScript code
   document.addEventListener("click", (e) => {
-    // Handle delete recipe button clicks
     if (e.target.classList.contains("delete-recipe") || e.target.closest(".delete-recipe")) {
-      e.stopPropagation() // Prevent the click from bubbling up to the recipe card
+      e.stopPropagation() 
       const recipeCard = e.target.closest(".recipe-card")
       const recipeId = recipeCard.getAttribute("data-recipe")
 
-      // Confirm deletion
       if (confirm("Are you sure you want to delete this recipe? This action cannot be undone.")) {
         deleteRecipe(recipeId, recipeCard)
       }
     }
   })
 
-  // Function to handle recipe deletion
   function deleteRecipe(recipeId, recipeCard) {
     fetch(window.location.href, {
       method: "POST",
@@ -297,13 +263,9 @@ document.addEventListener("DOMContentLoaded", () => {
       .then((response) => response.json())
       .then((data) => {
         if (data.success) {
-          // Remove the recipe card from the DOM
           recipeCard.remove()
-
-          // Show success message
           showAlert("Recipe deleted successfully", "success")
 
-          // If no recipes left, show empty state
           if (document.querySelectorAll(".recipe-card").length === 0) {
             showEmptyState()
           }
@@ -317,7 +279,6 @@ document.addEventListener("DOMContentLoaded", () => {
       })
   }
 
-  // Helper function to show alerts
   function showAlert(message, type) {
     const alertDiv = document.createElement("div")
     alertDiv.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 ${
@@ -326,13 +287,11 @@ document.addEventListener("DOMContentLoaded", () => {
     alertDiv.textContent = message
     document.body.appendChild(alertDiv)
 
-    // Remove alert after 3 seconds
     setTimeout(() => {
       alertDiv.remove()
     }, 3000)
   }
 
-  // Helper function to show empty state
   function showEmptyState() {
     const recipesContainer = document.getElementById("recipes-container")
     recipesContainer.innerHTML = `
@@ -348,7 +307,6 @@ document.addEventListener("DOMContentLoaded", () => {
               </div>
           `
 
-    // Add event listener to the new button
     document.getElementById("empty-add-recipe-btn").addEventListener("click", () => {
       document.getElementById("add-recipe-modal").classList.remove("hidden")
     })
