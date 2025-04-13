@@ -645,7 +645,7 @@ if($stmt_recipes = mysqli_prepare($conn, $sql_recipes)) {
             </nav>
             
             <div class="p-4 border-t border-gray-800">
-                <a href="logout.php" class="flex items-center text-gray-300 hover:text-white">
+                <a href="../auth/logout.php" class="flex items-center text-gray-300 hover:text-white">
                     <i class="fas fa-sign-out-alt mr-3 text-yellow-300"></i>
                     <span>Logout</span>
                 </a>
@@ -689,7 +689,7 @@ if($stmt_recipes = mysqli_prepare($conn, $sql_recipes)) {
                         </a>
                     </li>
                     <li>
-                        <a href="logout.php" class="sidebar-link flex items-center px-6 py-3 text-gray-300 hover:text-white">
+                        <a href="../auth/logout.php" class="sidebar-link flex items-center px-6 py-3 text-gray-300 hover:text-white">
                             <i class="fas fa-sign-out-alt mr-3 text-yellow-300"></i>
                             <span>Logout</span>
                         </a>
@@ -728,7 +728,7 @@ if($stmt_recipes = mysqli_prepare($conn, $sql_recipes)) {
                             <a href="profile.php" class="block px-4 py-2 text-sm text-text hover:bg-white">Your Profile</a>
                             <a href="settings.php" class="block px-4 py-2 text-sm text-text hover:bg-white">Settings</a>
                             <div class="border-t border-gray-200"></div>
-                            <a href="logout.php" class="block px-4 py-2 text-sm text-text hover:bg-white">Logout</a>
+                            <a href="../auth/logout.php" class="block px-4 py-2 text-sm text-text hover:bg-white">Logout</a>
                         </div>
                     </div>
                 </div>
@@ -803,11 +803,6 @@ if($stmt_recipes = mysqli_prepare($conn, $sql_recipes)) {
                                 </span>
                                 <?php endif; ?>
                             </div>
-                            
-                            <a href="generate-shopping-list.php?plan_id=<?php echo $current_plan['id']; ?>" class="bg-yellow-300 hover:bg-yellow-400 text-black px-4 py-2 rounded-lg text-sm font-medium flex items-center">
-                                <i class="fas fa-shopping-basket mr-2"></i>
-                                <span>Generate Shopping List</span>
-                            </a>
                             <button class="delete-plan-btn bg-red-100 hover:bg-red-200 text-red-700 px-4 py-2 rounded-lg text-sm font-medium flex items-center" data-plan-id="<?php echo $current_plan['id']; ?>">
                                 <i class="fas fa-trash-alt mr-2"></i>
                                 <span>Delete Plan</span>
