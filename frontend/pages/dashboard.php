@@ -12,89 +12,99 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
 
 require_once "../../config.php";
 
+$userId = $_SESSION["id"];
+
+// Recipe Count
 $recipe_count = 0;
 $sql_recipes = "SELECT COUNT(*) as count FROM recipes WHERE user_id = ?";
-if($stmt = mysqli_prepare($conn, $sql_recipes)) {
-    mysqli_stmt_bind_param($stmt, "i", $_SESSION["id"]);
-    if(mysqli_stmt_execute($stmt)) {
+if ($stmt = mysqli_prepare($conn, $sql_recipes)) {
+    mysqli_stmt_bind_param($stmt, "i", $userId);
+    if (mysqli_stmt_execute($stmt)) {
         $result = mysqli_stmt_get_result($stmt);
-        if($row = mysqli_fetch_assoc($result)) {
+        if ($row = mysqli_fetch_assoc($result)) {
             $recipe_count = $row['count'];
         }
+    } else {
+        echo "Error (recipes): " . mysqli_error($conn);
     }
     mysqli_stmt_close($stmt);
 }
 
+// Meal Plan Count
 $meal_plan_count = 0;
 $sql_meal_plans = "SELECT COUNT(*) as count FROM meal_plans WHERE user_id = ?";
-if($stmt = mysqli_prepare($conn, $sql_meal_plans)) {
-    mysqli_stmt_bind_param($stmt, "i", $_SESSION["id"]);
-    if(mysqli_stmt_execute($stmt)) {
+if ($stmt = mysqli_prepare($conn, $sql_meal_plans)) {
+    mysqli_stmt_bind_param($stmt, "i", $userId);
+    if (mysqli_stmt_execute($stmt)) {
         $result = mysqli_stmt_get_result($stmt);
-        if($row = mysqli_fetch_assoc($result)) {
+        if ($row = mysqli_fetch_assoc($result)) {
             $meal_plan_count = $row['count'];
         }
+    } else {
+        echo "Error (meal plans): " . mysqli_error($conn);
     }
     mysqli_stmt_close($stmt);
 }
 
+// Shopping List Count
 $shopping_list_count = 0;
-$sql_shopping = "SELECT COUNT(*) as count FROM shopping_list_items 
-                WHERE user_id = ? AND completed = 0";
-if($stmt = mysqli_prepare($conn, $sql_shopping)) {
-    mysqli_stmt_bind_param($stmt, "i", $_SESSION["id"]);
-    if(mysqli_stmt_execute($stmt)) {
+$sql_shopping = "SELECT COUNT(*) as count FROM shopping_list_items WHERE user_id = ? AND completed = 0";
+if ($stmt = mysqli_prepare($conn, $sql_shopping)) {
+    mysqli_stmt_bind_param($stmt, "i", $userId);
+    if (mysqli_stmt_execute($stmt)) {
         $result = mysqli_stmt_get_result($stmt);
-        if($row = mysqli_fetch_assoc($result)) {
+        if ($row = mysqli_fetch_assoc($result)) {
             $shopping_list_count = $row['count'];
         }
+    } else {
+        echo "Error (shopping list): " . mysqli_error($conn);
     }
     mysqli_stmt_close($stmt);
 }
 
+// Current Meal Plan
 $current_plan = null;
 $today = date('Y-m-d');
-$sql_current_plan = "SELECT mp.*, 
-                    (SELECT COUNT(*) FROM meal_plan_slots mps WHERE mps.plan_id = mp.id) as total_slots,
-                    (SELECT COUNT(*) FROM meal_plan_slots mps JOIN meal_plan_items mpi ON mps.id = mpi.slot_id WHERE mps.plan_id = mp.id) as filled_slots
-                    FROM meal_plans mp 
-                    WHERE mp.user_id = ? AND mp.end_date >= ? 
-                    ORDER BY mp.start_date ASC 
-                    LIMIT 1";
 
-if($stmt = mysqli_prepare($conn, $sql_current_plan)) {
-    mysqli_stmt_bind_param($stmt, "is", $_SESSION["id"], $today);
+$sql_current_plan = "SELECT mp.*, 
+    (SELECT COUNT(*) FROM meal_plan_slots mps WHERE mps.plan_id = mp.id) as total_slots,
+    (SELECT COUNT(*) FROM meal_plan_slots mps JOIN meal_plan_items mpi ON mps.id = mpi.slot_id WHERE mps.plan_id = mp.id) as filled_slots
+    FROM meal_plans mp 
+    WHERE mp.user_id = ? AND mp.end_date >= ? 
+    ORDER BY mp.start_date ASC 
+    LIMIT 1";
+
+if ($stmt = mysqli_prepare($conn, $sql_current_plan)) {
+    mysqli_stmt_bind_param($stmt, "is", $userId, $today);
     
-    if(mysqli_stmt_execute($stmt)) {
+    if (mysqli_stmt_execute($stmt)) {
         $result = mysqli_stmt_get_result($stmt);
         
-        if(mysqli_num_rows($result) == 1) {
+        if (mysqli_num_rows($result) == 1) {
             $current_plan = mysqli_fetch_assoc($result);
             
-            // Fetch meal slots for the current plan
+            // Get plan slots
             $sql_slots = "SELECT mps.*, mpi.recipe_id, r.name as recipe_name, r.image_path, r.calories 
-                         FROM meal_plan_slots mps 
-                         LEFT JOIN meal_plan_items mpi ON mps.id = mpi.slot_id 
-                         LEFT JOIN recipes r ON mpi.recipe_id = r.id 
-                         WHERE mps.plan_id = ? 
-                         ORDER BY mps.date ASC, FIELD(mps.meal_type, 'breakfast', 'lunch', 'dinner', 'snacks')";
-            
-            if($stmt_slots = mysqli_prepare($conn, $sql_slots)) {
+                FROM meal_plan_slots mps 
+                LEFT JOIN meal_plan_items mpi ON mps.id = mpi.slot_id 
+                LEFT JOIN recipes r ON mpi.recipe_id = r.id 
+                WHERE mps.plan_id = ? 
+                ORDER BY mps.date ASC, FIELD(mps.meal_type, 'breakfast', 'lunch', 'dinner', 'snacks')";
+
+            if ($stmt_slots = mysqli_prepare($conn, $sql_slots)) {
                 mysqli_stmt_bind_param($stmt_slots, "i", $current_plan['id']);
-                
-                if(mysqli_stmt_execute($stmt_slots)) {
+                if (mysqli_stmt_execute($stmt_slots)) {
                     $result_slots = mysqli_stmt_get_result($stmt_slots);
                     
                     $current_plan['slots'] = array();
                     $current_plan['days'] = array();
                     
-                    while($slot = mysqli_fetch_assoc($result_slots)) {
-                        // Group slots by date
+                    while ($slot = mysqli_fetch_assoc($result_slots)) {
                         $date = $slot['date'];
                         $day_name = date('l', strtotime($date));
                         $formatted_date = date('M d', strtotime($date));
                         
-                        if(!isset($current_plan['days'][$date])) {
+                        if (!isset($current_plan['days'][$date])) {
                             $current_plan['days'][$date] = array(
                                 'date' => $date,
                                 'day_name' => $day_name,
@@ -106,43 +116,55 @@ if($stmt = mysqli_prepare($conn, $sql_current_plan)) {
                         
                         $current_plan['days'][$date]['meals'][$slot['meal_type']] = $slot;
                         
-                        // Add calories to daily total
-                        if(!empty($slot['calories']) && !empty($slot['recipe_id'])) {
+                        if (!empty($slot['calories']) && !empty($slot['recipe_id'])) {
                             $current_plan['days'][$date]['total_calories'] += $slot['calories'];
                         }
-                        
-                        // Also store in flat array
+
                         $current_plan['slots'][] = $slot;
                     }
+                } else {
+                    echo "Error (slots): " . mysqli_error($conn);
                 }
+                mysqli_stmt_close($stmt_slots);
             }
         }
+    } else {
+        echo "Error (current plan): " . mysqli_error($conn);
     }
+
     mysqli_stmt_close($stmt);
 }
 
-// Fetch recent recipes
-$recent_recipes = array();
-$sql_recent = "SELECT id, name, category, prep_time, calories, diet_type, image_path, created_at 
-              FROM recipes 
-              WHERE user_id = ? 
-              ORDER BY created_at DESC 
-              LIMIT 4";
+// Fallback if no plan
+if (!$current_plan) {
+    $current_plan = [
+        'slots' => [],
+        'days' => []
+    ];
+}
 
-if($stmt = mysqli_prepare($conn, $sql_recent)) {
-    mysqli_stmt_bind_param($stmt, "i", $_SESSION["id"]);
-    
-    if(mysqli_stmt_execute($stmt)) {
+// Fetch Recent Recipes
+$recent_recipes = array();
+$sql_recent = "SELECT id, name, category, prep_time, servings, calories, protein, carbs, fiber, diet_type, image_path, created_at 
+        FROM recipes 
+        WHERE user_id = ? 
+        ORDER BY created_at DESC 
+        LIMIT 4";
+
+if ($stmt = mysqli_prepare($conn, $sql_recent)) {
+    mysqli_stmt_bind_param($stmt, "i", $userId);
+    if (mysqli_stmt_execute($stmt)) {
         $result = mysqli_stmt_get_result($stmt);
-        
-        while($recipe = mysqli_fetch_assoc($result)) {
+        while ($recipe = mysqli_fetch_assoc($result)) {
             $recent_recipes[] = $recipe;
         }
+    } else {
+        echo "Error (recent recipes): " . mysqli_error($conn);
     }
     mysqli_stmt_close($stmt);
 }
-
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -254,7 +276,7 @@ if($stmt = mysqli_prepare($conn, $sql_recent)) {
             </nav>
 
             <div class="p-4 border-t border-gray-800">
-                <a href="logout.php" class="logout-button flex items-center text-gray-300 hover:text-white">
+                <a href="../auth/logout.php" class="logout-button flex items-center text-gray-300 hover:text-white">
                     <i class="fas fa-sign-out-alt mr-3 text-yellow-300"></i>
                     <span>Logout</span>
                 </a>
@@ -298,7 +320,7 @@ if($stmt = mysqli_prepare($conn, $sql_recent)) {
                         </a>
                     </li>
                     <li>
-                        <a href="logout.php" class="sidebar-link flex items-center px-6 py-3 text-gray-300 hover:text-white">
+                        <a href="../auth/logout.php" class="sidebar-link flex items-center px-6 py-3 text-gray-300 hover:text-white">
                             <i class="fas fa-sign-out-alt mr-3 text-yellow-300"></i>
                             <span>Logout</span>
                         </a>
@@ -339,7 +361,7 @@ if($stmt = mysqli_prepare($conn, $sql_recent)) {
                             <a href="profile.php" class="block px-4 py-2 text-sm text-text hover:bg-white">Your Profile</a>
                             <a href="settings.php" class="block px-4 py-2 text-sm text-text hover:bg-white">Settings</a>
                             <div class="border-t border-gray-200"></div>
-                            <a href="logout.php" class="block px-4 py-2 text-sm text-text hover:bg-white">Logout</a>
+                            <a href="../auth/logout.php" class="block px-4 py-2 text-sm text-text hover:bg-white">Logout</a>
                         </div>
                     </div>
                 </div>
@@ -572,87 +594,117 @@ if($stmt = mysqli_prepare($conn, $sql_recent)) {
         </div>
     </div>
 
-    <!-- Recipe Modal (Hidden by default) -->
-    <div id="view-recipe-modal" class="fixed inset-0 bg-gray-200 flex items-center justify-center z-50 hidden">
-        <div class="bg-white rounded-xl shadow-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto modal-animation">
-            <div class="relative">
-                <div class="h-64 md:h-80 w-full">
-                    <img id="modal-image" src="../img/Alfredo.png" alt="Recipe" class="w-full h-full object-cover">
+    <!-- View Recipe Modal (Hidden by default) -->
+<div id="view-recipe-modal" class="fixed inset-0 bg-gray-100 bg-opacity-60 flex items-center justify-center z-50 hidden transition-all duration-300">
+    <div class="bg-gradient-to-t from-yellow-100 via-yellow-200 to-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto modal-animation transform scale-95 transition-transform duration-500 ease-in-out">
+        <div class="relative">
+            <div class="h-64 md:h-80 w-full">
+                <img id="modal-image" src="../img/Alfredo.png" alt="Recipe" class="w-full h-full object-cover rounded-t-xl">
+            </div>
+            <button id="close-view-modal" class="absolute top-4 right-4 bg-white rounded-full p-2 shadow-lg text-black hover:text-yellow-500 focus:outline-none transition-transform transform hover:scale-110">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        
+        <div class="p-8">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+                <div>
+                    <h2 id="modal-title" class="text-3xl font-semibold text-gray-800 tracking-tight"></h2>
+                    <div class="flex items-center mt-2">
+                        <div class="flex text-yellow-400">
+                            <i class="fas fa-star text-xs"></i>
+                            <i class="fas fa-star text-xs"></i>
+                            <i class="fas fa-star text-xs"></i>
+                            <i class="fas fa-star text-xs"></i>
+                            <i class="fas fa-star-half-alt text-xs"></i>
+                        </div>
+                        <span class="text-sm text-gray-600 ml-2">4.5</span>
+                    </div>
                 </div>
-                <button id="close-view-modal" class="absolute top-4 right-4 bg-white rounded-full p-2 shadow-md text-black hover:text-yellow-300 focus:outline-none">
-                    <i class="fas fa-times text-xl"></i>
-                </button>
+                <div>
+                    <span id="modal-category" class="inline-block px-4 py-2 bg-yellow-300 text-black rounded-full text-sm font-medium"></span>
+                </div>
             </div>
             
-            <div class="p-6">
-                <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-                    <div>
-                        <h2 id="modal-title" class="text-2xl font-serif font-bold text-black"></h2>
-                        <div class="flex items-center mt-2">
-                            <div class="flex text-yellow-300">
-                                <i class="fas fa-star text-xs"></i>
-                                <i class="fas fa-star text-xs"></i>
-                                <i class="fas fa-star text-xs"></i>
-                                <i class="fas fa-star text-xs"></i>
-                                <i class="fas fa-star-half-alt text-xs"></i>
-                            </div>
-                            <span class="text-xs text-text ml-2">4.5</span>
-                        </div>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white rounded-lg p-6 flex flex-col items-center justify-center shadow-lg transition-transform transform hover:scale-105">
+                    <div class="text-yellow-400 mb-2">
+                        <i class="far fa-clock text-2xl"></i>
                     </div>
-                    <div>
-                        <span id="modal-category" class="inline-block px-3 py-1 bg-yellow-300 bg-opacity-20 text-black rounded-full text-sm"></span>
-                    </div>
+                    <p class="text-sm text-gray-600">Prep Time</p>
+                    <p id="modal-prep-time" class="font-bold text-gray-800"></p>
                 </div>
                 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div class="bg-white rounded-lg p-4 flex flex-col items-center justify-center">
-                        <div class="text-yellow-300 mb-1">
-                            <i class="far fa-clock text-xl"></i>
-                        </div>
-                        <p class="text-sm text-text">Prep Time</p>
-                        <p id="modal-prep-time" class="font-bold text-black"></p>
+                <div class="bg-white rounded-lg p-6 flex flex-col items-center justify-center shadow-lg transition-transform transform hover:scale-105">
+                    <div class="text-yellow-400 mb-2">
+                        <i class="fas fa-fire text-2xl"></i>
                     </div>
-                    
-                    <div class="bg-white rounded-lg p-4 flex flex-col items-center justify-center">
-                        <div class="text-yellow-300 mb-1">
-                            <i class="fas fa-fire text-xl"></i>
-                        </div>
-                        <p class="text-sm text-text">Calories</p>
-                        <p id="modal-calories" class="font-bold text-black"></p>
-                    </div>
-                    
-                    <div class="bg-white rounded-lg p-4 flex flex-col items-center justify-center">
-                        <div class="text-yellow-300 mb-1">
-                            <i class="fas fa-utensils text-xl"></i>
-                        </div>
-                        <p class="text-sm text-text">Servings</p>
-                        <p id="modal-servings" class="font-bold text-black"></p>
-                    </div>
+                    <p class="text-sm text-gray-600">Calories</p>
+                    <p id="modal-calories" class="font-bold text-gray-800"></p>
                 </div>
                 
-                <div class="mb-8">
-                    <h3 class="text-xl font-bold text-black mb-4">Ingredients</h3>
-                    <ul id="modal-ingredients" class="space-y-2 pl-5 list-disc">
-                        <!-- Ingredients will be populated by JavaScript -->
-                    </ul>
-                </div>
-                
-                <div class="mb-8">
-                    <h3 class="text-xl font-bold text-black mb-4">Instructions</h3>
-                    <ol id="modal-instructions" class="space-y-4 pl-5 list-decimal">
-                        <!-- Instructions will be populated by JavaScript -->
-                    </ol>
-                </div>
-                
-                <div id="modal-notes-container" class="mb-8 hidden">
-                    <h3 class="text-xl font-bold text-black mb-4">Notes</h3>
-                    <div id="modal-notes" class="bg-yellow-50 p-4 rounded-lg text-gray-700">
-                        <!-- Notes will be populated by JavaScript -->
+                <div class="bg-white rounded-lg p-6 flex flex-col items-center justify-center shadow-lg transition-transform transform hover:scale-105">
+                    <div class="text-yellow-400 mb-2">
+                        <i class="fas fa-drumstick-bite text-2xl"></i>
                     </div>
+                    <p class="text-sm text-gray-600">Protein</p>
+                    <p id="modal-protein" class="font-bold text-gray-800"></p>
+                </div>
+                
+                <div class="bg-white rounded-lg p-6 flex flex-col items-center justify-center shadow-lg transition-transform transform hover:scale-105">
+                    <div class="text-yellow-400 mb-2">
+                        <i class="fas fa-utensils text-2xl"></i>
+                    </div>
+                    <p class="text-sm text-gray-600">Servings</p>
+                    <p id="modal-servings" class="font-bold text-gray-800"></p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div class="bg-white rounded-lg p-6 shadow-lg transition-transform transform hover:scale-105">
+                    <div class="flex items-center mb-3">
+                        <div class="text-yellow-400 mr-3">
+                            <i class="fas fa-bread-slice text-lg"></i>
+                        </div>
+                        <p class="text-sm text-gray-600">Carbohydrates</p>
+                    </div>
+                    <p id="modal-carbs" class="font-bold text-gray-800"></p>
+                </div>
+                
+                <div class="bg-white rounded-lg p-6 shadow-lg transition-transform transform hover:scale-105">
+                    <div class="flex items-center mb-3">
+                        <div class="text-yellow-400 mr-3">
+                            <i class="fas fa-seedling text-lg"></i>
+                        </div>
+                        <p class="text-sm text-gray-600">Fiber</p>
+                    </div>
+                    <p id="modal-fiber" class="font-bold text-gray-800"></p>
+                </div>
+            </div>
+            
+            <div class="mb-8">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">Ingredients</h3>
+                <ul id="modal-ingredients" class="space-y-2 pl-5 list-disc text-gray-700">
+                    <!-- Ingredients will be populated by JavaScript -->
+                </ul>
+            </div>
+            
+            <div class="mb-8">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">Instructions</h3>
+                <ol id="modal-instructions" class="space-y-4 pl-5 list-decimal text-gray-700">
+                    <!-- Instructions will be populated by JavaScript -->
+                </ol>
+            </div>
+            
+            <div id="modal-notes-container" class="mb-8 hidden">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">Notes</h3>
+                <div id="modal-notes" class="bg-yellow-50 p-6 rounded-lg text-gray-700">
+                    <!-- Notes will be populated by JavaScript -->
                 </div>
             </div>
         </div>
     </div>
+</div>
     <script src= "../js/dashboard.js"></script>
 </body>
 </html>

@@ -1,5 +1,5 @@
 <?php
-require_once "../../config.php";
+require_once"../../config.php";
 
 $name = $email = $password = $confirm_password = $dietary_preference = "";
 $name_err = $email_err = $password_err = $confirm_password_err = "";

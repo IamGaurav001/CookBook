@@ -283,7 +283,7 @@ $remaining_items = $total_items - $completed_items;
             </nav>
 
             <div class="p-4 border-t border-gray-800">
-                <a href="logout.php" class="logout-button flex items-center text-gray-300 hover:text-white">
+                <a href="../auth/logout.php" class="logout-button flex items-center text-gray-300 hover:text-white">
                     <i class="fas fa-sign-out-alt mr-3 text-yellow-300"></i>
                     <span>Logout</span>
                 </a>
@@ -327,7 +327,7 @@ $remaining_items = $total_items - $completed_items;
                         </a>
                     </li>
                     <li>
-                        <a href="logout.php" class="sidebar-link flex items-center px-6 py-3 text-gray-300 hover:text-white">
+                        <a href="../auth/logout.php" class="sidebar-link flex items-center px-6 py-3 text-gray-300 hover:text-white">
                             <i class="fas fa-sign-out-alt mr-3 text-yellow-300"></i>
                             <span>Logout</span>
                         </a>
@@ -368,7 +368,7 @@ $remaining_items = $total_items - $completed_items;
                             <a href="profile.php" class="block px-4 py-2 text-sm text-text hover:bg-white">Your Profile</a>
                             <a href="settings.php" class="block px-4 py-2 text-sm text-text hover:bg-white">Settings</a>
                             <div class="border-t border-gray-200"></div>
-                            <a href="logout.php" class="block px-4 py-2 text-sm text-text hover:bg-white">Logout</a>
+                            <a href="../auth/logout.php" class="block px-4 py-2 text-sm text-text hover:bg-white">Logout</a>
                         </div>
                     </div>
                 </div>

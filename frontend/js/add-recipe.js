@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const viewButton = card.querySelector(".view-recipe")
     if (viewButton) {
       viewButton.addEventListener("click", (e) => {
-        e.stopPropagation() // Stop event from bubbling to the card
+        e.stopPropagation()
         const recipeId = card.getAttribute("data-recipe")
         fetchRecipeDetails(recipeId)
       })
@@ -184,7 +184,7 @@ document.addEventListener("DOMContentLoaded", () => {
       : "Not specified"
     document.getElementById("modal-servings").textContent = (recipe.servings || "N/A") + " servings"
 
-    document.getElementById("modal-protein").textContent = recipe.protein ? recipe.protein + " g" : "Not specified"
+    document.getElementById("modal-protein").textContent = recipe.nutrition?.protein + " g"
     document.getElementById("modal-carbs").textContent = recipe.carbs ? recipe.carbs + " g" : "Not specified"
     document.getElementById("modal-fiber").textContent = recipe.fiber ? recipe.fiber + " g" : "Not specified"
 

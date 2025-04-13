@@ -396,7 +396,7 @@ if($stmt = mysqli_prepare($conn, $sql)) {
             </nav>
             
             <div class="p-4 border-t border-gray-800">
-                <a href="logout.php" class="flex items-center text-gray-300 hover:text-white">
+                <a href="../auth/logout.php" class="flex items-center text-gray-300 hover:text-white">
                     <i class="fas fa-sign-out-alt mr-3 text-yellow-300"></i>
                     <span>Logout</span>
                 </a>
@@ -440,7 +440,7 @@ if($stmt = mysqli_prepare($conn, $sql)) {
                         </a>
                     </li>
                     <li>
-                        <a href="logout.php" class="sidebar-link flex items-center px-6 py-3 text-gray-300 hover:text-white">
+                        <a href="../auth/logout.php" class="sidebar-link flex items-center px-6 py-3 text-gray-300 hover:text-white">
                             <i class="fas fa-sign-out-alt mr-3 text-yellow-300"></i>
                             <span>Logout</span>
                         </a>
@@ -479,7 +479,7 @@ if($stmt = mysqli_prepare($conn, $sql)) {
                             <a href="profile.php" class="block px-4 py-2 text-sm text-text hover:bg-white">Your Profile</a>
                             <a href="settings.php" class="block px-4 py-2 text-sm text-text hover:bg-white">Settings</a>
                             <div class="border-t border-gray-200"></div>
-                            <a href="logout.php" class="block px-4 py-2 text-sm text-text hover:bg-white">Logout</a>
+                            <a href="../auth/logout.php" class="block px-4 py-2 text-sm text-text hover:bg-white">Logout</a>
                         </div>
                     </div>
                 </div>
@@ -730,116 +730,117 @@ if($stmt = mysqli_prepare($conn, $sql)) {
     </div>
     
     <!-- View Recipe Modal (Hidden by default) -->
-    <div id="view-recipe-modal" class="fixed inset-0 bg-gray-200 flex items-center justify-center z-50 hidden">
-        <div class="bg-white rounded-xl shadow-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto modal-animation">
+    <div id="view-recipe-modal" class="fixed inset-0 bg-gray-100 bg-opacity-60 flex items-center justify-center z-50 hidden transition-all duration-300">
+        <div class="bg-gradient-to-t from-yellow-100 via-yellow-200 to-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto modal-animation transform scale-95 transition-transform duration-500 ease-in-out">
             <div class="relative">
                 <div class="h-64 md:h-80 w-full">
-                    <img id="modal-image" src="../img/Alfredo.png" alt="Recipe" class="w-full h-full object-cover">
+                    <img id="modal-image" src="../img/Alfredo.png" alt="Recipe" class="w-full h-full object-cover rounded-t-xl">
                 </div>
-                <button id="close-view-modal" class="absolute top-4 right-4 bg-white rounded-full p-2 shadow-md text-black hover:text-yellow-300 focus:outline-none">
+                <button id="close-view-modal" class="absolute top-4 right-4 bg-white rounded-full p-2 shadow-lg text-black hover:text-yellow-500 focus:outline-none transition-transform transform hover:scale-110">
                     <i class="fas fa-times text-xl"></i>
                 </button>
             </div>
             
-            <div class="p-6">
+            <div class="p-8">
                 <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
                     <div>
-                        <h2 id="modal-title" class="text-2xl font-serif font-bold text-black"></h2>
+                        <h2 id="modal-title" class="text-3xl font-semibold text-gray-800 tracking-tight"></h2>
                         <div class="flex items-center mt-2">
-                            <div class="flex text-yellow-300">
+                            <div class="flex text-yellow-400">
                                 <i class="fas fa-star text-xs"></i>
                                 <i class="fas fa-star text-xs"></i>
                                 <i class="fas fa-star text-xs"></i>
                                 <i class="fas fa-star text-xs"></i>
                                 <i class="fas fa-star-half-alt text-xs"></i>
                             </div>
-                            <span class="text-xs text-text ml-2">4.5</span>
+                            <span class="text-sm text-gray-600 ml-2">4.5</span>
                         </div>
                     </div>
                     <div>
-                        <span id="modal-category" class="inline-block px-3 py-1 bg-yellow-300 bg-opacity-20 text-black rounded-full text-sm"></span>
+                        <span id="modal-category" class="inline-block px-4 py-2 bg-yellow-300 text-black rounded-full text-sm font-medium"></span>
                     </div>
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                    <div class="bg-white rounded-lg p-4 flex flex-col items-center justify-center">
-                        <div class="text-yellow-300 mb-1">
-                            <i class="far fa-clock text-xl"></i>
+                    <div class="bg-white rounded-lg p-6 flex flex-col items-center justify-center shadow-lg transition-transform transform hover:scale-105">
+                        <div class="text-yellow-400 mb-2">
+                            <i class="far fa-clock text-2xl"></i>
                         </div>
-                        <p class="text-sm text-text">Prep Time</p>
-                        <p id="modal-prep-time" class="font-bold text-black"></p>
+                        <p class="text-sm text-gray-600">Prep Time</p>
+                        <p id="modal-prep-time" class="font-bold text-gray-800"></p>
                     </div>
                     
-                    <div class="bg-white rounded-lg p-4 flex flex-col items-center justify-center">
-                        <div class="text-yellow-300 mb-1">
-                            <i class="fas fa-fire text-xl"></i>
+                    <div class="bg-white rounded-lg p-6 flex flex-col items-center justify-center shadow-lg transition-transform transform hover:scale-105">
+                        <div class="text-yellow-400 mb-2">
+                            <i class="fas fa-fire text-2xl"></i>
                         </div>
-                        <p class="text-sm text-text">Calories</p>
-                        <p id="modal-calories" class="font-bold text-black"></p>
+                        <p class="text-sm text-gray-600">Calories</p>
+                        <p id="modal-calories" class="font-bold text-gray-800"></p>
                     </div>
                     
-                    <div class="bg-white rounded-lg p-4 flex flex-col items-center justify-center">
-                        <div class="text-yellow-300 mb-1">
-                            <i class="fas fa-drumstick-bite text-xl"></i>
+                    <div class="bg-white rounded-lg p-6 flex flex-col items-center justify-center shadow-lg transition-transform transform hover:scale-105">
+                        <div class="text-yellow-400 mb-2">
+                            <i class="fas fa-drumstick-bite text-2xl"></i>
                         </div>
-                        <p class="text-sm text-text">Protein</p>
-                        <p id="modal-protein" class="font-bold text-black"></p>
+                        <p class="text-sm text-gray-600">Protein</p>
+                        <p id="modal-protein" class="font-bold text-gray-800"></p>
                     </div>
                     
-                    <div class="bg-white rounded-lg p-4 flex flex-col items-center justify-center">
-                        <div class="text-yellow-300 mb-1">
-                            <i class="fas fa-utensils text-xl"></i>
+                    <div class="bg-white rounded-lg p-6 flex flex-col items-center justify-center shadow-lg transition-transform transform hover:scale-105">
+                        <div class="text-yellow-400 mb-2">
+                            <i class="fas fa-utensils text-2xl"></i>
                         </div>
-                        <p class="text-sm text-text">Servings</p>
-                        <p id="modal-servings" class="font-bold text-black"></p>
+                        <p class="text-sm text-gray-600">Servings</p>
+                        <p id="modal-servings" class="font-bold text-gray-800"></p>
                     </div>
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                    <div class="bg-white rounded-lg p-4">
-                        <div class="flex items-center mb-2">
-                            <div class="text-yellow-300 mr-2">
+                    <div class="bg-white rounded-lg p-6 shadow-lg transition-transform transform hover:scale-105">
+                        <div class="flex items-center mb-3">
+                            <div class="text-yellow-400 mr-3">
                                 <i class="fas fa-bread-slice text-lg"></i>
                             </div>
-                            <p class="text-sm text-text">Carbohydrates</p>
+                            <p class="text-sm text-gray-600">Carbohydrates</p>
                         </div>
-                        <p id="modal-carbs" class="font-bold text-black"></p>
+                        <p id="modal-carbs" class="font-bold text-gray-800"></p>
                     </div>
                     
-                    <div class="bg-white rounded-lg p-4">
-                        <div class="flex items-center mb-2">
-                            <div class="text-yellow-300 mr-2">
+                    <div class="bg-white rounded-lg p-6 shadow-lg transition-transform transform hover:scale-105">
+                        <div class="flex items-center mb-3">
+                            <div class="text-yellow-400 mr-3">
                                 <i class="fas fa-seedling text-lg"></i>
                             </div>
-                            <p class="text-sm text-text">Fiber</p>
+                            <p class="text-sm text-gray-600">Fiber</p>
                         </div>
-                        <p id="modal-fiber" class="font-bold text-black"></p>
+                        <p id="modal-fiber" class="font-bold text-gray-800"></p>
                     </div>
                 </div>
                 
                 <div class="mb-8">
-                    <h3 class="text-xl font-bold text-black mb-4">Ingredients</h3>
-                    <ul id="modal-ingredients" class="space-y-2 pl-5 list-disc">
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-4">Ingredients</h3>
+                    <ul id="modal-ingredients" class="space-y-2 pl-5 list-disc text-gray-700">
                         <!-- Ingredients will be populated by JavaScript -->
                     </ul>
                 </div>
                 
                 <div class="mb-8">
-                    <h3 class="text-xl font-bold text-black mb-4">Instructions</h3>
-                    <ol id="modal-instructions" class="space-y-4 pl-5 list-decimal">
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-4">Instructions</h3>
+                    <ol id="modal-instructions" class="space-y-4 pl-5 list-decimal text-gray-700">
                         <!-- Instructions will be populated by JavaScript -->
                     </ol>
                 </div>
                 
                 <div id="modal-notes-container" class="mb-8 hidden">
-                    <h3 class="text-xl font-bold text-black mb-4">Notes</h3>
-                    <div id="modal-notes" class="bg-yellow-50 p-4 rounded-lg text-gray-700">
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-4">Notes</h3>
+                    <div id="modal-notes" class="bg-yellow-50 p-6 rounded-lg text-gray-700">
                         <!-- Notes will be populated by JavaScript -->
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
 
     <script src="../js/add-recipe.js"></script>
 </body>
