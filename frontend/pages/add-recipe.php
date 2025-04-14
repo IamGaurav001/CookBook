@@ -535,16 +535,6 @@ if($stmt = mysqli_prepare($conn, $sql)) {
                             </div>
                             <div class="p-4">
                                 <h3 class="font-bold text-black"><?php echo htmlspecialchars($recipe['name']); ?></h3>
-                                <div class="flex items-center mt-2">
-                                    <div class="flex text-yellow-300">
-                                        <i class="fas fa-star text-xs"></i>
-                                        <i class="fas fa-star text-xs"></i>
-                                        <i class="fas fa-star text-xs"></i>
-                                        <i class="fas fa-star text-xs"></i>
-                                        <i class="fas fa-star-half-alt text-xs"></i>
-                                    </div>
-                                    <span class="text-xs text-text ml-2">4.5</span>
-                                </div>
                                 <div class="flex items-center justify-between mt-3">
                                     <div class="flex items-center text-xs text-text">
                                         <i class="far fa-clock mr-1"></i>
@@ -731,115 +721,106 @@ if($stmt = mysqli_prepare($conn, $sql)) {
     
     <!-- View Recipe Modal (Hidden by default) -->
     <div id="view-recipe-modal" class="fixed inset-0 bg-gray-100 bg-opacity-60 flex items-center justify-center z-50 hidden transition-all duration-300">
-        <div class="bg-gradient-to-t from-yellow-100 via-yellow-200 to-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto modal-animation transform scale-95 transition-transform duration-500 ease-in-out">
-            <div class="relative">
-                <div class="h-64 md:h-80 w-full">
-                    <img id="modal-image" src="../img/Alfredo.png" alt="Recipe" class="w-full h-full object-cover rounded-t-xl">
+    <div class="bg-gradient-to-t from-yellow-100 via-yellow-200 to-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto modal-animation transform scale-95 transition-transform duration-500 ease-in-out">
+        <div class="relative">
+            <div class="h-64 md:h-80 w-full">
+                <img id="modal-image" src="../img/Alfredo.png" alt="Recipe" class="w-full h-full object-cover rounded-t-xl">
+            </div>
+            <button id="close-view-modal" class="absolute top-4 right-4 bg-white rounded-full p-2 shadow-lg text-black hover:text-yellow-500 focus:outline-none transition-transform transform hover:scale-110">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        
+        <div class="p-8">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+                <div>
+                    <h2 id="modal-title" class="text-3xl font-semibold text-gray-800 tracking-tight"></h2>
+                    </div>
                 </div>
-                <button id="close-view-modal" class="absolute top-4 right-4 bg-white rounded-full p-2 shadow-lg text-black hover:text-yellow-500 focus:outline-none transition-transform transform hover:scale-110">
-                    <i class="fas fa-times text-xl"></i>
-                </button>
+                <div>
+                    <span id="modal-category" class="inline-block px-4 py-2 bg-yellow-300 text-black rounded-full text-sm font-medium"></span>
+                </div>
             </div>
             
-            <div class="p-8">
-                <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-                    <div>
-                        <h2 id="modal-title" class="text-3xl font-semibold text-gray-800 tracking-tight"></h2>
-                        <div class="flex items-center mt-2">
-                            <div class="flex text-yellow-400">
-                                <i class="fas fa-star text-xs"></i>
-                                <i class="fas fa-star text-xs"></i>
-                                <i class="fas fa-star text-xs"></i>
-                                <i class="fas fa-star text-xs"></i>
-                                <i class="fas fa-star-half-alt text-xs"></i>
-                            </div>
-                            <span class="text-sm text-gray-600 ml-2">4.5</span>
-                        </div>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white rounded-lg p-6 flex flex-col items-center justify-center shadow-lg transition-transform transform hover:scale-105">
+                    <div class="text-yellow-400 mb-2">
+                        <i class="far fa-clock text-2xl"></i>
                     </div>
-                    <div>
-                        <span id="modal-category" class="inline-block px-4 py-2 bg-yellow-300 text-black rounded-full text-sm font-medium"></span>
-                    </div>
+                    <p class="text-sm text-gray-600">Prep Time</p>
+                    <p id="modal-prep-time" class="font-bold text-gray-800"></p>
                 </div>
                 
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                    <div class="bg-white rounded-lg p-6 flex flex-col items-center justify-center shadow-lg transition-transform transform hover:scale-105">
-                        <div class="text-yellow-400 mb-2">
-                            <i class="far fa-clock text-2xl"></i>
-                        </div>
-                        <p class="text-sm text-gray-600">Prep Time</p>
-                        <p id="modal-prep-time" class="font-bold text-gray-800"></p>
+                <div class="bg-white rounded-lg p-6 flex flex-col items-center justify-center shadow-lg transition-transform transform hover:scale-105">
+                    <div class="text-yellow-400 mb-2">
+                        <i class="fas fa-fire text-2xl"></i>
                     </div>
-                    
-                    <div class="bg-white rounded-lg p-6 flex flex-col items-center justify-center shadow-lg transition-transform transform hover:scale-105">
-                        <div class="text-yellow-400 mb-2">
-                            <i class="fas fa-fire text-2xl"></i>
-                        </div>
-                        <p class="text-sm text-gray-600">Calories</p>
-                        <p id="modal-calories" class="font-bold text-gray-800"></p>
-                    </div>
-                    
-                    <div class="bg-white rounded-lg p-6 flex flex-col items-center justify-center shadow-lg transition-transform transform hover:scale-105">
-                        <div class="text-yellow-400 mb-2">
-                            <i class="fas fa-drumstick-bite text-2xl"></i>
-                        </div>
-                        <p class="text-sm text-gray-600">Protein</p>
-                        <p id="modal-protein" class="font-bold text-gray-800"></p>
-                    </div>
-                    
-                    <div class="bg-white rounded-lg p-6 flex flex-col items-center justify-center shadow-lg transition-transform transform hover:scale-105">
-                        <div class="text-yellow-400 mb-2">
-                            <i class="fas fa-utensils text-2xl"></i>
-                        </div>
-                        <p class="text-sm text-gray-600">Servings</p>
-                        <p id="modal-servings" class="font-bold text-gray-800"></p>
-                    </div>
+                    <p class="text-sm text-gray-600">Calories</p>
+                    <p id="modal-calories" class="font-bold text-gray-800"></p>
                 </div>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                    <div class="bg-white rounded-lg p-6 shadow-lg transition-transform transform hover:scale-105">
-                        <div class="flex items-center mb-3">
-                            <div class="text-yellow-400 mr-3">
-                                <i class="fas fa-bread-slice text-lg"></i>
-                            </div>
-                            <p class="text-sm text-gray-600">Carbohydrates</p>
+                <div class="bg-white rounded-lg p-6 flex flex-col items-center justify-center shadow-lg transition-transform transform hover:scale-105">
+                    <div class="text-yellow-400 mb-2">
+                        <i class="fas fa-drumstick-bite text-2xl"></i>
+                    </div>
+                    <p class="text-sm text-gray-600">Protein</p>
+                    <p id="modal-protein" class="font-bold text-gray-800"></p>
+                </div>
+                
+                <div class="bg-white rounded-lg p-6 flex flex-col items-center justify-center shadow-lg transition-transform transform hover:scale-105">
+                    <div class="text-yellow-400 mb-2">
+                        <i class="fas fa-utensils text-2xl"></i>
+                    </div>
+                    <p class="text-sm text-gray-600">Servings</p>
+                    <p id="modal-servings" class="font-bold text-gray-800"></p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div class="bg-white rounded-lg p-6 shadow-lg transition-transform transform hover:scale-105">
+                    <div class="flex items-center mb-3">
+                        <div class="text-yellow-400 mr-3">
+                            <i class="fas fa-bread-slice text-lg"></i>
                         </div>
-                        <p id="modal-carbs" class="font-bold text-gray-800"></p>
+                        <p class="text-sm text-gray-600">Carbohydrates</p>
                     </div>
-                    
-                    <div class="bg-white rounded-lg p-6 shadow-lg transition-transform transform hover:scale-105">
-                        <div class="flex items-center mb-3">
-                            <div class="text-yellow-400 mr-3">
-                                <i class="fas fa-seedling text-lg"></i>
-                            </div>
-                            <p class="text-sm text-gray-600">Fiber</p>
+                    <p id="modal-carbs" class="font-bold text-gray-800"></p>
+                </div>
+                
+                <div class="bg-white rounded-lg p-6 shadow-lg transition-transform transform hover:scale-105">
+                    <div class="flex items-center mb-3">
+                        <div class="text-yellow-400 mr-3">
+                            <i class="fas fa-seedling text-lg"></i>
                         </div>
-                        <p id="modal-fiber" class="font-bold text-gray-800"></p>
+                        <p class="text-sm text-gray-600">Fiber</p>
                     </div>
+                    <p id="modal-fiber" class="font-bold text-gray-800"></p>
                 </div>
-                
-                <div class="mb-8">
-                    <h3 class="text-2xl font-semibold text-gray-800 mb-4">Ingredients</h3>
-                    <ul id="modal-ingredients" class="space-y-2 pl-5 list-disc text-gray-700">
-                        <!-- Ingredients will be populated by JavaScript -->
-                    </ul>
-                </div>
-                
-                <div class="mb-8">
-                    <h3 class="text-2xl font-semibold text-gray-800 mb-4">Instructions</h3>
-                    <ol id="modal-instructions" class="space-y-4 pl-5 list-decimal text-gray-700">
-                        <!-- Instructions will be populated by JavaScript -->
-                    </ol>
-                </div>
-                
-                <div id="modal-notes-container" class="mb-8 hidden">
-                    <h3 class="text-2xl font-semibold text-gray-800 mb-4">Notes</h3>
-                    <div id="modal-notes" class="bg-yellow-50 p-6 rounded-lg text-gray-700">
-                        <!-- Notes will be populated by JavaScript -->
-                    </div>
+            </div>
+            
+            <div class="mb-8">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">Ingredients</h3>
+                <ul id="modal-ingredients" class="space-y-2 pl-5 list-disc text-gray-700">
+                    <!-- Ingredients will be populated by JavaScript -->
+                </ul>
+            </div>
+            
+            <div class="mb-8">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">Instructions</h3>
+                <ol id="modal-instructions" class="space-y-4 pl-5 list-decimal text-gray-700">
+                    <!-- Instructions will be populated by JavaScript -->
+                </ol>
+            </div>
+            
+            <div id="modal-notes-container" class="mb-8 hidden">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">Notes</h3>
+                <div id="modal-notes" class="bg-yellow-50 p-6 rounded-lg text-gray-700">
+                    <!-- Notes will be populated by JavaScript -->
                 </div>
             </div>
         </div>
     </div>
+</div>
 
 
     <script src="../js/add-recipe.js"></script>

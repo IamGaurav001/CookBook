@@ -45,7 +45,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["plan-name"])) {
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())";
             
             if($stmt = mysqli_prepare($conn, $sql)) {
-                mysqli_stmt_bind_param($stmt, "issssiiiii", 
+                mysqli_stmt_bind_param($stmt, "issssiiii",  
                     $param_user_id, 
                     $param_name, 
                     $param_start_date, 
@@ -748,7 +748,6 @@ if($stmt_recipes = mysqli_prepare($conn, $sql_recipes)) {
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
                     <div>
                         <h2 class="text-2xl font-serif font-bold text-black mb-2">Your Meal Plans</h2>
-                        <p class="text-text">Plan your meals for the week and generate shopping lists</p>
                     </div>
                     <button id="create-plan-btn" class="mt-4 md:mt-0 bg-black text-white px-6 py-2 rounded-lg font-medium flex items-center">
                         <i class="fas fa-plus mr-2"></i>

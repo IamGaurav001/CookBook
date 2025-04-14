@@ -157,7 +157,7 @@ mysqli_close($conn);
         <aside class="bg-black text-white w-full md:w-64 flex-shrink-0 md:flex flex-col hidden">
             <div class="p-4 border-b border-gray-800">
                 <h2 class="font-serif text-2xl font-bold text-yellow-300">
-                    <a href="index.php">CookBook</a>
+                    <a href="../index.php">CookBook</a>
                 </h2>
             </div>
 
