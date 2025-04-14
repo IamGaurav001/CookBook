@@ -561,16 +561,6 @@ if ($stmt = mysqli_prepare($conn, $sql_recent)) {
                             </div>
                             <div class="p-4">
                                 <h3 class="font-bold text-black"><?php echo htmlspecialchars($recipe['name']); ?></h3>
-                                <div class="flex items-center mt-2">
-                                    <div class="flex text-yellow-300">
-                                        <i class="fas fa-star text-xs"></i>
-                                        <i class="fas fa-star text-xs"></i>
-                                        <i class="fas fa-star text-xs"></i>
-                                        <i class="fas fa-star text-xs"></i>
-                                        <i class="fas fa-star-half-alt text-xs"></i>
-                                    </div>
-                                    <span class="text-xs text-text ml-2">4.5</span>
-                                </div>
                                 <div class="flex items-center justify-between mt-3">
                                     <div class="flex items-center text-xs text-text">
                                         <i class="far fa-clock mr-1"></i>
@@ -610,15 +600,6 @@ if ($stmt = mysqli_prepare($conn, $sql_recent)) {
             <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
                 <div>
                     <h2 id="modal-title" class="text-3xl font-semibold text-gray-800 tracking-tight"></h2>
-                    <div class="flex items-center mt-2">
-                        <div class="flex text-yellow-400">
-                            <i class="fas fa-star text-xs"></i>
-                            <i class="fas fa-star text-xs"></i>
-                            <i class="fas fa-star text-xs"></i>
-                            <i class="fas fa-star text-xs"></i>
-                            <i class="fas fa-star-half-alt text-xs"></i>
-                        </div>
-                        <span class="text-sm text-gray-600 ml-2">4.5</span>
                     </div>
                 </div>
                 <div>
@@ -708,4 +689,3 @@ if ($stmt = mysqli_prepare($conn, $sql_recent)) {
     <script src= "../js/dashboard.js"></script>
 </body>
 </html>
-
