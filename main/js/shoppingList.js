@@ -1,19 +1,24 @@
+// Main event listener that runs when the DOM is fully loaded
 document.addEventListener('DOMContentLoaded', function() {
+    // Mobile menu toggle functionality
     document.getElementById('mobile-menu-button').addEventListener('click', function() {
         const mobileMenu = document.getElementById('mobile-menu');
         mobileMenu.classList.toggle('hidden');
     });
     
+    // User menu toggle functionality
     document.getElementById('user-menu-button').addEventListener('click', function() {
         const userMenu = document.getElementById('user-menu');
         userMenu.classList.toggle('hidden');
     });
     
+    // Add item modal functionality
     const addItemBtn = document.getElementById('add-item-btn');
     const addItemModal = document.getElementById('add-item-modal');
     const closeAddModal = document.getElementById('close-add-modal');
     const cancelAddItem = document.getElementById('cancel-add-item');
     
+    // Empty state add item button functionality
     const emptyAddItemBtn = document.getElementById('empty-add-item-btn');
     if(emptyAddItemBtn) {
         emptyAddItemBtn.addEventListener('click', function() {
@@ -21,24 +26,29 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
+    // Show add item modal
     addItemBtn.addEventListener('click', function() {
         addItemModal.classList.remove('hidden');
     });
     
+    // Close add item modal
     closeAddModal.addEventListener('click', function() {
         addItemModal.classList.add('hidden');
     });
     
+    // Cancel add item
     cancelAddItem.addEventListener('click', function() {
         addItemModal.classList.add('hidden');
     });
     
+    // Close modal when clicking outside
     window.addEventListener('click', function(e) {
         if (e.target === addItemModal) {
             addItemModal.classList.add('hidden');
         }
     });
     
+    // Item checkbox functionality
     const itemCheckboxes = document.querySelectorAll('.item-checkbox');
     
     itemCheckboxes.forEach(checkbox => {
@@ -47,12 +57,14 @@ document.addEventListener('DOMContentLoaded', function() {
             const itemId = item.getAttribute('data-item-id');
             const completed = this.checked ? 1 : 0;
             
+            // Update item completion status
             if(completed) {
                 item.classList.add('completed');
             } else {
                 item.classList.remove('completed');
             }
             
+            // Update item status on server
             fetch('shopping-list.php', {
                 method: 'POST',
                 headers: {
@@ -66,7 +78,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Update counters
                     updateCounters();
                     
-                    // Show toast
+                    // Show toast notification
                     showToast(
                         completed ? 'Item Completed' : 'Item Uncompleted', 
                         completed ? 'Item marked as completed' : 'Item marked as not completed',
@@ -83,6 +95,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
+    // Delete item functionality
     const deleteButtons = document.querySelectorAll('.delete-item');
     
     deleteButtons.forEach(button => {
@@ -93,6 +106,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const item = this.closest('.shopping-item');
                 const itemId = item.getAttribute('data-item-id');
                 
+                // Delete item from server
                 fetch('shopping-list.php', {
                     method: 'POST',
                     headers: {
@@ -109,11 +123,13 @@ document.addEventListener('DOMContentLoaded', function() {
                         
                         showToast('Item Deleted', 'Item has been removed from your shopping list', 'trash-alt', 'text-red-500');
                         
+                        // Remove category section if empty
                         const categorySection = this.closest('.category-section');
                         if(categorySection && categorySection.querySelectorAll('.shopping-item').length === 0) {
                             categorySection.remove();
                         }
                         
+                        // Show empty state if no items left
                         if(document.querySelectorAll('.shopping-item').length === 0) {
                             document.getElementById('shopping-list-container').innerHTML = `
                                 <div id="empty-state" class="p-8 text-center">
@@ -143,6 +159,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
+    // Update item counters
     function updateCounters() {
         const totalItems = document.querySelectorAll('.shopping-item').length;
         const completedItems = document.querySelectorAll('.shopping-item.completed').length;
@@ -154,6 +171,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('list-stats').textContent = `Showing ${totalItems} items`;
     }
     
+    // Toast notification functionality
     const toast = document.getElementById('toast');
     const toastTitle = document.getElementById('toast-title');
     const toastMessage = document.getElementById('toast-message');
@@ -164,6 +182,7 @@ document.addEventListener('DOMContentLoaded', function() {
         hideToast();
     });
     
+    // Show toast notification
     function showToast(title, message, icon, iconColor) {
         toastTitle.textContent = title;
         toastMessage.textContent = message;
@@ -176,6 +195,7 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(hideToast, 3000);
     }
     
+    // Hide toast notification
     function hideToast() {
         toast.classList.remove('toast-slide-in');
         toast.classList.add('toast-slide-out');

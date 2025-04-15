@@ -1,19 +1,24 @@
+// Main event listener that runs when the DOM is fully loaded
 document.addEventListener("DOMContentLoaded", () => {
+  // Mobile menu toggle functionality
   document.getElementById("mobile-menu-button").addEventListener("click", () => {
     const mobileMenu = document.getElementById("mobile-menu")
     mobileMenu.classList.toggle("hidden")
   })
 
+  // User menu toggle functionality
   document.getElementById("user-menu-button").addEventListener("click", () => {
     const userMenu = document.getElementById("user-menu")
     userMenu.classList.toggle("hidden")
   })
 
+  // Create meal plan modal functionality
   const createPlanBtn = document.getElementById("create-plan-btn")
   const createPlanModal = document.getElementById("create-plan-modal")
   const closeCreateModal = document.getElementById("close-create-modal")
   const cancelCreatePlan = document.getElementById("cancel-create-plan")
 
+  // Empty state create plan button functionality
   const emptyCreatePlanBtn = document.getElementById("empty-create-plan-btn")
   if (emptyCreatePlanBtn) {
     emptyCreatePlanBtn.addEventListener("click", () => {
@@ -39,7 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
     })
   }
 
-  // Add Meal Modal
+  // Add meal modal functionality
   const addMealModal = document.getElementById("add-meal-modal")
   const closeAddMealModal = document.getElementById("close-add-meal-modal")
   const cancelAddMeal = document.getElementById("cancel-add-meal")
@@ -48,7 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const selectedSlotId = document.getElementById("selected-slot-id")
   const confirmAddMeal = document.getElementById("confirm-add-meal")
 
-  // Add meal buttons
+  // Add meal buttons functionality
   const addMealBtns = document.querySelectorAll(".add-meal-btn")
 
   addMealBtns.forEach((btn) => {
@@ -73,6 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
     })
   }
 
+  // Recipe selection functionality
   const recipeItems = document.querySelectorAll(".meal-item[data-recipe-id]")
 
   recipeItems.forEach((item) => {
@@ -87,6 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
     })
   })
 
+  // Recipe search functionality
   const recipeSearch = document.getElementById("recipe-search")
 
   if (recipeSearch) {
@@ -105,6 +112,7 @@ document.addEventListener("DOMContentLoaded", () => {
     })
   }
 
+  // Remove meal functionality
   const removeMealBtns = document.querySelectorAll(".remove-meal-btn")
 
   removeMealBtns.forEach((btn) => {
@@ -118,6 +126,7 @@ document.addEventListener("DOMContentLoaded", () => {
     })
   })
 
+  // Remove meal from server
   function removeMeal(slotId) {
     fetch(window.location.href, {
       method: "POST",
@@ -140,6 +149,7 @@ document.addEventListener("DOMContentLoaded", () => {
       })
   }
 
+  // Show toast notification
   function showToast(message, type = "success") {
     const toast = document.getElementById("toast")
     toast.textContent = message
@@ -158,6 +168,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 3000)
   }
 
+  // Close modals when clicking outside
   window.addEventListener("click", (e) => {
     if (e.target === createPlanModal) {
       createPlanModal.classList.add("hidden")
@@ -167,6 +178,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   })
 
+  // Date range functionality
   const startDateInput = document.getElementById("start-date")
   const endDateInput = document.getElementById("end-date")
 
@@ -187,6 +199,7 @@ document.addEventListener("DOMContentLoaded", () => {
       startDateInput.addEventListener("change", updatePlanName)
       endDateInput.addEventListener("change", updatePlanName)
 
+      // Update plan name based on date range
       function updatePlanName() {
         const start = new Date(startDateInput.value)
         const end = new Date(endDateInput.value)
@@ -197,6 +210,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // Add meal form submission
   if (addMealForm) {
     addMealForm.addEventListener("submit", function (e) {
       e.preventDefault()
@@ -234,6 +248,7 @@ document.addEventListener("DOMContentLoaded", () => {
     })
   }
 
+  // Delete meal plan functionality
   const deletePlanBtns = document.querySelectorAll(".delete-plan-btn")
 
   deletePlanBtns.forEach((btn) => {
@@ -247,6 +262,7 @@ document.addEventListener("DOMContentLoaded", () => {
     })
   })
 
+  // Delete meal plan from server
   function deleteMealPlan(planId) {
     fetch(window.location.href, {
       method: "POST",
