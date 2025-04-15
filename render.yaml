@@ -6,8 +6,6 @@ services:
     plan: free
     dockerfilePath: ./Dockerfile
     dockerCommand: apache2-foreground
-    dependencies:
-      - name: cookbook
     envVars:
       - key: APACHE_DOCUMENT_ROOT
         value: /var/www/html/main
@@ -32,14 +30,8 @@ services:
     healthCheckPath: /main/index.php
     autoDeploy: true
 
-  - type: mysql
-    name: cookbook-mysql
-    region: oregon
-    plan: free
-    ipAllowList: []
-
 databases:
-  - name: cookbook-db
+  - name: cookbook
     databaseName: cookbook
     plan: free
-    postgresSqlVersion: "14" 
+    mysqlVersion: "8"
