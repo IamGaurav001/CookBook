@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
+    default-mysql-server \
     default-mysql-client \
     zip \
     unzip
@@ -14,8 +15,14 @@ RUN apt-get update && apt-get install -y \
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install PHP extensions (MySQL version)
-RUN docker-php-ext-install pdo pdo_mysql mysqli mbstring exif pcntl bcmath gd
+# Install PHP extensions
+RUN docker-php-ext-install pdo_mysql mysqli mbstring exif pcntl bcmath gd
+
+# Configure MySQL
+RUN service mysql start && \
+    mysql -e "CREATE DATABASE IF NOT EXISTS cookBook;" && \
+    mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '';" && \
+    mysql -e "FLUSH PRIVILEGES;"
 
 # Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -48,8 +55,12 @@ RUN echo "</VirtualHost>" >> /etc/apache2/sites-available/000-default.conf
 RUN chown -R www-data:www-data /var/www/html
 RUN chmod -R 755 /var/www/html
 
+# Start MySQL and Apache
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
 # Expose port 80
 EXPOSE 80
 
-# Start Apache in foreground
-CMD ["apache2-foreground"]
+# Start services
+ENTRYPOINT ["docker-entrypoint.sh"]

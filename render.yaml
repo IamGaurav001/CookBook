@@ -12,13 +12,13 @@ services:
       - key: PHP_MEMORY_LIMIT
         value: 256M
       - key: DB_HOST
-        sync: false
+        value: localhost
       - key: DB_USER
-        sync: false
+        value: root
       - key: DB_PASSWORD
-        sync: false
+        value: ""
       - key: DB_NAME
-        value: cookbook
+        value: cookBook
     healthCheckPath: /main/index.php
     autoDeploy: true
 
