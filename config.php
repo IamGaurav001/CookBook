@@ -4,10 +4,10 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 // Database credentials
-$db_host = "localhost";     // MySQL host
-$db_user = "root";         // MySQL username
-$db_password = "";         // MySQL password
-$db_name = "cookBook";     // Your database name
+$db_host = "mysql.railway.app";     // MySQL host
+$db_user = "root";                  // MySQL username
+$db_password = "4nPHHzxVMJxWDxhbLHpr";  // MySQL password
+$db_name = "cookBook";              // Your database name
 
 // Debug output
 echo "Database Configuration:<br>";

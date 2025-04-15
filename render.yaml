@@ -12,11 +12,11 @@ services:
       - key: PHP_MEMORY_LIMIT
         value: 256M
       - key: DB_HOST
-        value: localhost
+        value: mysql.railway.app
       - key: DB_USER
         value: root
       - key: DB_PASSWORD
-        value: ""
+        value: 4nPHHzxVMJxWDxhbLHpr
       - key: DB_NAME
         value: cookBook
     healthCheckPath: /main/index.php
