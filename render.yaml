@@ -13,36 +13,36 @@ services:
         value: 256M
       - key: MYSQL_HOST
         fromService:
-          name: cookbook-db
           type: mysql
+          name: cookbook-db
           property: host
-      - key: MYSQL_PORT
-        fromService:
-          name: cookbook-db
-          type: mysql
-          property: port
       - key: MYSQL_USER
         fromService:
-          name: cookbook-db
           type: mysql
+          name: cookbook-db
           property: user
       - key: MYSQL_PASSWORD
         fromService:
-          name: cookbook-db
           type: mysql
+          name: cookbook-db
           property: password
       - key: MYSQL_DATABASE
         fromService:
-          name: cookbook-db
           type: mysql
+          name: cookbook-db
           property: database
+      - key: MYSQL_PORT
+        fromService:
+          type: mysql
+          name: cookbook-db
+          property: port
     dependencies:
       - cookbook-db
 
   - type: mysql
     name: cookbook-db
-    ipAllowList: []
     plan: free
     region: oregon
+    ipAllowList: []
     database: cookBook
-    user: cookbook_user
+    user: root
