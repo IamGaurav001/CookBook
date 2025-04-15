@@ -30,7 +30,13 @@ RUN composer install --no-interaction --no-dev --optimize-autoloader --ignore-pl
 
 # Configure Apache
 RUN a2enmod rewrite
-RUN service apache2 restart
+RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
+RUN echo "<Directory /var/www/html>" >> /etc/apache2/apache2.conf
+RUN echo "    Options Indexes FollowSymLinks" >> /etc/apache2/apache2.conf
+RUN echo "    AllowOverride All" >> /etc/apache2/apache2.conf
+RUN echo "    Require all granted" >> /etc/apache2/apache2.conf
+RUN echo "</Directory>" >> /etc/apache2/apache2.conf
+RUN echo "DirectoryIndex index.php index.html" >> /etc/apache2/apache2.conf
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html
