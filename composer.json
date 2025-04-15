@@ -4,9 +4,8 @@
     "type": "project",
     "require": {
         "php": "^8.2",
-        "ext-pdo": "*",
         "ext-mysqli": "*",
-        "ext-gd": "*"
+        "ext-pdo": "*"
     },
     "autoload": {
         "psr-4": {
