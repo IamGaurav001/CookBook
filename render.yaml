@@ -11,5 +11,27 @@ services:
         value: /var/www/html/main
       - key: PHP_MEMORY_LIMIT
         value: 256M
+      - key: DB_HOST
+        fromDatabase:
+          name: cookbook-db
+          property: host
+      - key: DB_USER
+        fromDatabase:
+          name: cookbook-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: cookbook-db
+          property: password
+      - key: DB_NAME
+        fromDatabase:
+          name: cookbook-db
+          property: database
     healthCheckPath: /main/index.php
-    autoDeploy: true 
+    autoDeploy: true
+
+databases:
+  - name: cookbook-db
+    databaseName: cookBook
+    user: cookbook_user
+    plan: free 
