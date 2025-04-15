@@ -5,7 +5,7 @@ services:
     region: oregon
     plan: free
     dockerfilePath: ./Dockerfile
-    dockerCommand: docker build -t cookbook . && docker run -p 80:80 cookbook
+    dockerCommand: apache2-foreground
     envVars:
       - key: APACHE_DOCUMENT_ROOT
         value: /var/www/html/main
