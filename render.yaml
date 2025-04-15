@@ -11,21 +11,11 @@ services:
         value: /var/www/html/main
       - key: PHP_MEMORY_LIMIT
         value: 256M
-      - key: DB_HOST
-        value: containers-us-west-207.railway.app
-      - key: DB_PORT
-        value: 7107
-      - key: DB_USER
-        value: root
-      - key: DB_PASSWORD
-        value: 4nPHHzxVMJxWDxhbLHpr
-      - key: DB_NAME
-        value: cookBook
-    healthCheckPath: /main/index.php
-    autoDeploy: true
 
-databases:
-  - name: cookbook
-    databaseName: cookbook
+  - type: mysql
+    name: cookbook-db
+    ipAllowList: []
     plan: free
-    mysqlVersion: "8"
+    region: oregon
+    database: cookBook
+    user: cookbook_user
