@@ -6,30 +6,28 @@ services:
     plan: free
     dockerfilePath: ./Dockerfile
     dockerCommand: apache2-foreground
+    dependencies:
+      - name: cookbook
     envVars:
       - key: APACHE_DOCUMENT_ROOT
         value: /var/www/html/main
       - key: PHP_MEMORY_LIMIT
         value: 256M
       - key: DB_HOST
-        fromService:
-          type: mysql
-          name: cookbook-mysql
+        fromDatabase:
+          name: cookbook
           property: host
       - key: DB_USER
-        fromService:
-          type: mysql
-          name: cookbook-mysql
+        fromDatabase:
+          name: cookbook
           property: user
       - key: DB_PASSWORD
-        fromService:
-          type: mysql
-          name: cookbook-mysql
+        fromDatabase:
+          name: cookbook
           property: password
       - key: DB_NAME
-        fromService:
-          type: mysql
-          name: cookbook-mysql
+        fromDatabase:
+          name: cookbook
           property: database
     healthCheckPath: /main/index.php
     autoDeploy: true
@@ -42,6 +40,6 @@ services:
 
 databases:
   - name: cookbook-db
-    databaseName: cookBook
-    user: cookbook_user
-    plan: free 
+    databaseName: cookbook
+    plan: free
+    postgresSqlVersion: "14" 
