@@ -15,19 +15,22 @@ echo "Host: " . $db_host . "<br>";
 echo "User: " . $db_user . "<br>";
 echo "Database: " . $db_name . "<br>";
 
+// Create connection string for PostgreSQL
+$conn_string = "host=$db_host dbname=$db_name user=$db_user password=$db_password";
+
 // Create connection
 try {
-    $conn = mysqli_connect($db_host, $db_user, $db_password, $db_name);
+    $conn = pg_connect($conn_string);
     if (!$conn) {
-        throw new Exception(mysqli_connect_error());
+        throw new Exception(pg_last_error());
     }
 } catch (Exception $e) {
     die("Connection failed: " . $e->getMessage() . 
-        "<br>Error number: " . mysqli_connect_errno() .
         "<br>Host: " . $db_host .
         "<br>User: " . $db_user .
         "<br>Database: " . $db_name);
 }
 
-mysqli_set_charset($conn, "utf8");
+// Set client encoding
+pg_set_client_encoding($conn, "UTF8");
 ?>
