@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: cookbook
+    env: docker
+    region: oregon
+    plan: free
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: APACHE_DOCUMENT_ROOT
+        value: /var/www/html/main
+      - key: PHP_MEMORY_LIMIT
+        value: 256M
+    healthCheckPath: /main/index.php
+    autoDeploy: true 
