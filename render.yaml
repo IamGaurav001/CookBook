@@ -11,6 +11,33 @@ services:
         value: /var/www/html/main
       - key: PHP_MEMORY_LIMIT
         value: 256M
+      - key: MYSQL_HOST
+        fromService:
+          name: cookbook-db
+          type: mysql
+          property: host
+      - key: MYSQL_PORT
+        fromService:
+          name: cookbook-db
+          type: mysql
+          property: port
+      - key: MYSQL_USER
+        fromService:
+          name: cookbook-db
+          type: mysql
+          property: user
+      - key: MYSQL_PASSWORD
+        fromService:
+          name: cookbook-db
+          type: mysql
+          property: password
+      - key: MYSQL_DATABASE
+        fromService:
+          name: cookbook-db
+          type: mysql
+          property: database
+    dependencies:
+      - cookbook-db
 
   - type: mysql
     name: cookbook-db
