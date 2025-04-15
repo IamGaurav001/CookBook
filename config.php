@@ -3,25 +3,31 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// Get environment variables with fallbacks
-$db_host = getenv('DB_HOST') ?: die('DB_HOST environment variable is not set');
-$db_user = getenv('DB_USER') ?: die('DB_USER environment variable is not set');
-$db_password = getenv('DB_PASSWORD') ?: die('DB_PASSWORD environment variable is not set');
-$db_name = getenv('DB_NAME') ?: die('DB_NAME environment variable is not set');
+// Database credentials
+$db_host = "containers-us-west-207.railway.app";  // Your MySQL host
+$db_user = "root";                                // Your MySQL username
+$db_password = "";          // Your MySQL password
+$db_name = "cookbook";                           // Your database name
 
-// Debug connection info (remove in production)
-echo "Attempting to connect to database:<br>";
-echo "Host: " . $db_host . "<br>";
-echo "User: " . $db_user . "<br>";
-echo "Database: " . $db_name . "<br>";
+// Debug output
+echo "Database Configuration:<br>";
+echo "Host: " . ($db_host ?: 'NOT SET') . "<br>";
+echo "User: " . ($db_user ?: 'NOT SET') . "<br>";
+echo "Database: " . ($db_name ?: 'NOT SET') . "<br>";
+echo "Password is " . ($db_password ? 'set' : 'NOT SET') . "<br><br>";
 
-// Create connection using MySQLi
-$conn = new mysqli($db_host, $db_user, $db_password, $db_name);
+// Create connection
+$conn = mysqli_connect($db_host, $db_user, $db_password, $db_name);
 
 // Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+if (!$conn) {
+    die("Connection failed: " . mysqli_connect_error());
 }
 
-echo "Connected successfully!";
+// Set charset
+mysqli_set_charset($conn, "utf8");
+
+echo "Connected successfully to MySQL!<br>";
+echo "Server version: " . mysqli_get_server_info($conn) . "<br>";
+echo "Character set: " . mysqli_character_set_name($conn) . "<br>";
 ?>
