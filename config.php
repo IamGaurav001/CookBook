@@ -12,11 +12,20 @@ $db_name = getenv('MYSQL_DATABASE');
 
 // Debug output (be careful with password in production)
 echo "Database Configuration:<br>";
-echo "Host: " . $db_host . "<br>";
-echo "Port: " . $db_port . "<br>";
-echo "User: " . $db_user . "<br>";
-echo "Database: " . $db_name . "<br>";
+echo "Host: " . ($db_host ? $db_host : 'NOT SET') . "<br>";
+echo "Port: " . ($db_port ? $db_port : 'NOT SET') . "<br>";
+echo "User: " . ($db_user ? $db_user : 'NOT SET') . "<br>";
+echo "Database: " . ($db_name ? $db_name : 'NOT SET') . "<br>";
 echo "Password is " . ($db_password ? 'set' : 'NOT SET') . "<br><br>";
+
+// Debug environment variables
+echo "All Environment Variables:<br>";
+foreach ($_ENV as $key => $value) {
+    if (strpos($key, 'MYSQL_') === 0) {
+        echo "$key: " . ($value ? 'set' : 'NOT SET') . "<br>";
+    }
+}
+echo "<br>";
 
 try {
     // Create connection with port
@@ -31,10 +40,10 @@ try {
     
 } catch (Exception $e) {
     die("Connection failed: " . $e->getMessage() . 
-        "<br>Host: " . $db_host . 
-        "<br>Port: " . $db_port . 
-        "<br>User: " . $db_user . 
-        "<br>Database: " . $db_name);
+        "<br>Host: " . ($db_host ? $db_host : 'NOT SET') . 
+        "<br>Port: " . ($db_port ? $db_port : 'NOT SET') . 
+        "<br>User: " . ($db_user ? $db_user : 'NOT SET') . 
+        "<br>Database: " . ($db_name ? $db_name : 'NOT SET'));
 }
 
 // Set charset
