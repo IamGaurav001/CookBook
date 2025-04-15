@@ -1,19 +1,24 @@
+// Main event listener that runs when the DOM is fully loaded
 document.addEventListener("DOMContentLoaded", () => {
+  // Mobile menu toggle functionality
   document.getElementById("mobile-menu-button").addEventListener("click", () => {
     const mobileMenu = document.getElementById("mobile-menu")
     mobileMenu.classList.toggle("hidden")
   })
 
+  // User menu toggle functionality
   document.getElementById("user-menu-button").addEventListener("click", () => {
     const userMenu = document.getElementById("user-menu")
     userMenu.classList.toggle("hidden")
   })
 
+  // Add recipe modal functionality
   const addRecipeBtn = document.getElementById("add-recipe-btn")
   const addRecipeModal = document.getElementById("add-recipe-modal")
   const closeAddModal = document.getElementById("close-add-modal")
   const cancelAddRecipe = document.getElementById("cancel-add-recipe")
 
+  // Empty state add recipe button functionality
   const emptyAddRecipeBtn = document.getElementById("empty-add-recipe-btn")
   if (emptyAddRecipeBtn) {
     emptyAddRecipeBtn.addEventListener("click", () => {
@@ -21,22 +26,27 @@ document.addEventListener("DOMContentLoaded", () => {
     })
   }
 
+  // Show add recipe modal
   addRecipeBtn.addEventListener("click", () => {
     addRecipeModal.classList.remove("hidden")
   })
 
+  // Close add recipe modal
   closeAddModal.addEventListener("click", () => {
     addRecipeModal.classList.add("hidden")
   })
 
+  // Cancel add recipe
   cancelAddRecipe.addEventListener("click", () => {
     addRecipeModal.classList.add("hidden")
   })
 
+  // Recipe card and view modal functionality
   const recipeCards = document.querySelectorAll(".recipe-card")
   const viewRecipeModal = document.getElementById("view-recipe-modal")
   const closeViewModal = document.getElementById("close-view-modal")
 
+  // Add click handlers for recipe cards
   recipeCards.forEach((card) => {
     const viewButton = card.querySelector(".view-recipe")
     if (viewButton) {
@@ -55,10 +65,12 @@ document.addEventListener("DOMContentLoaded", () => {
     })
   })
 
+  // Close view modal
   closeViewModal.addEventListener("click", () => {
     viewRecipeModal.classList.add("hidden")
   })
 
+  // Close modals when clicking outside
   window.addEventListener("click", (e) => {
     if (e.target === addRecipeModal) {
       addRecipeModal.classList.add("hidden")
@@ -68,6 +80,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   })
 
+  // ingredient input functionality
   const addIngredientBtn = document.getElementById("add-ingredient")
   const ingredientsContainer = document.getElementById("ingredients-container")
 
@@ -96,6 +109,7 @@ document.addEventListener("DOMContentLoaded", () => {
     })
   })
 
+  // instruction input functionality
   const addInstructionBtn = document.getElementById("add-instruction")
   const instructionsContainer = document.getElementById("instructions-container")
 
@@ -127,6 +141,7 @@ document.addEventListener("DOMContentLoaded", () => {
     })
   })
 
+  // Update step numbers in instructions
   function updateStepNumbers() {
     const steps = instructionsContainer.querySelectorAll(".bg-yellow-300")
     steps.forEach((step, index) => {
@@ -134,6 +149,7 @@ document.addEventListener("DOMContentLoaded", () => {
     })
   }
 
+  // Image upload functionality
   const uploadTrigger = document.getElementById("upload-trigger")
   const fileInput = document.getElementById("recipe-image")
 
@@ -148,6 +164,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   })
 
+  // Fetch and display recipe details
   function fetchRecipeDetails(recipeId) {
     console.log("Fetching recipe details for ID:", recipeId)
 
@@ -174,9 +191,11 @@ document.addEventListener("DOMContentLoaded", () => {
       })
   }
 
+  // Populate recipe modal with recipe details
   function populateRecipeModal(recipe) {
     console.log("Populating modal with recipe:", recipe)
 
+    // Set basic recipe information
     document.getElementById("modal-title").textContent = recipe.name || "Untitled Recipe"
     document.getElementById("modal-prep-time").textContent = (recipe.prep_time || "N/A") + " minutes"
     document.getElementById("modal-calories").textContent = recipe.calories
@@ -184,10 +203,12 @@ document.addEventListener("DOMContentLoaded", () => {
       : "Not specified"
     document.getElementById("modal-servings").textContent = (recipe.servings || "N/A") + " servings"
 
+    // Set nutrition information
     document.getElementById("modal-protein").textContent = recipe.nutrition?.protein + " g"
     document.getElementById("modal-carbs").textContent = recipe.carbs ? recipe.carbs + " g" : "Not specified"
     document.getElementById("modal-fiber").textContent = recipe.fiber ? recipe.fiber + " g" : "Not specified"
 
+    // Set category
     if (recipe.category) {
       document.getElementById("modal-category").textContent =
         recipe.category.charAt(0).toUpperCase() + recipe.category.slice(1)
@@ -195,6 +216,7 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("modal-category").textContent = "Uncategorized"
     }
 
+    // Set recipe image
     const modalImage = document.getElementById("modal-image")
     if (recipe.image_path) {
       modalImage.src = "../" + recipe.image_path
@@ -202,6 +224,7 @@ document.addEventListener("DOMContentLoaded", () => {
       modalImage.src = "../img/Alfredo.png"
     }
 
+    // Populate ingredients list
     const ingredientsList = document.getElementById("modal-ingredients")
     ingredientsList.innerHTML = ""
     if (recipe.ingredients && recipe.ingredients.length > 0) {
@@ -216,6 +239,7 @@ document.addEventListener("DOMContentLoaded", () => {
       ingredientsList.appendChild(li)
     }
 
+    // Populate instructions list
     const instructionsList = document.getElementById("modal-instructions")
     instructionsList.innerHTML = ""
     if (recipe.instructions && recipe.instructions.length > 0) {
@@ -230,6 +254,7 @@ document.addEventListener("DOMContentLoaded", () => {
       instructionsList.appendChild(li)
     }
 
+    // Handle recipe notes
     const notesContainer = document.getElementById("modal-notes-container")
     const notesContent = document.getElementById("modal-notes")
     if (recipe.notes) {
@@ -240,6 +265,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // Delete recipe functionality
   document.addEventListener("click", (e) => {
     if (e.target.classList.contains("delete-recipe") || e.target.closest(".delete-recipe")) {
       e.stopPropagation() 
@@ -252,6 +278,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   })
 
+  // Delete recipe from server
   function deleteRecipe(recipeId, recipeCard) {
     fetch(window.location.href, {
       method: "POST",
@@ -279,6 +306,7 @@ document.addEventListener("DOMContentLoaded", () => {
       })
   }
 
+  // Show alert message
   function showAlert(message, type) {
     const alertDiv = document.createElement("div")
     alertDiv.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 ${
@@ -292,6 +320,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 3000)
   }
 
+  // Show empty state when no recipes exist
   function showEmptyState() {
     const recipesContainer = document.getElementById("recipes-container")
     recipesContainer.innerHTML = `
