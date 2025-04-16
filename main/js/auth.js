@@ -57,20 +57,36 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (signupFormElement) {
     signupFormElement.addEventListener("submit", function (event) {
+      event.preventDefault(); // Prevent form submission until validation is complete
+      
       const termsCheckbox = document.getElementById("terms")
       const termsError = document.getElementById("terms-error")
       const nameInput = document.getElementById("signup-name")
       const emailInput = document.getElementById("signup-email")
+      const submitButton = this.querySelector('button[type="submit"]')
       let hasError = false
       let errorMessages = []
+
+      // Store original button state
+      const originalButtonHTML = 'Create Account'
+
+      // First reset any previous error states
+      submitButton.innerHTML = originalButtonHTML
+      submitButton.disabled = false
+      submitButton.classList.remove("loading")
+      
+      // Remove any previous error highlights
+      nameInput.classList.remove("error-highlight")
+      emailInput.classList.remove("error-highlight")
+      if (signupPassword) signupPassword.classList.remove("error-highlight")
+      if (signupConfirmPassword) signupConfirmPassword.classList.remove("error-highlight")
+      termsError.classList.add("hidden")
 
       // Validate name
       if (!nameInput.value.trim()) {
         errorMessages.push("Please enter your name")
         nameInput.classList.add("error-highlight")
         hasError = true
-      } else {
-        nameInput.classList.remove("error-highlight")
       }
 
       // Validate email
@@ -82,8 +98,6 @@ document.addEventListener("DOMContentLoaded", () => {
         errorMessages.push("Please enter a valid email address")
         emailInput.classList.add("error-highlight")
         hasError = true
-      } else {
-        emailInput.classList.remove("error-highlight")
       }
 
       // Validate terms checkbox
@@ -92,8 +106,6 @@ document.addEventListener("DOMContentLoaded", () => {
         termsError.textContent = "You must agree to the Terms of Service and Privacy Policy"
         termsError.classList.remove("hidden")
         hasError = true
-      } else {
-        termsError.classList.add("hidden")
       }
 
       // Password validation
@@ -121,24 +133,24 @@ document.addEventListener("DOMContentLoaded", () => {
           signupConfirmPassword.classList.add("error-highlight")
           signupConfirmPassword.classList.add("shake-error")
           hasError = true
-        } else {
-          signupPassword.classList.remove("error-highlight")
-          signupConfirmPassword.classList.remove("error-highlight")
-          passwordError.classList.add("hidden")
         }
       }
 
-      // If there are errors, show popup and prevent form submission
+      // If there are errors, show popup and keep button in normal state
       if (hasError) {
-        event.preventDefault()
         showAlert(errorMessages.join("<br>"), "error")
-        return
+        return false;
       }
 
-      // If no errors, proceed with form submission
-      const submitButton = this.querySelector('button[type="submit"]')
-      submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Creating Account...'
+      // Only if all validations pass, show processing state and submit
+      submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Processing...'
       submitButton.disabled = true
+      submitButton.classList.add("loading")
+      
+      // Submit the form after a brief delay to show the processing state
+      setTimeout(() => {
+        this.submit()
+      }, 100)
     })
   }
 

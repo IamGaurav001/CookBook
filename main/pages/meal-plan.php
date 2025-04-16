@@ -726,7 +726,6 @@ if($stmt_recipes = mysqli_prepare($conn, $sql_recipes)) {
                         <!-- User Dropdown Menu (Hidden by default) -->
                         <div id="user-menu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
                             <a href="profile.php" class="block px-4 py-2 text-sm text-text hover:bg-white">Your Profile</a>
-                            <a href="settings.php" class="block px-4 py-2 text-sm text-text hover:bg-white">Settings</a>
                             <div class="border-t border-gray-200"></div>
                             <a href="../auth/logout.php" class="block px-4 py-2 text-sm text-text hover:bg-white">Logout</a>
                         </div>
