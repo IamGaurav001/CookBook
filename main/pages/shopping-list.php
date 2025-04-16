@@ -45,11 +45,12 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["item-name"])) {
         }
         
         // Now insert the item into the list
-        $sql = "INSERT INTO shopping_list_items (list_id, name, quantity, unit, category, notes) 
-                VALUES (?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO shopping_list_items (user_id, list_id, name, quantity, unit, category, notes) 
+                VALUES (?, ?, ?, ?, ?, ?, ?)";
         
         if($stmt = mysqli_prepare($conn, $sql)) {
-            mysqli_stmt_bind_param($stmt, "isdsss", 
+            mysqli_stmt_bind_param($stmt, "iisdsss", 
+                $_SESSION["id"],
                 $list_id,
                 $param_name, 
                 $param_quantity, 
