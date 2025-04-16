@@ -86,6 +86,23 @@ $isLoggedIn = isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true;
     </div>
 </nav>
 
+    <!-- Mobile Sidebar Menu (Hidden by default) -->
+    <div id="mobile-menu" class="md:hidden hidden bg-white text-white w-full absolute z-50 top-16 left-0 shadow-lg">
+            <nav class="py-2">
+                <ul>
+                    <li>
+                    <a href="#about" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-text hover:bg-gray-50 hover:border-yellow text-[#375A64]">About</a>
+                    </li>
+                    <li>
+                    <a href="#reviews" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-text hover:bg-gray-50 hover:border-yellow text-[#375A64]">Reviews</a>
+                    </li>
+                    <li>
+                    <a href="#community" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-text hover:bg-gray-50 hover:border-yellow text-[#375A64]">Community</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
 <!-- Hero section with main call-to-action -->
 <section class="pt-24 pb-16 md:pt-32 md:pb-24 bg-gray-100">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
