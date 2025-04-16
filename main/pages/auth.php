@@ -112,14 +112,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["form_type"]) && $_POST[
     
     if(empty(trim($_POST["password"]))){
         $password_err = "Please enter a password.";     
-    } elseif(strlen(trim($_POST["password"])) < 8){
-        $password_err = "Password must have at least 8 characters.";
-    } elseif(!preg_match('/[A-Z]/', trim($_POST["password"]))){
-        $password_err = "Password must contain at least one uppercase letter.";
-    } elseif(!preg_match('/[0-9]/', trim($_POST["password"]))){
-        $password_err = "Password must contain at least one number.";
-    } elseif(!preg_match('/[!@#$%^&*(),.?":{}|<>]/', trim($_POST["password"]))){
-        $password_err = "Password must contain at least one special character.";
+    } elseif(strlen(trim($_POST["password"])) < 6){
+        $password_err = "Password must have at least 6 characters.";
     } else{
         $password = trim($_POST["password"]);
     }
@@ -446,7 +440,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["form_type"]) && $_POST[
                                         </button>
                                     </div>
                                     <p id="signup-password-error" class="text-red-500 text-sm mt-1 <?php echo (!empty($password_err)) ? '' : 'hidden'; ?>"><?php echo $password_err; ?></p>
-                                    <p class="text-xs text-gray-500 mt-1">Must be at least 8 characters with 1 uppercase, 1 number, and 1 special character</p>
+                                    <p class="text-xs text-gray-500 mt-1">Must be at least 6 characters</p>
                                 </div>
                                 
                                 <div>
