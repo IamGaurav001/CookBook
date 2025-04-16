@@ -156,7 +156,6 @@ $sql = "
   ORDER BY sl.created_at DESC
 ";
 
-echo $sql;
 if($stmt = mysqli_prepare($conn, $sql)) {
     mysqli_stmt_bind_param($stmt, "i", $_SESSION["id"]);
     mysqli_stmt_execute($stmt);
