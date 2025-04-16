@@ -1,4 +1,4 @@
--- Use the existing railway database
+-- Use existing database
 USE railway;
 
 -- Users table
@@ -120,4 +120,4 @@ CREATE TABLE IF NOT EXISTS shopping_list_items (
     INDEX idx_user_list (user_id, list_id),
     INDEX idx_category (category),
     INDEX idx_completed (completed)
-); 
+);
