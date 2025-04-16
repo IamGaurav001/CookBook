@@ -10,13 +10,6 @@ $db_user = getenv('MYSQLUSER') ?: 'root';
 $db_pass = getenv('MYSQLPASSWORD') ?: '';
 $db_name = getenv('MYSQLDATABASE') ?: 'cookBook';
 
-// Debug output (remove in production)
-echo "Database Configuration:\n";
-echo "Host: " . $db_host . "\n";
-echo "Port: " . $db_port . "\n";
-echo "User: " . $db_user . "\n";
-echo "Database: " . $db_name . "\n";
-
 try {
     // Create connection
     $conn = new mysqli($db_host, $db_user, $db_pass, $db_name, $db_port);
@@ -28,9 +21,6 @@ try {
     
     // Set charset to utf8mb4
     $conn->set_charset("utf8mb4");
-    
-    // Debug output (remove in production)
-    echo "Connected successfully to the database!\n";
     
 } catch (Exception $e) {
     // Log the error
