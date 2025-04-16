@@ -25,7 +25,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["item-name"])) {
     if(empty($item_name)) {
         $error_message = "Please enter an item name.";
     } else {
-        // First, get or create a default shopping list for the user
+        // Get or create a default shopping list
         $sql_list = "SELECT id FROM shopping_lists WHERE user_id = ? AND name = 'Default List'";
         $stmt_list = mysqli_prepare($conn, $sql_list);
         mysqli_stmt_bind_param($stmt_list, "i", $_SESSION["id"]);
@@ -33,7 +33,6 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["item-name"])) {
         $result_list = mysqli_stmt_get_result($stmt_list);
         
         if(mysqli_num_rows($result_list) == 0) {
-            // Create a default list if none exists
             $sql_create_list = "INSERT INTO shopping_lists (user_id, name) VALUES (?, 'Default List')";
             $stmt_create = mysqli_prepare($conn, $sql_create_list);
             mysqli_stmt_bind_param($stmt_create, "i", $_SESSION["id"]);
@@ -44,8 +43,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["item-name"])) {
             $list_id = $row['id'];
         }
         
-        // Now insert the item into the list
-        $sql = "INSERT INTO shopping_list_items (user_id, list_id, name, quantity, unit, category, notes) 
+        // Insert item
+        $sql = "INSERT INTO shopping_list_items (user_id, shopping_list_id, name, quantity, unit, category, notes) 
                 VALUES (?, ?, ?, ?, ?, ?, ?)";
         
         if($stmt = mysqli_prepare($conn, $sql)) {
@@ -78,32 +77,31 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["item-name"])) {
     }
 }
 
+// ✅ Update Item Completion
 if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["update_item"])) {
     $item_id = intval($_POST["item_id"]);
     $completed = intval($_POST["completed"]);
     
     $sql_verify = "SELECT sli.id 
                    FROM shopping_list_items sli 
-                   JOIN shopping_lists sl ON sli.list_id = sl.id 
+                   JOIN shopping_lists sl ON sli.shopping_list_id = sl.id 
                    WHERE sli.id = ? AND sl.user_id = ?";
     
     if($stmt_verify = mysqli_prepare($conn, $sql_verify)) {
         mysqli_stmt_bind_param($stmt_verify, "ii", $item_id, $_SESSION["id"]);
+        mysqli_stmt_execute($stmt_verify);
+        $result_verify = mysqli_stmt_get_result($stmt_verify);
         
-        if(mysqli_stmt_execute($stmt_verify)) {
-            $result_verify = mysqli_stmt_get_result($stmt_verify);
+        if(mysqli_num_rows($result_verify) == 1) {
+            $sql_update = "UPDATE shopping_list_items SET completed = ?, updated_at = NOW() WHERE id = ?";
             
-            if(mysqli_num_rows($result_verify) == 1) {
-                $sql_update = "UPDATE shopping_list_items SET completed = ?, updated_at = NOW() WHERE id = ?";
+            if($stmt_update = mysqli_prepare($conn, $sql_update)) {
+                mysqli_stmt_bind_param($stmt_update, "ii", $completed, $item_id);
                 
-                if($stmt_update = mysqli_prepare($conn, $sql_update)) {
-                    mysqli_stmt_bind_param($stmt_update, "ii", $completed, $item_id);
-                    
-                    if(mysqli_stmt_execute($stmt_update)) {
-                        header('Content-Type: application/json');
-                        echo json_encode(['success' => true]);
-                        exit;
-                    }
+                if(mysqli_stmt_execute($stmt_update)) {
+                    header('Content-Type: application/json');
+                    echo json_encode(['success' => true]);
+                    exit;
                 }
             }
         }
@@ -114,31 +112,30 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["update_item"])) {
     exit;
 }
 
+// ✅ Delete Item
 if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["delete_item"])) {
     $item_id = intval($_POST["item_id"]);
     
     $sql_verify = "SELECT sli.id 
                    FROM shopping_list_items sli 
-                   JOIN shopping_lists sl ON sli.list_id = sl.id 
+                   JOIN shopping_lists sl ON sli.shopping_list_id = sl.id 
                    WHERE sli.id = ? AND sl.user_id = ?";
     
     if($stmt_verify = mysqli_prepare($conn, $sql_verify)) {
         mysqli_stmt_bind_param($stmt_verify, "ii", $item_id, $_SESSION["id"]);
+        mysqli_stmt_execute($stmt_verify);
+        $result_verify = mysqli_stmt_get_result($stmt_verify);
         
-        if(mysqli_stmt_execute($stmt_verify)) {
-            $result_verify = mysqli_stmt_get_result($stmt_verify);
+        if(mysqli_num_rows($result_verify) == 1) {
+            $sql_delete = "DELETE FROM shopping_list_items WHERE id = ?";
             
-            if(mysqli_num_rows($result_verify) == 1) {
-                $sql_delete = "DELETE FROM shopping_list_items WHERE id = ?";
+            if($stmt_delete = mysqli_prepare($conn, $sql_delete)) {
+                mysqli_stmt_bind_param($stmt_delete, "i", $item_id);
                 
-                if($stmt_delete = mysqli_prepare($conn, $sql_delete)) {
-                    mysqli_stmt_bind_param($stmt_delete, "i", $item_id);
-                    
-                    if(mysqli_stmt_execute($stmt_delete)) {
-                        header('Content-Type: application/json');
-                        echo json_encode(['success' => true]);
-                        exit;
-                    }
+                if(mysqli_stmt_execute($stmt_delete)) {
+                    header('Content-Type: application/json');
+                    echo json_encode(['success' => true]);
+                    exit;
                 }
             }
         }
@@ -149,22 +146,20 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["delete_item"])) {
     exit;
 }
 
+// ✅ Fetch and Group Items
 $shopping_items = array();
 $sql = "SELECT sli.* FROM shopping_list_items sli 
         JOIN shopping_lists sl ON sli.list_id = sl.id 
         WHERE sl.user_id = ? 
         ORDER BY sli.category, sli.completed, sli.created_at DESC";
 
-
 if($stmt = mysqli_prepare($conn, $sql)) {
     mysqli_stmt_bind_param($stmt, "i", $_SESSION["id"]);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
     
-    if(mysqli_stmt_execute($stmt)) {
-        $result = mysqli_stmt_get_result($stmt);
-        
-        while($row = mysqli_fetch_assoc($result)) {
-            $shopping_items[] = $row;
-        }
+    while($row = mysqli_fetch_assoc($result)) {
+        $shopping_items[] = $row;
     }
 }
 
