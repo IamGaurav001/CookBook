@@ -1,6 +1,5 @@
--- Create the database if it doesn't exist
-CREATE DATABASE IF NOT EXISTS cookBook;
-USE cookBook;
+-- Use the existing railway database
+USE railway;
 
 -- Users table
 CREATE TABLE IF NOT EXISTS users (
