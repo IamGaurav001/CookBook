@@ -414,7 +414,7 @@ $remaining_items = $total_items - $completed_items;
                             My Shopping List
                         </h2>
                         <div class="flex flex-col sm:flex-row gap-3">
-                            <button id="add-item-btn" class="bg-yellow-300 hover:bg-yellow-400 text-black font-medium py-2 px-4 rounded-lg shadow-sm flex items-center justify-center">
+                            <button id="add-item-btn" class="bg-black hover:bg-yellow-400 text-white hover:text-black font-medium py-2 px-4 rounded-lg shadow-sm flex items-center justify-center cursor-pointer">
                                 <i class="fas fa-plus mr-2"></i>
                                 Add Item
                             </button>
@@ -471,12 +471,12 @@ $remaining_items = $total_items - $completed_items;
                     <div id="shopping-list-container" class="divide-y divide-gray-200">
                         <?php if(empty($shopping_items)): ?>
                         <div id="empty-state" class="p-8 text-center">
-                            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-yellow-300 bg-opacity-20 mb-4">
-                                <i class="fas fa-shopping-basket text-2xl text-yellow-300"></i>
+                            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full  bg-opacity-20 mb-4">
+                                <i class="fas fa-shopping-basket text-2xl text-gray-500"></i>
                             </div>
                             <h3 class="text-lg font-medium text-black mb-2">Your shopping list is empty</h3>
                             <p class="text-text mb-4">Add items to your shopping list to get started</p>
-                            <button id="empty-add-item-btn" class="bg-yellow-300 hover:bg-yellow-400 text-black font-medium py-2 px-4 rounded-lg shadow-sm">
+                            <button id="empty-add-item-btn" class="bg-black hover:bg-yellow-400 text-white hover:text-black font-medium py-2 px-4 rounded-lg shadow-sm cursor-pointer">
                                 Add Your First Item
                             </button>
                         </div>
@@ -537,7 +537,7 @@ $remaining_items = $total_items - $completed_items;
         <div class="bg-white rounded-xl shadow-lg max-w-md w-full modal-animation p-6">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-xl font-bold text-black" id="modal-title">Add New Item</h3>
-                <button id="close-add-modal" class="text-gray-400 hover:text-gray-500 focus:outline-none">
+                <button id="close-add-modal" class="text-gray-400 hover:text-gray-500 focus:outline-none cursor-pointer">
                     <i class="fas fa-times text-xl"></i>
                 </button>
             </div>
@@ -576,10 +576,10 @@ $remaining_items = $total_items - $completed_items;
                 </div>
                 
                 <div class="flex justify-end space-x-3">
-                    <button type="button" id="cancel-add-item" class="px-4 py-2 border border-gray-300 rounded-md text-text hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-yellow-300 focus:border-yellow-300">
+                    <button type="button" id="cancel-add-item" class="px-4 py-2 border border-gray-300 rounded-md text-text hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-yellow-300 focus:border-yellow-300 cursor-pointer">
                         Cancel
                     </button>
-                    <button type="submit" class="px-4 py-2 bg-yellow-300 text-black rounded-md hover:bg-yellow-400 focus:outline-none focus:ring-2 focus:ring-yellow-300 focus:border-yellow-300">
+                    <button type="submit" class="px-4 py-2 bg-yellow-300 text-black rounded-md hover:bg-yellow-400 focus:outline-none focus:ring-2 focus:ring-yellow-300 focus:border-yellow-300 cursor-pointer">
                         Add Item
                     </button>
                 </div>
@@ -597,7 +597,7 @@ $remaining_items = $total_items - $completed_items;
                 <h4 id="toast-title" class="text-sm font-medium text-gray-900">Success</h4>
                 <p id="toast-message" class="text-sm text-gray-500">Your action was successful!</p>
             </div>
-            <button id="close-toast" class="ml-auto text-gray-400 hover:text-gray-500">
+            <button id="close-toast" class="ml-auto text-gray-400 hover:text-gray-500 cursor-pointer">
                 <i class="fas fa-times"></i>
             </button>
         </div>
