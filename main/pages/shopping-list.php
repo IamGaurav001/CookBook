@@ -44,7 +44,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["item-name"])) {
         }
         
         // Insert item
-        $sql = "INSERT INTO shopping_list_items (user_id, shopping_list_id, name, quantity, unit, category, notes) 
+        $sql = "INSERT INTO shopping_list_items (user_id, list_id, name, quantity, unit, category, notes) 
                 VALUES (?, ?, ?, ?, ?, ?, ?)";
         
         if($stmt = mysqli_prepare($conn, $sql)) {
