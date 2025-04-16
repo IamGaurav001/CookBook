@@ -151,9 +151,10 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["delete_item"])) {
 
 $shopping_items = array();
 $sql = "SELECT sli.* FROM shopping_list_items sli 
-        JOIN shopping_lists sl ON sli.shopping_list_id = sl.id 
+        JOIN shopping_lists sl ON sli.list_id = sl.id 
         WHERE sl.user_id = ? 
         ORDER BY sli.category, sli.completed, sli.created_at DESC";
+
 
 if($stmt = mysqli_prepare($conn, $sql)) {
     mysqli_stmt_bind_param($stmt, "i", $_SESSION["id"]);
