@@ -151,8 +151,6 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["form_type"]) && $_POST[
                 $register_success = "Registration successful! You can now log in.";
                 
                 $name = $email = $password = $confirm_password = $dietary_preference = "";
-                
-                echo "<script>window.onload = function() { document.getElementById('login-tab').click(); }</script>";
             } else{
                 echo "Oops! Something went wrong. Please try again later.";
                 error_log("Registration insert error: " . mysqli_error($conn));
@@ -390,12 +388,12 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["form_type"]) && $_POST[
                                 </div>
                                 
                                 <div>
-                                    <div class="flex items-center justify-between mb-1">
+                                <div class="flex items-center justify-between mb-1">
                                         <label for="login-password" class="block text-sm font-medium text-text">Password</label>
                                         <a href="#" class="text-sm text-yellow-300 hover:underline">Forgot Password?</a>
                                     </div>
                                     <div class="relative">
-                                        <input type="password" id="login-password" name="password" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none <?php echo (!empty($password_err) || !empty($login_err)) ? 'error-highlight' : ''; ?>" placeholder="••••••••" required>
+                                        <input type="password" id="login-password" name="password" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none <?php echo (!empty($password_err)) ? 'border-red-500' : ''; ?>" placeholder="••••••••" required>
                                         <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center text-text toggle-password">
                                             <i class="fas fa-eye"></i>
                                         </button>
