@@ -497,7 +497,7 @@ if($stmt = mysqli_prepare($conn, $sql)) {
                     <div class="flex flex-wrap gap-2 mb-4 md:mb-0">
                         <button class="bg-gray-200 text-black px-4 py-2 rounded-lg font-medium">All Recipes</button>
                     </div>
-                    <button id="add-recipe-btn" class="bg-black text-white px-6 py-2 rounded-lg font-medium flex items-center">
+                    <button id="add-recipe-btn" class="bg-black hover:bg-yellow-400 text-white hover:text-black px-6 py-2 rounded-lg font-medium flex items-center cursor-pointer">
                         <i class="fas fa-plus mr-2"></i>
                         Add Recipe
                     </button>
@@ -512,13 +512,13 @@ if($stmt = mysqli_prepare($conn, $sql)) {
                         </div>
                         <h3 class="text-xl font-medium text-gray-500 mb-2">No recipes yet</h3>
                         <p class="text-gray-400 mb-6">Start adding your favorite recipes to your collection</p>
-                        <button id="empty-add-recipe-btn" class="bg-yellow-300 text-black px-6 py-2 rounded-lg font-medium">
+                        <button id="empty-add-recipe-btn" class="bg-black hover:bg-yellow-400 text-white hover:text-black px-6 py-2 rounded-lg font-medium cursor-pointer">
                             Add Your First Recipe
                         </button>
                     </div>
                     <?php else: ?>
                         <?php foreach($user_recipes as $recipe): ?>
-                        <div class="recipe-card bg-white rounded-xl shadow-md overflow-hidden cursor-pointer" data-recipe="<?php echo $recipe['id']; ?>">
+                        <div class="recipe-card bg-white rounded-xl shadow-md overflow-hidden" data-recipe="<?php echo $recipe['id']; ?>">
                             <div class="relative h-48">
                                 <?php if(!empty($recipe['image_path'])): ?>
                                 <img src="../<?php echo htmlspecialchars($recipe['image_path']); ?>" alt="<?php echo htmlspecialchars($recipe['name']); ?>" class="w-full h-full object-cover">
@@ -527,8 +527,8 @@ if($stmt = mysqli_prepare($conn, $sql)) {
                                 <?php endif; ?>
                                 <div class="recipe-overlay absolute inset-0 flex items-center justify-center">
                                     <div class="flex space-x-2">
-                                        <button class="delete-recipe bg-white text-black px-3 py-1 rounded-lg font-medium">Delete</button>
-                                        <button class="view-recipe bg-yellow-300 text-black px-3 py-1 rounded-lg font-medium">View</button>
+                                        <button class="delete-recipe bg-white text-black px-3 py-1 rounded-lg font-medium cursor-pointer">Delete</button>
+                                        <button class="view-recipe bg-yellow-300 text-black px-3 py-1 rounded-lg font-medium cursor-pointer">View</button>
                                     </div>
                                 </div>
                             </div>
@@ -707,10 +707,10 @@ if($stmt = mysqli_prepare($conn, $sql)) {
                 </div>
                 
                 <div class="flex justify-end gap-3">
-                    <button type="button" id="cancel-add-recipe" class="bg-white border border-gray-200 text-text px-6 py-2 rounded-lg font-medium hover:bg-gray-50">
+                    <button type="button" id="cancel-add-recipe" class="bg-white border border-gray-200 text-text px-6 py-2 rounded-lg font-medium hover:bg-gray-50 cursor-pointer">
                         Cancel
                     </button>
-                    <button type="submit" class="bg-yellow-300 text-black px-6 py-2 rounded-lg font-medium hover:bg-yellow-400">
+                    <button type="submit" class="bg-yellow-300 text-black px-6 py-2 rounded-lg font-medium hover:bg-yellow-400 cursor-pointer">
                         Save Recipe
                     </button>
                 </div>

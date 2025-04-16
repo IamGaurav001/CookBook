@@ -746,9 +746,9 @@ if($stmt_recipes = mysqli_prepare($conn, $sql_recipes)) {
                 <!-- Meal Plans Header -->
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
                     <div>
-                        <h2 class="text-2xl font-serif font-bold text-black mb-2">Your Meal Plans</h2>
+                    <h2 class="text-2xl font-serif font-bold text-transparent bg-clip-text bg-gradient-to-r from-black to-gray-700 mb-2">Your Meal Plans</h2>
                     </div>
-                    <button id="create-plan-btn" class="mt-4 md:mt-0 bg-black text-white px-6 py-2 rounded-lg font-medium flex items-center">
+                    <button id="create-plan-btn" class="mt-4 md:mt-0 bg-black hover:bg-yellow-400 text-white hover:text-black px-6 py-2 rounded-lg font-medium flex items-center cursor-pointer">
                         <i class="fas fa-plus mr-2"></i>
                         Create New Plan
                     </button>
@@ -801,7 +801,7 @@ if($stmt_recipes = mysqli_prepare($conn, $sql_recipes)) {
                                 </span>
                                 <?php endif; ?>
                             </div>
-                            <button class="delete-plan-btn bg-red-100 hover:bg-red-200 text-red-700 px-4 py-2 rounded-lg text-sm font-medium flex items-center" data-plan-id="<?php echo $current_plan['id']; ?>">
+                            <button class="delete-plan-btn bg-red-100 hover:bg-red-200 text-red-700 px-4 py-2 rounded-lg text-sm font-medium flex items-center cursor-pointer" data-plan-id="<?php echo $current_plan['id']; ?>">
                                 <i class="fas fa-trash-alt mr-2"></i>
                                 <span>Delete Plan</span>
                             </button>
@@ -1076,12 +1076,12 @@ if($stmt_recipes = mysqli_prepare($conn, $sql_recipes)) {
                 <?php else: ?>
                 <!-- No meal plans yet -->
                 <div class="bg-white rounded-xl shadow-md p-8 text-center">
-                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-yellow-300 bg-opacity-20 mb-4">
-                        <i class="fas fa-calendar-alt text-2xl text-yellow-300"></i>
+                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-opacity-20 mb-4">
+                        <i class="fas fa-calendar-alt text-2xl text-gray-500"></i>
                     </div>
                     <h3 class="text-lg font-medium text-black mb-2">No meal plans yet</h3>
                     <p class="text-text mb-4">Create your first meal plan to get started</p>
-                    <button id="empty-create-plan-btn" class="bg-yellow-300 hover:bg-yellow-400 text-black font-medium py-2 px-4 rounded-lg shadow-sm">
+                    <button id="empty-create-plan-btn" class="bg-black hover:bg-yellow-400 text-white hover:text-black font-medium py-2 px-4 rounded-lg shadow-sm cursor-pointer">
                         Create Your First Plan
                     </button>
                 </div>
@@ -1195,7 +1195,7 @@ if($stmt_recipes = mysqli_prepare($conn, $sql_recipes)) {
                                                 <a href="meal-plan-details.php?id=<?php echo $plan['id']; ?>" class="action-btn view-btn">
                                                     <i class="fas fa-eye mr-1"></i> View
                                                 </a>
-                                                <button class="action-btn delete-btn delete-plan-btn" data-plan-id="<?php echo $plan['id']; ?>">
+                                                <button class="action-btn delete-btn delete-plan-btn cursor-pointer" data-plan-id="<?php echo $plan['id']; ?>">
                                                     <i class="fas fa-trash-alt mr-1"></i> Delete
                                                 </button>
                                             </div>
@@ -1217,7 +1217,7 @@ if($stmt_recipes = mysqli_prepare($conn, $sql_recipes)) {
         <div class="bg-white rounded-xl shadow-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto modal-animation p-6">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-serif font-bold text-black">Create New Meal Plan</h2>
-                <button id="close-create-modal" class="text-gray-400 hover:text-black focus:outline-none">
+                <button id="close-create-modal" class="text-gray-400 hover:text-black focus:outline-none cursor-pointer">
                     <i class="fas fa-times text-xl"></i>
                 </button>
             </div>
@@ -1338,10 +1338,10 @@ if($stmt_recipes = mysqli_prepare($conn, $sql_recipes)) {
                 </div>
                 
                 <div class="flex justify-end gap-3">
-                    <button type="button" id="cancel-create-plan" class="bg-white border border-gray-200 text-text px-6 py-2 rounded-lg font-medium hover:bg-gray-50">
+                    <button type="button" id="cancel-create-plan" class="bg-white border border-gray-200 text-text px-6 py-2 rounded-lg font-medium hover:bg-gray-50 cursor-pointer">
                         Cancel
                     </button>
-                    <button type="submit" class="bg-yellow-300 text-black px-6 py-2 rounded-lg font-medium hover:bg-yellow-400">
+                    <button type="submit" class="bg-yellow-300 text-black px-6 py-2 rounded-lg font-medium hover:bg-yellow-400 cursor-pointer">
                         Create Plan
                     </button>
                 </div>
@@ -1354,7 +1354,7 @@ if($stmt_recipes = mysqli_prepare($conn, $sql_recipes)) {
         <div class="bg-white rounded-xl shadow-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto modal-animation p-6">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-serif font-bold text-black">Add Meal</h2>
-                <button id="close-add-meal-modal" class="text-gray-400 hover:text-black focus:outline-none">
+                <button id="close-add-meal-modal" class="text-gray-400 hover:text-black focus:outline-none cursor-pointer">
                     <i class="fas fa-times text-xl"></i>
                 </button>
             </div>
@@ -1409,10 +1409,10 @@ if($stmt_recipes = mysqli_prepare($conn, $sql_recipes)) {
                 <input type="hidden" id="selected-slot-id" name="slot_id" value="">
                 
                 <div class="flex justify-end gap-3">
-                    <button type="button" id="cancel-add-meal" class="bg-white border border-gray-200 text-text px-6 py-2 rounded-lg font-medium hover:bg-gray-50">
+                    <button type="button" id="cancel-add-meal" class="bg-white border border-gray-200 text-text px-6 py-2 rounded-lg font-medium hover:bg-gray-50 cursor-pointer">
                         Cancel
                     </button>
-                    <button type="submit" id="confirm-add-meal" class="bg-yellow-300 text-black px-6 py-2 rounded-lg font-medium hover:bg-yellow-400" disabled>
+                    <button type="submit" id="confirm-add-meal" class="bg-yellow-300 text-black px-6 py-2 rounded-lg font-medium hover:bg-yellow-400 cursor-pointer" disabled>
                         Add to Plan
                     </button>
                 </div>

@@ -369,7 +369,7 @@ if ($stmt = mysqli_prepare($conn, $sql_recent)) {
             <!-- Dashboard Content -->
             <main class="flex-grow p-6 overflow-auto">
                 <div class="mb-8">
-                    <h2 class="text-2xl font-serif font-bold text-black mb-6">
+                <h2 class="text-2xl font-serif font-bold text-transparent bg-clip-text bg-gradient-to-r from-black to-gray-700 mb-6 tracking-tight">
                         Overview
                     </h2>
 
@@ -387,7 +387,7 @@ if ($stmt = mysqli_prepare($conn, $sql_recent)) {
                                 </div>
                             </div>
                             <div class="mt-4">
-                                <a href="add-recipe.php" class="text-yellow-300 hover:underline text-sm flex items-center">
+                                <a href="add-recipe.php" class="text-black hover:underline text-sm flex items-center">
                                     <span>View all recipes</span>
                                     <i class="fas fa-arrow-right ml-1 text-xs"></i>
                                 </a>
@@ -406,7 +406,7 @@ if ($stmt = mysqli_prepare($conn, $sql_recent)) {
                                 </div>
                             </div>
                             <div class="mt-4">
-                                <a href="meal-plan.php" class="text-yellow-300 hover:underline text-sm flex items-center">
+                                <a href="meal-plan.php" class="text-black hover:underline text-sm flex items-center">
                                     <span>View meal plans</span>
                                     <i class="fas fa-arrow-right ml-1 text-xs"></i>
                                 </a>
@@ -425,7 +425,7 @@ if ($stmt = mysqli_prepare($conn, $sql_recent)) {
                                 </div>
                             </div>
                             <div class="mt-4">
-                                <a href="shopping-list.php" class="text-yellow-300 hover:underline text-sm flex items-center">
+                                <a href="shopping-list.php" class="text-black hover:underline text-sm flex items-center">
                                     <span>View shopping list</span>
                                     <i class="fas fa-arrow-right ml-1 text-xs"></i>
                                 </a>
@@ -438,10 +438,10 @@ if ($stmt = mysqli_prepare($conn, $sql_recent)) {
                 <!-- Weekly Meal Plan Section -->
                 <div class="mb-8">
                     <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-2xl font-serif font-bold text-black">
+                    <h2 class="text-2xl font-serif font-bold text-transparent bg-clip-text bg-gradient-to-r from-black to-gray-700 tracking-tight">
                             This Week's Meal Plan
                         </h2>
-                        <a href="meal-plan.php" class="text-yellow-300 hover:underline text-sm flex items-center">
+                        <a href="meal-plan.php" class="text-black hover:underline text-sm flex items-center">
                             <span>Edit meal plan</span>
                             <i class="fas fa-edit ml-1"></i>
                         </a>
@@ -521,10 +521,10 @@ if ($stmt = mysqli_prepare($conn, $sql_recent)) {
                 <!-- Explore New Recipes Section -->
                 <div>
                     <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-2xl font-serif font-bold text-black">
+                    <h2 class="text-2xl font-serif font-bold text-transparent bg-clip-text bg-gradient-to-r from-black to-gray-700 tracking-tight">
                             Your Recent Recipes
                         </h2>
-                        <a href="add-recipe.php" class="text-yellow-300 hover:underline text-sm flex items-center">
+                        <a href="add-recipe.php" class="text-black hover:underline text-sm flex items-center">
                             <span>View all</span>
                             <i class="fas fa-arrow-right ml-1 text-xs"></i>
                         </a>
