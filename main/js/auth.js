@@ -7,28 +7,32 @@ document.addEventListener("DOMContentLoaded", () => {
   const signupForm = document.getElementById("signup-form")
 
   // Handle login tab click
-  loginTab.addEventListener("click", () => {
-    loginTab.classList.add("tab-active")
-    loginTab.classList.remove("tab-inactive")
-    signupTab.classList.add("tab-inactive")
-    signupTab.classList.remove("tab-active")
+  if (loginTab) {
+    loginTab.addEventListener("click", () => {
+      loginTab.classList.add("tab-active")
+      loginTab.classList.remove("tab-inactive")
+      signupTab.classList.add("tab-inactive")
+      signupTab.classList.remove("tab-active")
 
-    loginForm.classList.remove("hidden")
-    signupForm.classList.add("hidden")
-  })
+      loginForm.classList.remove("hidden")
+      signupForm.classList.add("hidden")
+    })
+  }
 
   // Handle signup tab click
-  signupTab.addEventListener("click", () => {
-    signupTab.classList.add("tab-active")
-    signupTab.classList.remove("tab-inactive")
-    loginTab.classList.add("tab-inactive")
-    loginTab.classList.remove("tab-active")
+  if (signupTab) {
+    signupTab.addEventListener("click", () => {
+      signupTab.classList.add("tab-active")
+      signupTab.classList.remove("tab-inactive")
+      loginTab.classList.add("tab-inactive")
+      loginTab.classList.remove("tab-active")
 
-    signupForm.classList.remove("hidden")
-    loginForm.classList.add("hidden")
-  })
+      signupForm.classList.remove("hidden")
+      loginForm.classList.add("hidden")
+    })
+  }
 
-  // Password visibility toggle functionality - FIXED to work inside the input box
+  // Password visibility toggle functionality
   const togglePasswordButtons = document.querySelectorAll(".toggle-password")
 
   togglePasswordButtons.forEach((button) => {
@@ -36,7 +40,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const passwordInput = this.parentElement.querySelector("input")
       const icon = this.querySelector("i")
 
-      // Toggle password visibility and icon
       if (passwordInput.type === "password") {
         passwordInput.type = "text"
         icon.classList.remove("fa-eye")
@@ -49,38 +52,26 @@ document.addEventListener("DOMContentLoaded", () => {
     })
   })
 
-  // Form validation for signup - SIMPLIFIED password requirements
+  // Form validation for signup - Simplified password requirements
   const signupFormElement = document.getElementById("signup-form-element")
-  const signupPassword = document.getElementById("signup-password")
-  const signupConfirmPassword = document.getElementById("signup-confirm-password")
-  const passwordError = document.getElementById("signup-password-error")
-
   if (signupFormElement) {
     signupFormElement.addEventListener("submit", function (event) {
-      event.preventDefault(); // Prevent form submission until validation is complete
+      event.preventDefault();
       
-      const termsCheckbox = document.getElementById("terms")
-      const termsError = document.getElementById("terms-error")
       const nameInput = document.getElementById("signup-name")
       const emailInput = document.getElementById("signup-email")
+      const passwordInput = document.getElementById("signup-password")
+      const confirmPasswordInput = document.getElementById("signup-confirm-password")
+      const termsCheckbox = document.getElementById("terms")
       const submitButton = this.querySelector('button[type="submit"]')
       let hasError = false
       let errorMessages = []
 
-      // Store original button state
-      const originalButtonHTML = 'Create Account'
-
-      // First reset any previous error states
-      submitButton.innerHTML = originalButtonHTML
-      submitButton.disabled = false
-      submitButton.classList.remove("loading")
-      
-      // Remove any previous error highlights
+      // Reset previous error states
       nameInput.classList.remove("error-highlight")
       emailInput.classList.remove("error-highlight")
-      if (signupPassword) signupPassword.classList.remove("error-highlight")
-      if (signupConfirmPassword) signupConfirmPassword.classList.remove("error-highlight")
-      termsError.classList.add("hidden")
+      passwordInput.classList.remove("error-highlight")
+      confirmPasswordInput.classList.remove("error-highlight")
 
       // Validate name
       if (!nameInput.value.trim()) {
@@ -100,186 +91,121 @@ document.addEventListener("DOMContentLoaded", () => {
         hasError = true
       }
 
-      // Validate terms checkbox
-      if (!termsCheckbox.checked) {
-        errorMessages.push("You must agree to the Terms of Service and Privacy Policy")
-        termsError.textContent = "You must agree to the Terms of Service and Privacy Policy"
-        termsError.classList.remove("hidden")
+      // Simplified password validation
+      if (!passwordInput.value) {
+        errorMessages.push("Please enter a password")
+        passwordInput.classList.add("error-highlight")
+        hasError = true
+      } else if (passwordInput.value.length < 6) {
+        errorMessages.push("Password must be at least 6 characters long")
+        passwordInput.classList.add("error-highlight")
         hasError = true
       }
 
-      // Password validation
-      if (signupPassword && signupConfirmPassword) {
-        if (signupPassword.value.length < 8) {
-          errorMessages.push("Password must be at least 8 characters long")
-          signupPassword.classList.add("error-highlight")
-          hasError = true
-        } else if (!/[A-Z]/.test(signupPassword.value)) {
-          errorMessages.push("Password must contain at least one uppercase letter")
-          signupPassword.classList.add("error-highlight")
-          hasError = true
-        } else if (!/[0-9]/.test(signupPassword.value)) {
-          errorMessages.push("Password must contain at least one number")
-          signupPassword.classList.add("error-highlight")
-          hasError = true
-        } else if (!/[!@#$%^&*(),.?":{}|<>]/.test(signupPassword.value)) {
-          errorMessages.push("Password must contain at least one special character")
-          signupPassword.classList.add("error-highlight")
-          hasError = true
-        } else if (signupPassword.value !== signupConfirmPassword.value) {
-          errorMessages.push("Passwords do not match")
-          passwordError.textContent = "Passwords do not match"
-          passwordError.classList.remove("hidden")
-          signupConfirmPassword.classList.add("error-highlight")
-          signupConfirmPassword.classList.add("shake-error")
-          hasError = true
-        }
+      // Confirm password
+      if (passwordInput.value !== confirmPasswordInput.value) {
+        errorMessages.push("Passwords do not match")
+        confirmPasswordInput.classList.add("error-highlight")
+        hasError = true
       }
 
-      // If there are errors, show popup and keep button in normal state
+      // Terms checkbox
+      if (!termsCheckbox.checked) {
+        errorMessages.push("Please accept the Terms of Service")
+        hasError = true
+      }
+
       if (hasError) {
         showAlert(errorMessages.join("<br>"), "error")
-        return false;
+        return
       }
 
-      // Only if all validations pass, show processing state and submit
-      submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Processing...'
+      // Show processing state
+      submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Creating Account...'
       submitButton.disabled = true
-      submitButton.classList.add("loading")
-      
-      // Submit the form after a brief delay to show the processing state
+
+      // Submit the form
       setTimeout(() => {
         this.submit()
       }, 100)
     })
   }
 
-  // Login form validation and wrong password feedback
+  // Login form handling with visual feedback
   const loginFormElement = document.getElementById("login-form-element")
-  const loginPassword = document.getElementById("login-password")
-  const loginEmail = document.getElementById("login-email")
-
   if (loginFormElement) {
     loginFormElement.addEventListener("submit", function (event) {
-      // We'll add client-side validation here, but also handle server-side errors
       const submitButton = this.querySelector('button[type="submit"]')
+      const emailInput = document.getElementById("login-email")
+      const passwordInput = document.getElementById("login-password")
+      let hasError = false
+
+      // Reset previous error states
+      emailInput.classList.remove("error-highlight")
+      passwordInput.classList.remove("error-highlight")
+
+      // Basic validation
+      if (!emailInput.value.trim()) {
+        emailInput.classList.add("error-highlight")
+        hasError = true
+      }
+      if (!passwordInput.value.trim()) {
+        passwordInput.classList.add("error-highlight")
+        hasError = true
+      }
+
+      if (hasError) {
+        event.preventDefault()
+        showAlert("Please fill in all fields", "error")
+        return
+      }
+
+      // Show processing state
       submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Logging in...'
       submitButton.disabled = true
-
-      // The form will submit naturally and PHP will handle validation
     })
   }
 
-  // Add button click effects - ENHANCED
-  const allButtons = document.querySelectorAll("button")
-  allButtons.forEach((button) => {
-    // Add ripple effect to all buttons
-    button.addEventListener("click", function (e) {
-      // Create ripple element
-      const ripple = document.createElement("span")
-      this.appendChild(ripple)
-
-      // Get position
-      const x = e.clientX - this.getBoundingClientRect().left
-      const y = e.clientY - this.getBoundingClientRect().top
-
-      // Add ripple class and position
-      ripple.className = "ripple"
-      ripple.style.left = `${x}px`
-      ripple.style.top = `${y}px`
-
-      // Remove ripple after animation completes
-      setTimeout(() => {
-        ripple.remove()
-      }, 600)
-
-      // Add scale effect
-      this.classList.add("button-clicked")
-      setTimeout(() => {
-        this.classList.remove("button-clicked")
-      }, 200)
-    })
-  })
-
-  // Add specific handling for submit buttons
-  const submitButtons = document.querySelectorAll('button[type="submit"]')
-  submitButtons.forEach((button) => {
+  // Add button click effects
+  const buttons = document.querySelectorAll("button")
+  buttons.forEach((button) => {
     button.addEventListener("click", function () {
-      // Add loading state
-      const originalText = this.innerHTML
-      if (!this.classList.contains("loading")) {
-        this.classList.add("loading")
-
-        // Only show loading state if form is valid
-        const form = this.closest("form")
-        if (form && form.checkValidity()) {
-          this.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Processing...'
-        }
-      }
+      this.style.transform = "scale(0.95)"
+      setTimeout(() => {
+        this.style.transform = "scale(1)"
+      }, 100)
     })
   })
-
-  // Handle error alerts
-  const loginErrorAlert = document.getElementById("login-error-alert")
-  if (loginErrorAlert) {
-    // Add shake animation when error is displayed
-    setTimeout(() => {
-      const passwordInput = document.getElementById("login-password")
-      if (passwordInput) {
-        passwordInput.classList.add("shake-error")
-        passwordInput.classList.add("error-highlight")
-
-        // Remove the animation class after it completes
-        passwordInput.addEventListener("animationend", () => {
-          passwordInput.classList.remove("shake-error")
-        })
-      }
-    }, 100)
-
-    // Auto-hide error message after 5 seconds
-    setTimeout(() => {
-      loginErrorAlert.style.opacity = "0"
-      loginErrorAlert.style.transition = "opacity 0.5s ease"
-      setTimeout(() => {
-        loginErrorAlert.style.display = "none"
-      }, 500)
-    }, 5000)
-  }
 
   // Add custom alerts functionality
   window.showAlert = (message, type = "success") => {
-    // Create alert element
     const alertDiv = document.createElement("div")
-    alertDiv.className =
-      type === "success"
-        ? "fixed top-4 right-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded z-50"
-        : "fixed top-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded z-50"
+    alertDiv.className = `fixed top-4 right-4 p-4 rounded-lg z-50 ${
+      type === "success" ? "bg-green-100 text-green-700 border border-green-400" : 
+      "bg-red-100 text-red-700 border border-red-400"
+    }`
 
     // Add content
     alertDiv.innerHTML = `
-            <strong class="font-bold">${type === "success" ? "Success!" : "Error!"}</strong>
-            <span class="block sm:inline"> ${message}</span>
-            <button class="absolute top-0 right-0 px-4 py-3">
-                <i class="fas fa-times"></i>
-            </button>
-        `
+      <div class="flex items-center">
+        <i class="fas ${type === "success" ? "fa-check-circle" : "fa-exclamation-circle"} mr-3"></i>
+        <div>
+          <p class="font-bold">${type === "success" ? "Success!" : "Error!"}</p>
+          <p>${message}</p>
+        </div>
+        <button class="ml-auto" onclick="this.parentElement.parentElement.remove()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    `
 
-    // Add to body
     document.body.appendChild(alertDiv)
-
-    // Add close button functionality
-    const closeButton = alertDiv.querySelector("button")
-    closeButton.addEventListener("click", () => {
-      alertDiv.remove()
-    })
 
     // Auto remove after 5 seconds
     setTimeout(() => {
       alertDiv.style.opacity = "0"
       alertDiv.style.transition = "opacity 0.5s ease"
-      setTimeout(() => {
-        alertDiv.remove()
-      }, 500)
+      setTimeout(() => alertDiv.remove(), 500)
     }, 5000)
   }
 
