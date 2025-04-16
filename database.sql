@@ -105,6 +105,7 @@ CREATE TABLE IF NOT EXISTS shopping_lists (
 -- Shopping List Items table
 CREATE TABLE IF NOT EXISTS shopping_list_items (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
     list_id INT NOT NULL,
     name VARCHAR(255) NOT NULL,
     quantity INT DEFAULT 1,
@@ -114,5 +115,9 @@ CREATE TABLE IF NOT EXISTS shopping_list_items (
     completed BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (list_id) REFERENCES shopping_lists(id) ON DELETE CASCADE
+    FOREIGN KEY (list_id) REFERENCES shopping_lists(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_user_list (user_id, list_id),
+    INDEX idx_category (category),
+    INDEX idx_completed (completed)
 ); 
