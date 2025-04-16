@@ -151,6 +151,16 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["form_type"]) && $_POST[
                 $register_success = "Registration successful! You can now log in.";
                 
                 $name = $email = $password = $confirm_password = $dietary_preference = "";
+                
+                // Show success message and redirect to login
+                echo "<script>
+                    window.onload = function() {
+                        showAlert('Registration successful! You can now log in.', 'success');
+                        setTimeout(function() {
+                            document.getElementById('login-tab').click();
+                        }, 2000);
+                    }
+                </script>";
             } else{
                 echo "Oops! Something went wrong. Please try again later.";
                 error_log("Registration insert error: " . mysqli_error($conn));
