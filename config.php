@@ -3,44 +3,40 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// TODO: Switch back to environment variables when deployed
-$db_host = getenv('MYSQLHOST');
-$db_port = getenv('MYSQLPORT');
-$db_user = getenv('MYSQLUSER');
-$db_password = getenv('MYSQLPASSWORD');
-$db_name = getenv('MYSQLDATABASE');
+// Get database credentials from environment variables
+$db_host = getenv('MYSQLHOST') ?: 'localhost';
+$db_port = getenv('MYSQLPORT') ?: '3306';
+$db_user = getenv('MYSQLUSER') ?: 'root';
+$db_pass = getenv('MYSQLPASSWORD') ?: '';
+$db_name = getenv('MYSQLDATABASE') ?: 'cookBook';
 
-// Debug output
-echo "Database Configuration:<br>";
-echo "Host: " . $db_host . "<br>";
-echo "Port: " . $db_port . "<br>";
-echo "User: " . $db_user . "<br>";
-echo "Database: " . $db_name . "<br>";
-echo "Password is set<br><br>";
-
-$conn = null; // Initialize the connection variable
+// Debug output (remove in production)
+echo "Database Configuration:\n";
+echo "Host: " . $db_host . "\n";
+echo "Port: " . $db_port . "\n";
+echo "User: " . $db_user . "\n";
+echo "Database: " . $db_name . "\n";
 
 try {
-    // Create connection with port
-    $conn = mysqli_connect($db_host, $db_user, $db_password, $db_name, $db_port);
-
+    // Create connection
+    $conn = new mysqli($db_host, $db_user, $db_pass, $db_name, $db_port);
+    
     // Check connection
-    if (!$conn) {
-        throw new Exception(mysqli_connect_error());
+    if ($conn->connect_error) {
+        throw new Exception("Connection failed: " . $conn->connect_error);
     }
-
-    echo "Connected successfully to MySQL!<br>";
-
+    
+    // Set charset to utf8mb4
+    $conn->set_charset("utf8mb4");
+    
+    // Debug output (remove in production)
+    echo "Connected successfully to the database!\n";
+    
 } catch (Exception $e) {
-    die("Connection failed: " . $e->getMessage() .
-        "<br>Host: " . $db_host .
-        "<br>Port: " . $db_port .
-        "<br>User: " . $db_user .
-        "<br>Database: " . $db_name);
-} finally {
-    // Set charset after successful connection (if connection was established)
-    if ($conn) {
-        mysqli_set_charset($conn, "utf8");
-    }
+    // Log the error
+    error_log("Database connection error: " . $e->getMessage());
+    
+    // Display a user-friendly error message
+    die("We're experiencing some technical difficulties. Please try again later.");
 }
 ?>
