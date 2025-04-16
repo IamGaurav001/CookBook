@@ -4,18 +4,11 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 // TODO: Switch back to environment variables when deployed
-// $db_host = getenv('MYSQL_HOST');
-// $db_port = getenv('MYSQL_PORT');
-// $db_user = getenv('MYSQL_USER');
-// $db_password = getenv('MYSQL_PASSWORD');
-// $db_name = getenv('MYSQL_DATABASE');
-
-// Temporary direct credentials for development
-$db_host = "containers-us-west-207.railway.app";
-$db_port = "7107";
-$db_user = "root";
-$db_password = "4nPHHzxVMJxWDxhbLHpr";
-$db_name = "cookBook";
+$db_host = getenv('MYSQLHOST');
+$db_port = getenv('MYSQLPORT');
+$db_user = getenv('MYSQLUSER');
+$db_password = getenv('MYSQLPASSWORD');
+$db_name = getenv('MYSQLDATABASE');
 
 // Debug output
 echo "Database Configuration:<br>";
