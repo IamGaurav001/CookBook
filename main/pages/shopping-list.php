@@ -81,7 +81,10 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["update_item"])) {
     $item_id = intval($_POST["item_id"]);
     $completed = intval($_POST["completed"]);
     
-    $sql_verify = "SELECT id FROM shopping_list_items WHERE id = ? AND user_id = ?";
+    $sql_verify = "SELECT sli.id 
+                   FROM shopping_list_items sli 
+                   JOIN shopping_lists sl ON sli.list_id = sl.id 
+                   WHERE sli.id = ? AND sl.user_id = ?";
     
     if($stmt_verify = mysqli_prepare($conn, $sql_verify)) {
         mysqli_stmt_bind_param($stmt_verify, "ii", $item_id, $_SESSION["id"]);
@@ -113,7 +116,10 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["update_item"])) {
 if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["delete_item"])) {
     $item_id = intval($_POST["item_id"]);
     
-    $sql_verify = "SELECT id FROM shopping_list_items WHERE id = ? AND user_id = ?";
+    $sql_verify = "SELECT sli.id 
+                   FROM shopping_list_items sli 
+                   JOIN shopping_lists sl ON sli.list_id = sl.id 
+                   WHERE sli.id = ? AND sl.user_id = ?";
     
     if($stmt_verify = mysqli_prepare($conn, $sql_verify)) {
         mysqli_stmt_bind_param($stmt_verify, "ii", $item_id, $_SESSION["id"]);
