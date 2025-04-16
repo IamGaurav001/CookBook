@@ -25,12 +25,32 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["item-name"])) {
     if(empty($item_name)) {
         $error_message = "Please enter an item name.";
     } else {
-        $sql = "INSERT INTO shopping_list_items (user_id, name, quantity, unit, category, notes, created_at) 
-                VALUES (?, ?, ?, ?, ?, ?, NOW())";
+        // First, get or create a default shopping list for the user
+        $sql_list = "SELECT id FROM shopping_lists WHERE user_id = ? AND name = 'Default List'";
+        $stmt_list = mysqli_prepare($conn, $sql_list);
+        mysqli_stmt_bind_param($stmt_list, "i", $_SESSION["id"]);
+        mysqli_stmt_execute($stmt_list);
+        $result_list = mysqli_stmt_get_result($stmt_list);
+        
+        if(mysqli_num_rows($result_list) == 0) {
+            // Create a default list if none exists
+            $sql_create_list = "INSERT INTO shopping_lists (user_id, name) VALUES (?, 'Default List')";
+            $stmt_create = mysqli_prepare($conn, $sql_create_list);
+            mysqli_stmt_bind_param($stmt_create, "i", $_SESSION["id"]);
+            mysqli_stmt_execute($stmt_create);
+            $list_id = mysqli_insert_id($conn);
+        } else {
+            $row = mysqli_fetch_assoc($result_list);
+            $list_id = $row['id'];
+        }
+        
+        // Now insert the item into the list
+        $sql = "INSERT INTO shopping_list_items (list_id, name, quantity, unit, category, notes) 
+                VALUES (?, ?, ?, ?, ?, ?)";
         
         if($stmt = mysqli_prepare($conn, $sql)) {
             mysqli_stmt_bind_param($stmt, "isdsss", 
-                $param_user_id, 
+                $list_id,
                 $param_name, 
                 $param_quantity, 
                 $param_unit, 
@@ -38,7 +58,6 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["item-name"])) {
                 $param_notes
             );
             
-            $param_user_id = $_SESSION["id"];
             $param_name = $item_name;
             $param_quantity = $quantity;
             $param_unit = $unit;
@@ -124,7 +143,10 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["delete_item"])) {
 }
 
 $shopping_items = array();
-$sql = "SELECT * FROM shopping_list_items WHERE user_id = ? ORDER BY category, completed, created_at DESC";
+$sql = "SELECT sli.* FROM shopping_list_items sli 
+        JOIN shopping_lists sl ON sli.list_id = sl.id 
+        WHERE sl.user_id = ? 
+        ORDER BY sli.category, sli.completed, sli.created_at DESC";
 
 if($stmt = mysqli_prepare($conn, $sql)) {
     mysqli_stmt_bind_param($stmt, "i", $_SESSION["id"]);
