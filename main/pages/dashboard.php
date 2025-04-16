@@ -48,7 +48,7 @@ if ($stmt = mysqli_prepare($conn, $sql_meal_plans)) {
 
 // Shopping List Count
 $shopping_list_count = 0;
-$sql_shopping = "SELECT COUNT(*) as count FROM shopping_list_items WHERE user_id = ? AND completed = 0";
+$sql_shopping = "SELECT COUNT(*) as count FROM shopping_list_items WHERE user_id = ?";
 if ($stmt = mysqli_prepare($conn, $sql_shopping)) {
     mysqli_stmt_bind_param($stmt, "i", $userId);
     if (mysqli_stmt_execute($stmt)) {
