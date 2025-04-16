@@ -226,6 +226,81 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["form_type"]) && $_POST[
         .social-btn:hover {
             transform: translateY(-2px);
         }
+        
+        /* Button click effect */
+        button {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        button:active {
+            transform: scale(0.95);
+        }
+        
+        button::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.5);
+            opacity: 0;
+            border-radius: 100%;
+            transform: scale(1, 1) translate(-50%);
+            transform-origin: 50% 50%;
+        }
+        
+        button:focus:not(:active)::after {
+            animation: ripple 1s ease-out;
+        }
+        
+        @keyframes ripple {
+            0% {
+                transform: scale(0, 0);
+                opacity: 0.5;
+            }
+            20% {
+                transform: scale(25, 25);
+                opacity: 0.3;
+            }
+            100% {
+                opacity: 0;
+                transform: scale(40, 40);
+            }
+        }
+        
+        /* Error animation for wrong password */
+        .shake-error {
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+            transform: translate3d(0, 0, 0);
+            backface-visibility: hidden;
+            perspective: 1000px;
+        }
+        
+        @keyframes shake {
+            10%, 90% {
+                transform: translate3d(-1px, 0, 0);
+            }
+            
+            20%, 80% {
+                transform: translate3d(2px, 0, 0);
+            }
+            
+            30%, 50%, 70% {
+                transform: translate3d(-4px, 0, 0);
+            }
+            
+            40%, 60% {
+                transform: translate3d(4px, 0, 0);
+            }
+        }
+        
+        .error-highlight {
+            border-color: #FF4136 !important;
+            box-shadow: 0 0 0 3px rgba(255, 65, 54, 0.2) !important;
+        }
     </style>
 </head>
 <body class="font-sans bg-white text-text min-h-screen">
@@ -298,11 +373,19 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["form_type"]) && $_POST[
                         
                         <!-- Login Form -->
                         <div id="login-form" class="animate-fade-in">
-                            <h3 class="text-2xl font-bold text-black mb-6 text-center">Welcome Back</h3>        
+                            <h3 class="text-2xl font-bold text-black mb-6 text-center">Welcome Back</h3>
+                            
+                            <?php if(!empty($login_err)): ?>
+                                <div id="login-error-alert" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4 shake-error">
+                                    <strong class="font-bold">Error!</strong>
+                                    <span class="block sm:inline"> <?php echo $login_err; ?></span>
+                                </div>
+                            <?php endif; ?>
+                            
                             <form id="login-form-element" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" class="space-y-6">
                                 <div>
                                     <label for="login-email" class="block text-sm font-medium text-text mb-1">Email Address</label>
-                                    <input type="email" id="login-email" name="email" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none <?php echo (!empty($email_err)) ? 'border-red-500' : ''; ?>" value="<?php echo $email; ?>" placeholder="your@email.com" required>
+                                    <input type="email" id="login-email" name="email" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none <?php echo (!empty($email_err) || !empty($login_err)) ? 'error-highlight' : ''; ?>" value="<?php echo $email; ?>" placeholder="your@email.com" required>
                                     <p id="login-email-error" class="text-red-500 text-sm mt-1 <?php echo (!empty($email_err)) ? '' : 'hidden'; ?>"><?php echo $email_err; ?></p>
                                 </div>
                                 
@@ -312,7 +395,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["form_type"]) && $_POST[
                                         <a href="#" class="text-sm text-yellow-300 hover:underline">Forgot Password?</a>
                                     </div>
                                     <div class="relative">
-                                        <input type="password" id="login-password" name="password" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none <?php echo (!empty($password_err)) ? 'border-red-500' : ''; ?>" placeholder="••••••••" required>
+                                        <input type="password" id="login-password" name="password" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none <?php echo (!empty($password_err) || !empty($login_err)) ? 'error-highlight' : ''; ?>" placeholder="••••••••" required>
                                         <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center text-text toggle-password">
                                             <i class="fas fa-eye"></i>
                                         </button>
@@ -321,8 +404,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["form_type"]) && $_POST[
                                 </div>
                                 
                                 <div>
-                                    <button type="submit" class="w-full bg-black hover:bg-opacity-90 text-white font-medium py-3 px-4 rounded-lg shadow-md transition duration-300 ease-in-out">
-                                        Login
+                                    <button type="submit" class="w-full bg-black hover:bg-opacity-90 text-white font-medium py-3 px-4 rounded-lg shadow-md transition duration-300 ease-in-out btn-with-effect">
+                                        <span class="relative z-10">Login</span>
                                     </button>
                                 </div>
                             </form>
@@ -336,20 +419,20 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["form_type"]) && $_POST[
                                 <input type="hidden" name="form_type" value="register">
                                 <div>
                                     <label for="signup-name" class="block text-sm font-medium text-text mb-1">Full Name</label>
-                                    <input type="text" id="signup-name" name="name" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none <?php echo (!empty($name_err)) ? 'border-red-500' : ''; ?>" value="<?php echo $name; ?>" placeholder="John Doe" required>
+                                    <input type="text" id="signup-name" name="name" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none <?php echo (!empty($name_err)) ? 'error-highlight' : ''; ?>" value="<?php echo $name; ?>" placeholder="John Doe" required>
                                     <p id="signup-name-error" class="text-red-500 text-sm mt-1 <?php echo (!empty($name_err)) ? '' : 'hidden'; ?>"><?php echo $name_err; ?></p>
                                 </div>
                                 
                                 <div>
                                     <label for="signup-email" class="block text-sm font-medium text-text mb-1">Email Address</label>
-                                    <input type="email" id="signup-email" name="email" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none <?php echo (!empty($email_err)) ? 'border-red-500' : ''; ?>" value="<?php echo $email; ?>" placeholder="your@email.com" required>
+                                    <input type="email" id="signup-email" name="email" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none <?php echo (!empty($email_err)) ? 'error-highlight' : ''; ?>" value="<?php echo $email; ?>" placeholder="your@email.com" required>
                                     <p id="signup-email-error" class="text-red-500 text-sm mt-1 <?php echo (!empty($email_err)) ? '' : 'hidden'; ?>"><?php echo $email_err; ?></p>
                                 </div>
                                 
                                 <div>
                                     <label for="signup-password" class="block text-sm font-medium text-text mb-1">Password</label>
                                     <div class="relative">
-                                        <input type="password" id="signup-password" name="password" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none <?php echo (!empty($password_err)) ? 'border-red-500' : ''; ?>" placeholder="••••••••" required>
+                                        <input type="password" id="signup-password" name="password" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none <?php echo (!empty($password_err)) ? 'error-highlight' : ''; ?>" placeholder="••••••••" required>
                                         <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center text-text toggle-password">
                                             <i class="fas fa-eye"></i>
                                         </button>
@@ -361,7 +444,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["form_type"]) && $_POST[
                                 <div>
                                     <label for="signup-confirm-password" class="block text-sm font-medium text-text mb-1">Confirm Password</label>
                                     <div class="relative">
-                                        <input type="password" id="signup-confirm-password" name="confirm_password" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none <?php echo (!empty($confirm_password_err)) ? 'border-red-500' : ''; ?>" placeholder="••••••••" required>
+                                        <input type="password" id="signup-confirm-password" name="confirm_password" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none <?php echo (!empty($confirm_password_err)) ? 'error-highlight' : ''; ?>" placeholder="••••••••" required>
                                         <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center text-text toggle-password">
                                             <i class="fas fa-eye"></i>
                                         </button>
@@ -388,8 +471,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["form_type"]) && $_POST[
                                 <p id="terms-error" class="text-red-500 text-sm mt-1 hidden"></p>
                                 
                                 <div>
-                                    <button type="submit" class="w-full bg-yellow-300 hover:bg-opacity-90 text-black font-medium py-3 px-4 rounded-lg shadow-md transition duration-300 ease-in-out">
-                                        Create Account
+                                    <button type="submit" class="w-full bg-yellow-300 hover:bg-opacity-90 text-black font-medium py-3 px-4 rounded-lg shadow-md transition duration-300 ease-in-out btn-with-effect">
+                                        <span class="relative z-10">Create Account</span>
                                     </button>
                                 </div>
                             </form>
@@ -413,7 +496,6 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["form_type"]) && $_POST[
         </footer>
     </div>
     
-    <script src="../js/auth.js"></script>
+    <script src = "../js/auth.js">    </script>
 </body>
 </html>
-
