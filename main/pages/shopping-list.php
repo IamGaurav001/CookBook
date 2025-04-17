@@ -91,6 +91,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["item-name"])) {
 if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["update_item"])) {
     $item_id = intval($_POST["item_id"]);
     $completed = intval($_POST["completed"]);
+    $response = array('success' => false, 'message' => '');
     
     $sql_verify = "SELECT id FROM shopping_list_items WHERE id = ? AND user_id = ?";
     
@@ -107,17 +108,38 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["update_item"])) {
                     mysqli_stmt_bind_param($stmt_update, "iii", $completed, $item_id, $_SESSION["id"]);
                     
                     if(mysqli_stmt_execute($stmt_update)) {
-                        header('Content-Type: application/json');
-                        echo json_encode(['success' => true]);
-                        exit;
+                        if(mysqli_affected_rows($conn) > 0) {
+                            $response['success'] = true;
+                            $response['message'] = 'Item updated successfully';
+                        } else {
+                            $response['message'] = 'No changes made to the item';
+                            error_log("Shopping list update - No rows affected. Item ID: " . $item_id . ", User ID: " . $_SESSION["id"]);
+                        }
+                    } else {
+                        $response['message'] = 'Error executing update: ' . mysqli_error($conn);
+                        error_log("Shopping list update error: " . mysqli_error($conn));
                     }
+                    mysqli_stmt_close($stmt_update);
+                } else {
+                    $response['message'] = 'Error preparing update statement: ' . mysqli_error($conn);
+                    error_log("Shopping list prepare error: " . mysqli_error($conn));
                 }
+            } else {
+                $response['message'] = 'Item not found or unauthorized access';
+                error_log("Shopping list verification failed. Item ID: " . $item_id . ", User ID: " . $_SESSION["id"]);
             }
+        } else {
+            $response['message'] = 'Error verifying item: ' . mysqli_error($conn);
+            error_log("Shopping list verify error: " . mysqli_error($conn));
         }
+        mysqli_stmt_close($stmt_verify);
+    } else {
+        $response['message'] = 'Error preparing verification: ' . mysqli_error($conn);
+        error_log("Shopping list verify prepare error: " . mysqli_error($conn));
     }
     
     header('Content-Type: application/json');
-    echo json_encode(['success' => false, 'message' => 'Error updating item']);
+    echo json_encode($response);
     exit;
 }
 

@@ -32,20 +32,20 @@ document.addEventListener("DOMContentLoaded", () => {
     })
   }
 
-  // Password visibility toggle functionality
-  const togglePasswordButtons = document.querySelectorAll(".toggle-password")
-
-  togglePasswordButtons.forEach((button) => {
+  // Password toggle functionality
+  const toggleButtons = document.querySelectorAll(".toggle-password")
+  
+  toggleButtons.forEach((button) => {
     button.addEventListener("click", function () {
-      const passwordInput = this.parentElement.querySelector("input")
+      const input = this.closest(".relative").querySelector("input[type='password'], input[type='text']")
       const icon = this.querySelector("i")
-
-      if (passwordInput.type === "password") {
-        passwordInput.type = "text"
+      
+      if (input.type === "password") {
+        input.type = "text"
         icon.classList.remove("fa-eye")
         icon.classList.add("fa-eye-slash")
       } else {
-        passwordInput.type = "password"
+        input.type = "password"
         icon.classList.remove("fa-eye-slash")
         icon.classList.add("fa-eye")
       }

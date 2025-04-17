@@ -392,16 +392,17 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["form_type"]) && $_POST[
                                 </div>
                                 
                                 <div>
-                                <div class="flex items-center justify-between mb-1">
+                                    <div class="flex items-center justify-between mb-1">
                                         <label for="login-password" class="block text-sm font-medium text-text">Password</label>
                                         <a href="#" class="text-sm text-yellow-300 hover:underline">Forgot Password?</a>
                                     </div>
                                     <div class="relative">
                                         <input type="password" id="login-password" name="password" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none <?php echo (!empty($password_err)) ? 'border-red-500' : ''; ?>" placeholder="••••••••" required>
-
-                                        <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center text-text toggle-password cursor-pointer">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
+                                        <div class="absolute inset-y-0 right-0 flex items-center px-4 text-black">
+                                            <button type="button" class="toggle-password cursor-pointer hover:text-gray-600">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </div>
                                     </div>
                                     <p id="login-password-error" class="text-red-500 text-sm mt-1 <?php echo (!empty($password_err)) ? '' : 'hidden'; ?>"><?php echo $password_err; ?></p>
                                 </div>
@@ -436,9 +437,11 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["form_type"]) && $_POST[
                                     <label for="signup-password" class="block text-sm font-medium text-text mb-1">Password</label>
                                     <div class="relative">
                                         <input type="password" id="signup-password" name="password" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none <?php echo (!empty($password_err)) ? 'error-highlight' : ''; ?>" placeholder="••••••••" required>
-                                        <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center text-text toggle-password cursor-pointer">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
+                                        <div class="absolute inset-y-0 right-0 flex items-center px-4 text-black">
+                                            <button type="button" class="toggle-password cursor-pointer hover:text-black">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </div>
                                     </div>
                                     <p id="signup-password-error" class="text-red-500 text-sm mt-1 <?php echo (!empty($password_err)) ? '' : 'hidden'; ?>"><?php echo $password_err; ?></p>
                                     <p class="text-xs text-gray-500 mt-1">Must be at least 6 characters</p>
@@ -448,9 +451,11 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["form_type"]) && $_POST[
                                     <label for="signup-confirm-password" class="block text-sm font-medium text-text mb-1">Confirm Password</label>
                                     <div class="relative">
                                         <input type="password" id="signup-confirm-password" name="confirm_password" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none <?php echo (!empty($confirm_password_err)) ? 'error-highlight' : ''; ?>" placeholder="••••••••" required>
-                                        <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center text-text toggle-password cursor-pointer">
-                                            <i class="fas fa-eye"></i
-                                        </button>
+                                        <div class="absolute inset-y-0 right-0 flex items-center px-4 text-black">
+                                            <button type="button" class="toggle-password cursor-pointer hover:text-black">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </div>
                                     </div>
                                     <p id="signup-confirm-password-error" class="text-red-500 text-sm mt-1 <?php echo (!empty($confirm_password_err)) ? '' : 'hidden'; ?>"><?php echo $confirm_password_err; ?></p>
                                 </div>
