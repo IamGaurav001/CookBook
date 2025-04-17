@@ -11,8 +11,8 @@ $db_pass = getenv('MYSQLPASSWORD') ?: '';
 $db_name = getenv('MYSQLDATABASE') ?: 'cookBook';
 
 try {
-    // Create connection using socket
-    $conn = new mysqli('localhost:/Applications/XAMPP/xamppfiles/var/mysql/mysql.sock', $db_user, $db_pass, $db_name);
+    // Create connection
+    $conn = new mysqli($db_host, $db_user, $db_pass, $db_name, $db_port);
     
     // Check connection
     if ($conn->connect_error) {
@@ -26,7 +26,7 @@ try {
     // Log the error
     error_log("Database connection error: " . $e->getMessage());
     
-    // Display a user-friendly error message
-    die("We're experiencing some technical difficulties. Please try again later.");
+    // Display the actual error message for debugging
+    die("Database Error: " . $e->getMessage());
 }
 ?>

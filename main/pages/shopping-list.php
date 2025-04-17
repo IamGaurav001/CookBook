@@ -1,60 +1,19 @@
 <?php
-ini_set('display_errors', 0);
-error_reporting(0);
-
-// Function to send JSON response
-function sendJsonResponse($success, $message = '', $data = []) {
-    header('Content-Type: application/json');
-    echo json_encode([
-        'success' => $success,
-        'message' => $message,
-        'data' => $data
-    ]);
-    exit;
-}
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
 session_start();
 
-// Check database connection
-if (!$conn) {
-    error_log("Database connection failed: " . mysqli_connect_error());
-    sendJsonResponse(false, 'Database connection failed');
-}
-
 if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
-    sendJsonResponse(false, 'Session expired. Please login again.');
+    header("location: auth.php");
+    exit;
 }
 
 require_once "../../config.php";
 
 $item_added = false;
 $error_message = "";
-
-// Get or create default shopping list for the user
-$default_list_id = null;
-$sql_get_list = "SELECT id FROM shopping_lists WHERE user_id = ? AND plan_id IS NULL LIMIT 1";
-if($stmt = mysqli_prepare($conn, $sql_get_list)) {
-    mysqli_stmt_bind_param($stmt, "i", $_SESSION["id"]);
-    if(mysqli_stmt_execute($stmt)) {
-        $result = mysqli_stmt_get_result($stmt);
-        if($row = mysqli_fetch_assoc($result)) {
-            $default_list_id = $row['id'];
-        } else {
-            // Create a default shopping list if none exists
-            $sql_create_list = "INSERT INTO shopping_lists (user_id, name, created_at) VALUES (?, 'My Shopping List', NOW())";
-            if($stmt_create = mysqli_prepare($conn, $sql_create_list)) {
-                mysqli_stmt_bind_param($stmt_create, "i", $_SESSION["id"]);
-                if(mysqli_stmt_execute($stmt_create)) {
-                    $default_list_id = mysqli_insert_id($conn);
-                } else {
-                    $error_message = "Error creating shopping list: " . mysqli_error($conn);
-                }
-                mysqli_stmt_close($stmt_create);
-            }
-        }
-    }
-    mysqli_stmt_close($stmt);
-}
 
 if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["item-name"])) {
     $item_name = trim($_POST["item-name"]);
@@ -65,16 +24,13 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["item-name"])) {
     
     if(empty($item_name)) {
         $error_message = "Please enter an item name.";
-    } else if(!$default_list_id) {
-        $error_message = "Error: Could not create or find shopping list.";
     } else {
-        $sql = "INSERT INTO shopping_list_items (user_id, list_id, name, quantity, unit, category, notes, created_at) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, NOW())";
+        $sql = "INSERT INTO shopping_list_items (user_id, name, quantity, unit, category, notes, created_at) 
+                VALUES (?, ?, ?, ?, ?, ?, NOW())";
         
         if($stmt = mysqli_prepare($conn, $sql)) {
-            mysqli_stmt_bind_param($stmt, "iisdsss", 
+            mysqli_stmt_bind_param($stmt, "isdsss", 
                 $param_user_id, 
-                $param_list_id,
                 $param_name, 
                 $param_quantity, 
                 $param_unit, 
@@ -83,7 +39,6 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["item-name"])) {
             );
             
             $param_user_id = $_SESSION["id"];
-            $param_list_id = $default_list_id;
             $param_name = $item_name;
             $param_quantity = $quantity;
             $param_unit = $unit;
@@ -104,135 +59,72 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["item-name"])) {
 }
 
 if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["update_item"])) {
-    try {
-        $item_id = intval($_POST["item_id"]);
-        $completed = intval($_POST["completed"]);
+    $item_id = intval($_POST["item_id"]);
+    $completed = intval($_POST["completed"]);
+    
+    $sql_verify = "SELECT id FROM shopping_list_items WHERE id = ? AND user_id = ?";
+    
+    if($stmt_verify = mysqli_prepare($conn, $sql_verify)) {
+        mysqli_stmt_bind_param($stmt_verify, "ii", $item_id, $_SESSION["id"]);
         
-        error_log("Update request - Item ID: $item_id, Completed: $completed, User ID: " . $_SESSION["id"]);
-        
-        if(!$item_id) {
-            error_log("Invalid item ID provided");
-            sendJsonResponse(false, 'Invalid item ID');
-        }
-        
-        // Verify item ownership
-        $sql_verify = "SELECT id FROM shopping_list_items WHERE id = ? AND user_id = ?";
-        error_log("Verifying item ownership with query: " . $sql_verify);
-        
-        if($stmt_verify = mysqli_prepare($conn, $sql_verify)) {
-            mysqli_stmt_bind_param($stmt_verify, "ii", $item_id, $_SESSION["id"]);
+        if(mysqli_stmt_execute($stmt_verify)) {
+            $result_verify = mysqli_stmt_get_result($stmt_verify);
             
-            if(mysqli_stmt_execute($stmt_verify)) {
-                $result_verify = mysqli_stmt_get_result($stmt_verify);
+            if(mysqli_num_rows($result_verify) == 1) {
+                $sql_update = "UPDATE shopping_list_items SET completed = ?, updated_at = NOW() WHERE id = ?";
                 
-                if(mysqli_num_rows($result_verify) == 1) {
-                    $sql_update = "UPDATE shopping_list_items SET completed = ?, updated_at = NOW() WHERE id = ? AND user_id = ?";
-                    error_log("Updating item with query: " . $sql_update);
+                if($stmt_update = mysqli_prepare($conn, $sql_update)) {
+                    mysqli_stmt_bind_param($stmt_update, "ii", $completed, $item_id);
                     
-                    if($stmt_update = mysqli_prepare($conn, $sql_update)) {
-                        mysqli_stmt_bind_param($stmt_update, "iii", $completed, $item_id, $_SESSION["id"]);
-                        
-                        if(mysqli_stmt_execute($stmt_update)) {
-                            $affected_rows = mysqli_affected_rows($conn);
-                            error_log("Update executed. Affected rows: " . $affected_rows);
-                            
-                            if($affected_rows > 0) {
-                                sendJsonResponse(true, 'Item updated successfully');
-                            } else {
-                                error_log("No rows affected by update");
-                                sendJsonResponse(false, 'No changes made to the item');
-                            }
-                        } else {
-                            $error = mysqli_error($conn);
-                            error_log("Failed to execute update: " . $error);
-                            sendJsonResponse(false, 'Database error: ' . $error);
-                        }
-                        mysqli_stmt_close($stmt_update);
-                    } else {
-                        $error = mysqli_error($conn);
-                        error_log("Failed to prepare update statement: " . $error);
-                        sendJsonResponse(false, 'Failed to prepare update statement: ' . $error);
+                    if(mysqli_stmt_execute($stmt_update)) {
+                        header('Content-Type: application/json');
+                        echo json_encode(['success' => true]);
+                        exit;
                     }
-                } else {
-                    error_log("Item not found or unauthorized. Item ID: $item_id, User ID: " . $_SESSION["id"]);
-                    sendJsonResponse(false, 'Item not found or unauthorized access');
                 }
-            } else {
-                $error = mysqli_error($conn);
-                error_log("Failed to execute verify query: " . $error);
-                sendJsonResponse(false, 'Failed to verify item ownership: ' . $error);
             }
-            mysqli_stmt_close($stmt_verify);
-        } else {
-            $error = mysqli_error($conn);
-            error_log("Failed to prepare verify statement: " . $error);
-            sendJsonResponse(false, 'Failed to prepare verification statement: ' . $error);
         }
-    } catch (Exception $e) {
-        error_log("Shopping list update exception: " . $e->getMessage());
-        error_log("Exception trace: " . $e->getTraceAsString());
-        sendJsonResponse(false, 'An unexpected error occurred: ' . $e->getMessage());
     }
+    
+    header('Content-Type: application/json');
+    echo json_encode(['success' => false, 'message' => 'Error updating item']);
+    exit;
 }
 
 if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["delete_item"])) {
-    try {
-        $item_id = intval($_POST["item_id"]);
+    $item_id = intval($_POST["item_id"]);
+    
+    $sql_verify = "SELECT id FROM shopping_list_items WHERE id = ? AND user_id = ?";
+    
+    if($stmt_verify = mysqli_prepare($conn, $sql_verify)) {
+        mysqli_stmt_bind_param($stmt_verify, "ii", $item_id, $_SESSION["id"]);
         
-        if(!$item_id) {
-            sendJsonResponse(false, 'Invalid item ID');
-        }
-        
-        // Verify item ownership
-        $sql_verify = "SELECT id FROM shopping_list_items WHERE id = ? AND user_id = ?";
-        
-        if($stmt_verify = mysqli_prepare($conn, $sql_verify)) {
-            mysqli_stmt_bind_param($stmt_verify, "ii", $item_id, $_SESSION["id"]);
+        if(mysqli_stmt_execute($stmt_verify)) {
+            $result_verify = mysqli_stmt_get_result($stmt_verify);
             
-            if(mysqli_stmt_execute($stmt_verify)) {
-                $result_verify = mysqli_stmt_get_result($stmt_verify);
+            if(mysqli_num_rows($result_verify) == 1) {
+                $sql_delete = "DELETE FROM shopping_list_items WHERE id = ?";
                 
-                if(mysqli_num_rows($result_verify) == 1) {
-                    $sql_delete = "DELETE FROM shopping_list_items WHERE id = ? AND user_id = ?";
+                if($stmt_delete = mysqli_prepare($conn, $sql_delete)) {
+                    mysqli_stmt_bind_param($stmt_delete, "i", $item_id);
                     
-                    if($stmt_delete = mysqli_prepare($conn, $sql_delete)) {
-                        mysqli_stmt_bind_param($stmt_delete, "ii", $item_id, $_SESSION["id"]);
-                        
-                        if(mysqli_stmt_execute($stmt_delete)) {
-                            if(mysqli_affected_rows($conn) > 0) {
-                                sendJsonResponse(true, 'Item deleted successfully');
-                            } else {
-                                sendJsonResponse(false, 'Failed to delete item');
-                            }
-                        } else {
-                            sendJsonResponse(false, 'Database error: ' . mysqli_error($conn));
-                        }
-                        mysqli_stmt_close($stmt_delete);
-                    } else {
-                        sendJsonResponse(false, 'Failed to prepare delete statement');
+                    if(mysqli_stmt_execute($stmt_delete)) {
+                        header('Content-Type: application/json');
+                        echo json_encode(['success' => true]);
+                        exit;
                     }
-                } else {
-                    sendJsonResponse(false, 'Item not found or unauthorized access');
                 }
-            } else {
-                sendJsonResponse(false, 'Failed to verify item ownership');
             }
-            mysqli_stmt_close($stmt_verify);
-        } else {
-            sendJsonResponse(false, 'Failed to prepare verification statement');
         }
-    } catch (Exception $e) {
-        error_log("Shopping list delete error: " . $e->getMessage());
-        sendJsonResponse(false, 'An unexpected error occurred');
     }
+    
+    header('Content-Type: application/json');
+    echo json_encode(['success' => false, 'message' => 'Error deleting item']);
+    exit;
 }
 
 $shopping_items = array();
-$sql = "SELECT sli.* FROM shopping_list_items sli 
-        JOIN shopping_lists sl ON sli.list_id = sl.id 
-        WHERE sli.user_id = ? 
-        AND sl.plan_id IS NULL 
-        ORDER BY sli.category, sli.completed, sli.created_at DESC";
+$sql = "SELECT * FROM shopping_list_items WHERE user_id = ? ORDER BY category, completed, created_at DESC";
 
 if($stmt = mysqli_prepare($conn, $sql)) {
     mysqli_stmt_bind_param($stmt, "i", $_SESSION["id"]);

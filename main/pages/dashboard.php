@@ -51,13 +51,7 @@ if ($stmt = mysqli_prepare($conn, $sql_meal_plans)) {
 
 // Get active shopping list items count
 $shopping_list_count = 0;
-$sql_shopping = "SELECT COUNT(*) as count 
-    FROM shopping_list_items sli 
-    JOIN shopping_lists sl ON sli.list_id = sl.id 
-    WHERE sli.user_id = ? 
-    AND sli.completed = 0 
-    AND sl.plan_id IS NULL";
-
+$sql_shopping = "SELECT COUNT(*) as count FROM shopping_list_items WHERE user_id = ? AND completed = 0";
 if ($stmt = mysqli_prepare($conn, $sql_shopping)) {
     mysqli_stmt_bind_param($stmt, "i", $userId);
     if (mysqli_stmt_execute($stmt)) {
