@@ -78,6 +78,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Update counters
                     updateCounters();
                     
+                    // Refresh dashboard count
+                    fetch('dashboard.php')
+                        .then(response => response.text())
+                        .then(html => {
+                            const parser = new DOMParser();
+                            const doc = parser.parseFromString(html, 'text/html');
+                            const dashboardCount = doc.querySelector('.shopping-list-count');
+                            if(dashboardCount) {
+                                document.querySelector('.shopping-list-count').textContent = dashboardCount.textContent;
+                            }
+                        });
+                    
                     // Show toast notification
                     showToast(
                         completed ? 'Item Completed' : 'Item Uncompleted', 
@@ -87,10 +99,24 @@ document.addEventListener('DOMContentLoaded', function() {
                     );
                 } else {
                     console.error('Error updating item:', data.message);
+                    // Revert checkbox state on error
+                    this.checked = !this.checked;
+                    if(completed) {
+                        item.classList.remove('completed');
+                    } else {
+                        item.classList.add('completed');
+                    }
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
+                // Revert checkbox state on error
+                this.checked = !this.checked;
+                if(completed) {
+                    item.classList.remove('completed');
+                } else {
+                    item.classList.add('completed');
+                }
             });
         });
     });

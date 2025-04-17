@@ -432,7 +432,7 @@ if ($stmt = mysqli_prepare($conn, $sql_recent)) {
                                 </div>
                                 <div>
                                     <h3 class="text-sm font-medium text-text">Shopping List</h3>
-                                    <p class="text-2xl font-bold text-black"><?php echo $shopping_list_count; ?></p>
+                                    <p class="text-2xl font-bold text-black shopping-list-count"><?php echo $shopping_list_count; ?></p>
                                 </div>
                             </div>
                             <div class="mt-4">

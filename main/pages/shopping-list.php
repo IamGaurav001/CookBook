@@ -101,10 +101,10 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["update_item"])) {
             $result_verify = mysqli_stmt_get_result($stmt_verify);
             
             if(mysqli_num_rows($result_verify) == 1) {
-                $sql_update = "UPDATE shopping_list_items SET completed = ?, updated_at = NOW() WHERE id = ?";
+                $sql_update = "UPDATE shopping_list_items SET completed = ?, updated_at = NOW() WHERE id = ? AND user_id = ?";
                 
                 if($stmt_update = mysqli_prepare($conn, $sql_update)) {
-                    mysqli_stmt_bind_param($stmt_update, "ii", $completed, $item_id);
+                    mysqli_stmt_bind_param($stmt_update, "iii", $completed, $item_id, $_SESSION["id"]);
                     
                     if(mysqli_stmt_execute($stmt_update)) {
                         header('Content-Type: application/json');
