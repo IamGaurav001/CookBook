@@ -5,7 +5,7 @@ ini_set('display_errors', 1);
 
 // Get database credentials from environment variables
 $db_host = getenv('MYSQLHOST') ?: 'localhost';
-$db_port = getenv('MYSQLPORT') ?: '3306';
+$db_port = getenv('MYSQLPORT') ?: '3309';
 $db_user = getenv('MYSQLUSER') ?: 'root';
 $db_pass = getenv('MYSQLPASSWORD') ?: '';
 $db_name = getenv('MYSQLDATABASE') ?: 'cookBook';
