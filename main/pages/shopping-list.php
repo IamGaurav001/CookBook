@@ -347,10 +347,10 @@ $remaining_items = $total_items - $completed_items;
                 </div>
 
                 <div class="flex items-center">
-                    <span class="mr-4 text-text">Welcome, <span id="user-name" class="font-medium"><?php echo htmlspecialchars($_SESSION["name"]); ?></span>!</span>
+                    <span class="mr-4 text-text">Welcome, <span class="font-medium"><?php echo htmlspecialchars($_SESSION["name"]); ?></span>!</span>
                     <div class="relative">
-
-                            <div id="user-initials" class="w-10 h-10 rounded-full bg-yellow-300 text-black flex items-center justify-center font-medium mr-2">
+                        <button id="user-menu-button" class="flex items-center focus:outline-none cursor-pointer">
+                            <div class="w-10 h-10 rounded-full bg-yellow-300 text-black flex items-center justify-center font-medium mr-2">
                                 <?php 
                                     $initials = '';
                                     $name_parts = explode(' ', $_SESSION["name"]);
@@ -362,7 +362,7 @@ $remaining_items = $total_items - $completed_items;
                             </div>
                             <i class="fas fa-chevron-down text-xs text-text cursor-pointer"></i>
                         </button>
-
+                        
                         <!-- User Dropdown Menu (Hidden by default) -->
                         <div id="user-menu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
                             <a href="profile.php" class="block px-4 py-2 text-sm text-text hover:bg-white">Your Profile</a>
