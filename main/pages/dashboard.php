@@ -342,7 +342,7 @@ if ($stmt = mysqli_prepare($conn, $sql_recent)) {
                 <div class="flex items-center">
                     <span class="mr-4 text-text">Welcome, <span id="user-name" class="font-medium"><?php echo htmlspecialchars($_SESSION["name"]); ?></span>!</span>
                     <div class="relative">
-                        <button id="user-menu-button" class="flex items-center focus:outline-none">
+                        <button id="user-menu-button" class="flex items-center focus:outline-none cursor-pointer">
                             <div id="user-initials" class="w-10 h-10 rounded-full bg-yellow-300 text-black flex items-center justify-center font-medium mr-2">
                                 <?php 
                                     $initials = '';
@@ -353,11 +353,11 @@ if ($stmt = mysqli_prepare($conn, $sql_recent)) {
                                     echo htmlspecialchars($initials);
                                 ?>
                             </div>
-                            <i class="fas fa-chevron-down text-xs text-text"></i>
+                            <i class="fas fa-chevron-down text-xs text-text cursor-pointer"></i>
                         </button>
 
                         <!-- User Dropdown Menu (Hidden by default) -->
-                        <div id="user-menu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                        <div id="user-menu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 ">
                             <a href="profile.php" class="block px-4 py-2 text-sm text-text hover:bg-white">Your Profile</a>
                             <div class="border-t border-gray-200"></div>
                             <a href="../auth/logout.php" class="block px-4 py-2 text-sm text-text hover:bg-white">Logout</a>
@@ -533,11 +533,11 @@ if ($stmt = mysqli_prepare($conn, $sql_recent)) {
                     <?php if(empty($recent_recipes)): ?>
                     <div class="bg-white rounded-xl shadow-md p-8 text-center">
                         <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-yellow-300 bg-opacity-20 mb-4">
-                            <i class="fas fa-book text-2xl text-yellow-300"></i>
+                            <i class="fas fa-book text-2xl text-black"></i>
                         </div>
                         <h3 class="text-lg font-medium text-black mb-2">No recipes yet</h3>
                         <p class="text-text mb-4">Start adding your favorite recipes to your collection</p>
-                        <a href="add-recipe.php" class="bg-yellow-300 hover:bg-yellow-400 text-black font-medium py-2 px-4 rounded-lg shadow-sm inline-block">
+                        <a href="add-recipe.php" class="bg-black hover:bg-yellow-400 text-white hover:text-black font-medium py-2 px-4 rounded-lg shadow-sm inline-block">
                             Add Your First Recipe
                         </a>
                     </div>

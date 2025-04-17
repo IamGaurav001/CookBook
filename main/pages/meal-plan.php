@@ -709,8 +709,8 @@ if($stmt_recipes = mysqli_prepare($conn, $sql_recipes)) {
                 <div class="flex items-center">
                     <span class="mr-4 text-text">Welcome, <span class="font-medium"><?php echo htmlspecialchars($_SESSION["name"]); ?></span>!</span>
                     <div class="relative">
-                        <button id="user-menu-button" class="flex items-center focus:outline-none">
-                            <div class="w-10 h-10 rounded-full bg-yellow-300 text-black flex items-center justify-center font-medium mr-2">
+                    <button id="user-menu-button" class="flex items-center focus:outline-none cursor-pointer">
+                            <div id="user-initials" class="w-10 h-10 rounded-full bg-yellow-300 text-black flex items-center justify-center font-medium mr-2">
                                 <?php 
                                     $initials = '';
                                     $name_parts = explode(' ', $_SESSION["name"]);
@@ -720,7 +720,7 @@ if($stmt_recipes = mysqli_prepare($conn, $sql_recipes)) {
                                     echo htmlspecialchars($initials);
                                 ?>
                             </div>
-                            <i class="fas fa-chevron-down text-xs text-text"></i>
+                            <i class="fas fa-chevron-down text-xs text-text cursor-pointer"></i>
                         </button>
                         
                         <!-- User Dropdown Menu (Hidden by default) -->
