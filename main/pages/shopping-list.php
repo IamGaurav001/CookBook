@@ -15,6 +15,12 @@ function sendJsonResponse($success, $message = '', $data = []) {
 
 session_start();
 
+// Check database connection
+if (!$conn) {
+    error_log("Database connection failed: " . mysqli_connect_error());
+    sendJsonResponse(false, 'Database connection failed');
+}
+
 if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
     sendJsonResponse(false, 'Session expired. Please login again.');
 }
@@ -102,12 +108,16 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["update_item"])) {
         $item_id = intval($_POST["item_id"]);
         $completed = intval($_POST["completed"]);
         
+        error_log("Update request - Item ID: $item_id, Completed: $completed, User ID: " . $_SESSION["id"]);
+        
         if(!$item_id) {
+            error_log("Invalid item ID provided");
             sendJsonResponse(false, 'Invalid item ID');
         }
         
         // Verify item ownership
         $sql_verify = "SELECT id FROM shopping_list_items WHERE id = ? AND user_id = ?";
+        error_log("Verifying item ownership with query: " . $sql_verify);
         
         if($stmt_verify = mysqli_prepare($conn, $sql_verify)) {
             mysqli_stmt_bind_param($stmt_verify, "ii", $item_id, $_SESSION["id"]);
@@ -117,36 +127,51 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["update_item"])) {
                 
                 if(mysqli_num_rows($result_verify) == 1) {
                     $sql_update = "UPDATE shopping_list_items SET completed = ?, updated_at = NOW() WHERE id = ? AND user_id = ?";
+                    error_log("Updating item with query: " . $sql_update);
                     
                     if($stmt_update = mysqli_prepare($conn, $sql_update)) {
                         mysqli_stmt_bind_param($stmt_update, "iii", $completed, $item_id, $_SESSION["id"]);
                         
                         if(mysqli_stmt_execute($stmt_update)) {
-                            if(mysqli_affected_rows($conn) > 0) {
+                            $affected_rows = mysqli_affected_rows($conn);
+                            error_log("Update executed. Affected rows: " . $affected_rows);
+                            
+                            if($affected_rows > 0) {
                                 sendJsonResponse(true, 'Item updated successfully');
                             } else {
+                                error_log("No rows affected by update");
                                 sendJsonResponse(false, 'No changes made to the item');
                             }
                         } else {
-                            sendJsonResponse(false, 'Database error: ' . mysqli_error($conn));
+                            $error = mysqli_error($conn);
+                            error_log("Failed to execute update: " . $error);
+                            sendJsonResponse(false, 'Database error: ' . $error);
                         }
                         mysqli_stmt_close($stmt_update);
                     } else {
-                        sendJsonResponse(false, 'Failed to prepare update statement');
+                        $error = mysqli_error($conn);
+                        error_log("Failed to prepare update statement: " . $error);
+                        sendJsonResponse(false, 'Failed to prepare update statement: ' . $error);
                     }
                 } else {
+                    error_log("Item not found or unauthorized. Item ID: $item_id, User ID: " . $_SESSION["id"]);
                     sendJsonResponse(false, 'Item not found or unauthorized access');
                 }
             } else {
-                sendJsonResponse(false, 'Failed to verify item ownership');
+                $error = mysqli_error($conn);
+                error_log("Failed to execute verify query: " . $error);
+                sendJsonResponse(false, 'Failed to verify item ownership: ' . $error);
             }
             mysqli_stmt_close($stmt_verify);
         } else {
-            sendJsonResponse(false, 'Failed to prepare verification statement');
+            $error = mysqli_error($conn);
+            error_log("Failed to prepare verify statement: " . $error);
+            sendJsonResponse(false, 'Failed to prepare verification statement: ' . $error);
         }
     } catch (Exception $e) {
-        error_log("Shopping list update error: " . $e->getMessage());
-        sendJsonResponse(false, 'An unexpected error occurred');
+        error_log("Shopping list update exception: " . $e->getMessage());
+        error_log("Exception trace: " . $e->getTraceAsString());
+        sendJsonResponse(false, 'An unexpected error occurred: ' . $e->getMessage());
     }
 }
 

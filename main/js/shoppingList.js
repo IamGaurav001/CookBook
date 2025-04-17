@@ -88,7 +88,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     },
                     body: `update_item=1&item_id=${itemId}&completed=${completed}`
                 })
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     if (data.success) {
                         // Update UI
@@ -102,14 +107,16 @@ document.addEventListener('DOMContentLoaded', function() {
                     } else {
                         // Revert checkbox state
                         e.target.checked = !e.target.checked;
-                        showToast('Error', data.message || 'Failed to update item', 'error');
-                        console.error('Update failed:', data.message);
+                        const errorMessage = data.message || 'Failed to update item';
+                        showToast('Error', errorMessage, 'error');
+                        console.error('Update failed:', errorMessage);
                     }
                 })
                 .catch(error => {
                     // Revert checkbox state
                     e.target.checked = !e.target.checked;
-                    showToast('Error', 'Failed to update item', 'error');
+                    const errorMessage = error.message || 'Failed to update item';
+                    showToast('Error', errorMessage, 'error');
                     console.error('Update error:', error);
                 })
                 .finally(() => {
