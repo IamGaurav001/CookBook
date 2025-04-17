@@ -155,6 +155,33 @@ foreach($shopping_items as $item) {
     }
 }
 $remaining_items = $total_items - $completed_items;
+
+// Add this before the HTML output
+if(isset($_GET['get_count'])) {
+    error_log("Getting shopping list count for user: " . $_SESSION["id"]);
+    $sql = "SELECT COUNT(*) as count FROM shopping_list_items WHERE user_id = ? AND completed = 0";
+    if($stmt = mysqli_prepare($conn, $sql)) {
+        mysqli_stmt_bind_param($stmt, "i", $_SESSION["id"]);
+        if(mysqli_stmt_execute($stmt)) {
+            $result = mysqli_stmt_get_result($stmt);
+            if($row = mysqli_fetch_assoc($result)) {
+                error_log("Shopping list count: " . $row['count']);
+                header('Content-Type: application/json');
+                echo json_encode(['success' => true, 'count' => $row['count']]);
+                exit;
+            } else {
+                error_log("No rows returned for shopping list count");
+            }
+        } else {
+            error_log("Error executing shopping list count query: " . mysqli_error($conn));
+        }
+    } else {
+        error_log("Error preparing shopping list count statement: " . mysqli_error($conn));
+    }
+    header('Content-Type: application/json');
+    echo json_encode(['success' => false, 'message' => 'Error getting count']);
+    exit;
+}
 ?>
 
 <!DOCTYPE html>

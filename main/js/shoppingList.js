@@ -78,6 +78,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Update counters
                     updateCounters();
                     
+                    // Trigger storage event to update dashboard
+                    localStorage.setItem('shoppingListUpdated', Date.now());
+                    
                     // Show toast notification
                     showToast(
                         completed ? 'Item Completed' : 'Item Uncompleted', 
@@ -120,6 +123,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         item.remove();
                         
                         updateCounters();
+                        
+                        // Trigger storage event to update dashboard
+                        localStorage.setItem('shoppingListUpdated', Date.now());
                         
                         showToast('Item Deleted', 'Item has been removed from your shopping list', 'trash-alt', 'text-red-500');
                         

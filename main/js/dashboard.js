@@ -163,4 +163,28 @@ document.addEventListener('DOMContentLoaded', function() {
       notesContainer.classList.add("hidden")
     }
   }
+
+  // Function to update shopping list count
+  function updateShoppingListCount() {
+    fetch('shopping-list.php?get_count=1')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.querySelector('.shopping-list-count').textContent = data.count;
+            }
+        })
+        .catch(error => {
+            console.error('Error updating shopping list count:', error);
+        });
+  }
+
+  // Listen for shopping list updates from other tabs/windows
+  window.addEventListener('storage', function(e) {
+    if (e.key === 'shoppingListUpdated') {
+        updateShoppingListCount();
+    }
+  });
+
+  // Initial count update
+  updateShoppingListCount();
 });
