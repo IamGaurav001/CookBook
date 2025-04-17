@@ -17,7 +17,7 @@ $error_message = "";
 
 // Get or create default shopping list for the user
 $default_list_id = null;
-$sql = "SELECT id FROM shopping_lists WHERE user_id = ? AND is_default = 1 LIMIT 1";
+$sql = "SELECT id FROM shopping_lists WHERE user_id = ? LIMIT 1";
 if($stmt = mysqli_prepare($conn, $sql)) {
     mysqli_stmt_bind_param($stmt, "i", $_SESSION["id"]);
     if(mysqli_stmt_execute($stmt)) {
@@ -26,7 +26,7 @@ if($stmt = mysqli_prepare($conn, $sql)) {
             $default_list_id = $row['id'];
         } else {
             // Create default shopping list if none exists
-            $sql = "INSERT INTO shopping_lists (user_id, name, is_default) VALUES (?, 'My Shopping List', 1)";
+            $sql = "INSERT INTO shopping_lists (user_id, name) VALUES (?, 'My Shopping List')";
             if($stmt = mysqli_prepare($conn, $sql)) {
                 mysqli_stmt_bind_param($stmt, "i", $_SESSION["id"]);
                 if(mysqli_stmt_execute($stmt)) {
