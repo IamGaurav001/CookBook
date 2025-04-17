@@ -349,7 +349,7 @@ $remaining_items = $total_items - $completed_items;
                 <div class="flex items-center">
                     <span class="mr-4 text-text">Welcome, <span id="user-name" class="font-medium"><?php echo htmlspecialchars($_SESSION["name"]); ?></span>!</span>
                     <div class="relative">
-                        <button id="user-menu-button" class="flex items-center focus:outline-none cursor-pointer">
+
                             <div id="user-initials" class="w-10 h-10 rounded-full bg-yellow-300 text-black flex items-center justify-center font-medium mr-2">
                                 <?php 
                                     $initials = '';

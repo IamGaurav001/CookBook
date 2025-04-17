@@ -348,7 +348,7 @@ if ($stmt = mysqli_prepare($conn, $sql_recent)) {
                     <span class="mr-4 text-text">Welcome, <span id="user-name" class="font-medium"><?php echo htmlspecialchars($_SESSION["name"]); ?></span>!</span>
                     <div class="relative">
                         <button id="user-menu-button" class="flex items-center focus:outline-none cursor-pointer">
-                            <div id="user-initials" class="w-10 h-10 rounded-full bg-yellow-300 text-black flex items-center justify-center font-medium mr-2 cursor-pointer">
+
                                 <?php 
                                     $initials = '';
                                     $name_parts = explode(' ', $_SESSION["name"]);
@@ -358,12 +358,12 @@ if ($stmt = mysqli_prepare($conn, $sql_recent)) {
                                     echo htmlspecialchars($initials);
                                 ?>
                             </div>
-                            <i class="fas fa-chevron-down text-xs text-black cursor-pointer"></i>
+
                         </button>
 
                         <!-- User Dropdown Menu (Hidden by default) -->
                         <div id="user-menu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 ">
-                            <a href="profile.php" class="block px-4 py-2 text-sm text-black hover:bg-white">Your Profile</a>
+
                             <div class="border-t border-gray-200"></div>
                             <a href="../auth/logout.php" class="block px-4 py-2 text-sm text-text hover:bg-white">Logout</a>
                         </div>
