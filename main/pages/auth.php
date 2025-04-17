@@ -368,8 +368,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["form_type"]) && $_POST[
                     <div class="md:w-1/2 form-container p-8">
                         <div class="mb-8 flex justify-center">
                             <div class="flex space-x-8">
-                                <button id="login-tab" class="text-lg font-medium py-2 px-1 tab-active">Login</button>
-                                <button id="signup-tab" class="text-lg font-medium py-2 px-1 tab-inactive">Sign Up</button>
+                                <button id="login-tab" class="text-lg font-medium py-2 px-1 tab-active cursor-pointer">Login</button>
+                                <button id="signup-tab" class="text-lg font-medium py-2 px-1 tab-inactive cursor-pointer">Sign Up</button>
                             </div>
                         </div>
                         
@@ -399,14 +399,14 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["form_type"]) && $_POST[
                                     <div class="relative">
                                         <input type="password" id="login-password" name="password" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none <?php echo (!empty($password_err)) ? 'border-red-500' : ''; ?>" placeholder="••••••••" required>
                                         <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center text-text toggle-password">
-                                            <i class="fas fa-eye"></i>
+                                            <i class="fas fa-eye cursor-pointer"></i>
                                         </button>
                                     </div>
                                     <p id="login-password-error" class="text-red-500 text-sm mt-1 <?php echo (!empty($password_err)) ? '' : 'hidden'; ?>"><?php echo $password_err; ?></p>
                                 </div>
                                 
                                 <div>
-                                    <button type="submit" class="w-full bg-black hover:bg-opacity-90 text-white font-medium py-3 px-4 rounded-lg shadow-md transition duration-300 ease-in-out btn-with-effect">
+                                    <button type="submit" class="w-full bg-black hover:bg-opacity-90 text-white font-medium py-3 px-4 rounded-lg shadow-md transition duration-300 ease-in-out btn-with-effect cursor-pointer">
                                         <span class="relative z-10">Login</span>
                                     </button>
                                 </div>
@@ -436,7 +436,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["form_type"]) && $_POST[
                                     <div class="relative">
                                         <input type="password" id="signup-password" name="password" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none <?php echo (!empty($password_err)) ? 'error-highlight' : ''; ?>" placeholder="••••••••" required>
                                         <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center text-text toggle-password">
-                                            <i class="fas fa-eye"></i>
+
                                         </button>
                                     </div>
                                     <p id="signup-password-error" class="text-red-500 text-sm mt-1 <?php echo (!empty($password_err)) ? '' : 'hidden'; ?>"><?php echo $password_err; ?></p>
@@ -448,7 +448,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["form_type"]) && $_POST[
                                     <div class="relative">
                                         <input type="password" id="signup-confirm-password" name="confirm_password" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none <?php echo (!empty($confirm_password_err)) ? 'error-highlight' : ''; ?>" placeholder="••••••••" required>
                                         <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center text-text toggle-password">
-                                            <i class="fas fa-eye"></i>
+                                            <i class="fas fa-eye cursor-pointer"></i>
                                         </button>
                                     </div>
                                     <p id="signup-confirm-password-error" class="text-red-500 text-sm mt-1 <?php echo (!empty($confirm_password_err)) ? '' : 'hidden'; ?>"><?php echo $confirm_password_err; ?></p>
@@ -466,14 +466,14 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["form_type"]) && $_POST[
                                 
                                 <div class="flex items-start">
                                     <input id="terms" name="terms" type="checkbox" class="h-4 w-4 text-yellow-300 border-gray-300 rounded mt-1" required>
-                                    <label for="terms" class="ml-2 block text-sm text-text">
+                                    <label for="terms" class="ml-2 block text-sm text-text cursor-pointer">
                                         I agree to the <a href="#" class="text-yellow-300 hover:underline">Terms of Service</a> and <a href="#" class="text-yellow-300 hover:underline">Privacy Policy</a>
                                     </label>
                                 </div>
                                 <p id="terms-error" class="text-red-500 text-sm mt-1 hidden"></p>
                                 
                                 <div>
-                                    <button type="submit" class="w-full bg-yellow-300 hover:bg-opacity-90 text-black font-medium py-3 px-4 rounded-lg shadow-md transition duration-300 ease-in-out btn-with-effect">
+                                    <button type="submit" class="w-full bg-yellow-300 hover:bg-opacity-90 text-black font-medium py-3 px-4 rounded-lg shadow-md transition duration-300 ease-in-out btn-with-effect cursor-pointer">
                                         <span class="relative z-10">Create Account</span>
                                     </button>
                                 </div>
