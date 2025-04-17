@@ -15,6 +15,32 @@ require_once "../../config.php";
 $item_added = false;
 $error_message = "";
 
+// Get or create default shopping list for the user
+$default_list_id = null;
+$sql_get_list = "SELECT id FROM shopping_lists WHERE user_id = ? AND plan_id IS NULL LIMIT 1";
+if($stmt = mysqli_prepare($conn, $sql_get_list)) {
+    mysqli_stmt_bind_param($stmt, "i", $_SESSION["id"]);
+    if(mysqli_stmt_execute($stmt)) {
+        $result = mysqli_stmt_get_result($stmt);
+        if($row = mysqli_fetch_assoc($result)) {
+            $default_list_id = $row['id'];
+        } else {
+            // Create a default shopping list if none exists
+            $sql_create_list = "INSERT INTO shopping_lists (user_id, name, created_at) VALUES (?, 'My Shopping List', NOW())";
+            if($stmt_create = mysqli_prepare($conn, $sql_create_list)) {
+                mysqli_stmt_bind_param($stmt_create, "i", $_SESSION["id"]);
+                if(mysqli_stmt_execute($stmt_create)) {
+                    $default_list_id = mysqli_insert_id($conn);
+                } else {
+                    $error_message = "Error creating shopping list: " . mysqli_error($conn);
+                }
+                mysqli_stmt_close($stmt_create);
+            }
+        }
+    }
+    mysqli_stmt_close($stmt);
+}
+
 if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["item-name"])) {
     $item_name = trim($_POST["item-name"]);
     $quantity = !empty($_POST["item-quantity"]) ? intval($_POST["item-quantity"]) : 1;
@@ -24,13 +50,16 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["item-name"])) {
     
     if(empty($item_name)) {
         $error_message = "Please enter an item name.";
+    } else if(!$default_list_id) {
+        $error_message = "Error: Could not create or find shopping list.";
     } else {
-        $sql = "INSERT INTO shopping_list_items (user_id, name, quantity, unit, category, notes, created_at) 
-                VALUES (?, ?, ?, ?, ?, ?, NOW())";
+        $sql = "INSERT INTO shopping_list_items (user_id, list_id, name, quantity, unit, category, notes, created_at) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, NOW())";
         
         if($stmt = mysqli_prepare($conn, $sql)) {
-            mysqli_stmt_bind_param($stmt, "isdsss", 
+            mysqli_stmt_bind_param($stmt, "iisdsss", 
                 $param_user_id, 
+                $param_list_id,
                 $param_name, 
                 $param_quantity, 
                 $param_unit, 
@@ -39,6 +68,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["item-name"])) {
             );
             
             $param_user_id = $_SESSION["id"];
+            $param_list_id = $default_list_id;
             $param_name = $item_name;
             $param_quantity = $quantity;
             $param_unit = $unit;
