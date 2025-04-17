@@ -25,32 +25,12 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["item-name"])) {
     if(empty($item_name)) {
         $error_message = "Please enter an item name.";
     } else {
-        // Get or create a default shopping list
-        $sql_list = "SELECT id FROM shopping_lists WHERE user_id = ? AND name = 'Default List'";
-        $stmt_list = mysqli_prepare($conn, $sql_list);
-        mysqli_stmt_bind_param($stmt_list, "i", $_SESSION["id"]);
-        mysqli_stmt_execute($stmt_list);
-        $result_list = mysqli_stmt_get_result($stmt_list);
-        
-        if(mysqli_num_rows($result_list) == 0) {
-            $sql_create_list = "INSERT INTO shopping_lists (user_id, name) VALUES (?, 'Default List')";
-            $stmt_create = mysqli_prepare($conn, $sql_create_list);
-            mysqli_stmt_bind_param($stmt_create, "i", $_SESSION["id"]);
-            mysqli_stmt_execute($stmt_create);
-            $list_id = mysqli_insert_id($conn);
-        } else {
-            $row = mysqli_fetch_assoc($result_list);
-            $list_id = $row['id'];
-        }
-        
-        // Insert item
-        $sql = "INSERT INTO shopping_list_items (user_id, list_id, name, quantity, unit, category, notes) 
-                VALUES (?, ?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO shopping_list_items (user_id, name, quantity, unit, category, notes, created_at) 
+                VALUES (?, ?, ?, ?, ?, ?, NOW())";
         
         if($stmt = mysqli_prepare($conn, $sql)) {
-            mysqli_stmt_bind_param($stmt, "iisdsss", 
-                $_SESSION["id"],
-                $list_id,
+            mysqli_stmt_bind_param($stmt, "isdsss", 
+                $param_user_id, 
                 $param_name, 
                 $param_quantity, 
                 $param_unit, 
@@ -58,6 +38,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["item-name"])) {
                 $param_notes
             );
             
+            $param_user_id = $_SESSION["id"];
             $param_name = $item_name;
             $param_quantity = $quantity;
             $param_unit = $unit;
@@ -77,31 +58,29 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["item-name"])) {
     }
 }
 
-// ✅ Update Item Completion
 if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["update_item"])) {
     $item_id = intval($_POST["item_id"]);
     $completed = intval($_POST["completed"]);
     
-    $sql_verify = "SELECT sli.id 
-                   FROM shopping_list_items sli 
-                   JOIN shopping_lists sl ON sli.shopping_list_id = sl.id 
-                   WHERE sli.id = ? AND sl.user_id = ?";
+    $sql_verify = "SELECT id FROM shopping_list_items WHERE id = ? AND user_id = ?";
     
     if($stmt_verify = mysqli_prepare($conn, $sql_verify)) {
         mysqli_stmt_bind_param($stmt_verify, "ii", $item_id, $_SESSION["id"]);
-        mysqli_stmt_execute($stmt_verify);
-        $result_verify = mysqli_stmt_get_result($stmt_verify);
         
-        if(mysqli_num_rows($result_verify) == 1) {
-            $sql_update = "UPDATE shopping_list_items SET completed = ?, updated_at = NOW() WHERE id = ?";
+        if(mysqli_stmt_execute($stmt_verify)) {
+            $result_verify = mysqli_stmt_get_result($stmt_verify);
             
-            if($stmt_update = mysqli_prepare($conn, $sql_update)) {
-                mysqli_stmt_bind_param($stmt_update, "ii", $completed, $item_id);
+            if(mysqli_num_rows($result_verify) == 1) {
+                $sql_update = "UPDATE shopping_list_items SET completed = ?, updated_at = NOW() WHERE id = ?";
                 
-                if(mysqli_stmt_execute($stmt_update)) {
-                    header('Content-Type: application/json');
-                    echo json_encode(['success' => true]);
-                    exit;
+                if($stmt_update = mysqli_prepare($conn, $sql_update)) {
+                    mysqli_stmt_bind_param($stmt_update, "ii", $completed, $item_id);
+                    
+                    if(mysqli_stmt_execute($stmt_update)) {
+                        header('Content-Type: application/json');
+                        echo json_encode(['success' => true]);
+                        exit;
+                    }
                 }
             }
         }
@@ -112,30 +91,28 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["update_item"])) {
     exit;
 }
 
-// ✅ Delete Item
 if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["delete_item"])) {
     $item_id = intval($_POST["item_id"]);
     
-    $sql_verify = "SELECT sli.id 
-                   FROM shopping_list_items sli 
-                   JOIN shopping_lists sl ON sli.list_id = sl.id 
-                   WHERE sli.id = ? AND sl.user_id = ?";
+    $sql_verify = "SELECT id FROM shopping_list_items WHERE id = ? AND user_id = ?";
     
     if($stmt_verify = mysqli_prepare($conn, $sql_verify)) {
         mysqli_stmt_bind_param($stmt_verify, "ii", $item_id, $_SESSION["id"]);
-        mysqli_stmt_execute($stmt_verify);
-        $result_verify = mysqli_stmt_get_result($stmt_verify);
         
-        if(mysqli_num_rows($result_verify) == 1) {
-            $sql_delete = "DELETE FROM shopping_list_items WHERE id = ?";
+        if(mysqli_stmt_execute($stmt_verify)) {
+            $result_verify = mysqli_stmt_get_result($stmt_verify);
             
-            if($stmt_delete = mysqli_prepare($conn, $sql_delete)) {
-                mysqli_stmt_bind_param($stmt_delete, "i", $item_id);
+            if(mysqli_num_rows($result_verify) == 1) {
+                $sql_delete = "DELETE FROM shopping_list_items WHERE id = ?";
                 
-                if(mysqli_stmt_execute($stmt_delete)) {
-                    header('Content-Type: application/json');
-                    echo json_encode(['success' => true]);
-                    exit;
+                if($stmt_delete = mysqli_prepare($conn, $sql_delete)) {
+                    mysqli_stmt_bind_param($stmt_delete, "i", $item_id);
+                    
+                    if(mysqli_stmt_execute($stmt_delete)) {
+                        header('Content-Type: application/json');
+                        echo json_encode(['success' => true]);
+                        exit;
+                    }
                 }
             }
         }
@@ -146,20 +123,18 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["delete_item"])) {
     exit;
 }
 
-// ✅ Fetch and Group Items
 $shopping_items = array();
-$sql = "SELECT sli.* FROM shopping_list_items sli 
-        JOIN shopping_lists sl ON sli.list_id = sl.id 
-        WHERE sl.user_id = ? 
-        ORDER BY sli.category, sli.created_at DESC";
+$sql = "SELECT * FROM shopping_list_items WHERE user_id = ? ORDER BY category, completed, created_at DESC";
 
 if($stmt = mysqli_prepare($conn, $sql)) {
     mysqli_stmt_bind_param($stmt, "i", $_SESSION["id"]);
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
     
-    while($row = mysqli_fetch_assoc($result)) {
-        $shopping_items[] = $row;
+    if(mysqli_stmt_execute($stmt)) {
+        $result = mysqli_stmt_get_result($stmt);
+        
+        while($row = mysqli_fetch_assoc($result)) {
+            $shopping_items[] = $row;
+        }
     }
 }
 
@@ -374,7 +349,7 @@ $remaining_items = $total_items - $completed_items;
                 <div class="flex items-center">
                     <span class="mr-4 text-text">Welcome, <span id="user-name" class="font-medium"><?php echo htmlspecialchars($_SESSION["name"]); ?></span>!</span>
                     <div class="relative">
-                    <button id="user-menu-button" class="flex items-center focus:outline-none cursor-pointer">
+
                             <div id="user-initials" class="w-10 h-10 rounded-full bg-yellow-300 text-black flex items-center justify-center font-medium mr-2">
                                 <?php 
                                     $initials = '';
@@ -516,7 +491,7 @@ $remaining_items = $total_items - $completed_items;
                                                 $color_class = isset($category_colors[$item['category']]) ? $category_colors[$item['category']] : $category_colors['other'];
                                             ?>
                                             <span class="text-xs <?php echo $color_class; ?> px-2 py-1 rounded-full mr-3 capitalize"><?php echo htmlspecialchars($item['category']); ?></span>
-                                            <button class="delete-item text-gray-400 hover:text-red-500">
+                                            <button class="delete-item text-gray-400 hover:text-red-500 cursor-pointer">
                                                 <i class="fas fa-trash-alt"></i>
                                             </button>
                                         </div>

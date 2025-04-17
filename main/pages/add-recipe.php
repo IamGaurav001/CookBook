@@ -460,8 +460,10 @@ if($stmt = mysqli_prepare($conn, $sql)) {
                 <div class="flex items-center">
                     <span class="mr-4 text-text">Welcome, <span class="font-medium"><?php echo htmlspecialchars($_SESSION["name"]); ?></span>!</span>
                     <div class="relative">
+
                     <button id="user-menu-button" class="flex items-center focus:outline-none cursor-pointer">
                             <div id="user-initials" class="w-10 h-10 rounded-full bg-yellow-300 text-black flex items-center justify-center font-medium mr-2">
+
                                 <?php 
                                     $initials = '';
                                     $name_parts = explode(' ', $_SESSION["name"]);

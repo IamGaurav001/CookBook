@@ -1,20 +1,23 @@
 <?php
+// Enable error reporting for debugging
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+// Start session and check if user is logged in
 session_start();
- 
 if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
     header("location: auth.php");
     exit;
 }
 
+// Include database configuration
 require_once "../../config.php";
 
+// Get current user ID from session
 $userId = $_SESSION["id"];
 
-// Recipe Count
+// Get total recipe count for the user
 $recipe_count = 0;
 $sql_recipes = "SELECT COUNT(*) as count FROM recipes WHERE user_id = ?";
 if ($stmt = mysqli_prepare($conn, $sql_recipes)) {
@@ -30,7 +33,7 @@ if ($stmt = mysqli_prepare($conn, $sql_recipes)) {
     mysqli_stmt_close($stmt);
 }
 
-// Meal Plan Count
+// Get total meal plan count for the user
 $meal_plan_count = 0;
 $sql_meal_plans = "SELECT COUNT(*) as count FROM meal_plans WHERE user_id = ?";
 if ($stmt = mysqli_prepare($conn, $sql_meal_plans)) {
@@ -46,9 +49,9 @@ if ($stmt = mysqli_prepare($conn, $sql_meal_plans)) {
     mysqli_stmt_close($stmt);
 }
 
-// Shopping List Count
+// Get active shopping list items count
 $shopping_list_count = 0;
-$sql_shopping = "SELECT COUNT(*) as count FROM shopping_list_items WHERE user_id = ?";
+$sql_shopping = "SELECT COUNT(*) as count FROM shopping_list_items WHERE user_id = ? AND completed = 0";
 if ($stmt = mysqli_prepare($conn, $sql_shopping)) {
     mysqli_stmt_bind_param($stmt, "i", $userId);
     if (mysqli_stmt_execute($stmt)) {
@@ -62,16 +65,17 @@ if ($stmt = mysqli_prepare($conn, $sql_shopping)) {
     mysqli_stmt_close($stmt);
 }
 
-// Current Meal Plan
+// Get current active meal plan
 $current_plan = null;
 $today = date('Y-m-d');
 
+// Query to get current meal plan with slot counts
 $sql_current_plan = "SELECT mp.*, 
     (SELECT COUNT(*) FROM meal_plan_slots mps WHERE mps.plan_id = mp.id) as total_slots,
     (SELECT COUNT(*) FROM meal_plan_slots mps JOIN meal_plan_items mpi ON mps.id = mpi.slot_id WHERE mps.plan_id = mp.id) as filled_slots
     FROM meal_plans mp 
     WHERE mp.user_id = ? AND mp.end_date >= ? 
-    ORDER BY mp.start_date ASC 
+    ORDER BY mp.start_date ASC
     LIMIT 1";
 
 if ($stmt = mysqli_prepare($conn, $sql_current_plan)) {
@@ -83,7 +87,7 @@ if ($stmt = mysqli_prepare($conn, $sql_current_plan)) {
         if (mysqli_num_rows($result) == 1) {
             $current_plan = mysqli_fetch_assoc($result);
             
-            // Get plan slots
+            // Get detailed meal plan slots with recipe information
             $sql_slots = "SELECT mps.*, mpi.recipe_id, r.name as recipe_name, r.image_path, r.calories 
                 FROM meal_plan_slots mps 
                 LEFT JOIN meal_plan_items mpi ON mps.id = mpi.slot_id 
@@ -99,6 +103,7 @@ if ($stmt = mysqli_prepare($conn, $sql_current_plan)) {
                     $current_plan['slots'] = array();
                     $current_plan['days'] = array();
                     
+                    // Organize meal plan slots by day and meal type
                     while ($slot = mysqli_fetch_assoc($result_slots)) {
                         $date = $slot['date'];
                         $day_name = date('l', strtotime($date));
@@ -135,7 +140,7 @@ if ($stmt = mysqli_prepare($conn, $sql_current_plan)) {
     mysqli_stmt_close($stmt);
 }
 
-// Fallback if no plan
+// Set default empty plan if none exists
 if (!$current_plan) {
     $current_plan = [
         'slots' => [],
@@ -143,7 +148,7 @@ if (!$current_plan) {
     ];
 }
 
-// Fetch Recent Recipes
+// Get user's most recent recipes
 $recent_recipes = array();
 $sql_recent = "SELECT id, name, category, prep_time, servings, calories, protein, carbs, fiber, diet_type, image_path, created_at 
         FROM recipes 
@@ -343,7 +348,7 @@ if ($stmt = mysqli_prepare($conn, $sql_recent)) {
                     <span class="mr-4 text-text">Welcome, <span id="user-name" class="font-medium"><?php echo htmlspecialchars($_SESSION["name"]); ?></span>!</span>
                     <div class="relative">
                         <button id="user-menu-button" class="flex items-center focus:outline-none cursor-pointer">
-                            <div id="user-initials" class="w-10 h-10 rounded-full bg-yellow-300 text-black flex items-center justify-center font-medium mr-2">
+
                                 <?php 
                                     $initials = '';
                                     $name_parts = explode(' ', $_SESSION["name"]);
@@ -353,12 +358,12 @@ if ($stmt = mysqli_prepare($conn, $sql_recent)) {
                                     echo htmlspecialchars($initials);
                                 ?>
                             </div>
-                            <i class="fas fa-chevron-down text-xs text-text cursor-pointer"></i>
+
                         </button>
 
                         <!-- User Dropdown Menu (Hidden by default) -->
                         <div id="user-menu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 ">
-                            <a href="profile.php" class="block px-4 py-2 text-sm text-text hover:bg-white">Your Profile</a>
+
                             <div class="border-t border-gray-200"></div>
                             <a href="../auth/logout.php" class="block px-4 py-2 text-sm text-text hover:bg-white">Logout</a>
                         </div>

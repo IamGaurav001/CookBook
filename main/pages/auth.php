@@ -398,6 +398,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["form_type"]) && $_POST[
                                     </div>
                                     <div class="relative">
                                         <input type="password" id="login-password" name="password" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none <?php echo (!empty($password_err)) ? 'border-red-500' : ''; ?>" placeholder="••••••••" required>
+
                                         <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center text-text toggle-password cursor-pointer">
                                             <i class="fas fa-eye"></i>
                                         </button>
@@ -448,7 +449,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["form_type"]) && $_POST[
                                     <div class="relative">
                                         <input type="password" id="signup-confirm-password" name="confirm_password" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none <?php echo (!empty($confirm_password_err)) ? 'error-highlight' : ''; ?>" placeholder="••••••••" required>
                                         <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center text-text toggle-password cursor-pointer">
-                                            <i class="fas fa-eye"></i>
+                                            <i class="fas fa-eye"></i
                                         </button>
                                     </div>
                                     <p id="signup-confirm-password-error" class="text-red-500 text-sm mt-1 <?php echo (!empty($confirm_password_err)) ? '' : 'hidden'; ?>"><?php echo $confirm_password_err; ?></p>
@@ -466,7 +467,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["form_type"]) && $_POST[
                                 
                                 <div class="flex items-start">
                                     <input id="terms" name="terms" type="checkbox" class="h-4 w-4 text-yellow-300 border-gray-300 rounded mt-1" required>
-                                    <label for="terms" class="ml-2 block text-sm text-text">
+                                    <label for="terms" class="ml-2 block text-sm text-text cursor-pointer">
                                         I agree to the <a href="#" class="text-yellow-300 hover:underline">Terms of Service</a> and <a href="#" class="text-yellow-300 hover:underline">Privacy Policy</a>
                                     </label>
                                 </div>
