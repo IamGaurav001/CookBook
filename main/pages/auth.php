@@ -460,7 +460,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["form_type"]) && $_POST[
                                         <option value="">Select a preference</option>
                                         <option value="none">No Preference</option>
                                         <option value="vegetarian">Vegetarian</option>
-                                        <option value="non-vegetarian">Non-Vegetarian</option>
+                                        <option value="non-vegetarian">Non Vegetarian</option>
                                     </select>
                                 </div>
                                 
