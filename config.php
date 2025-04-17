@@ -11,8 +11,8 @@ $db_pass = getenv('MYSQLPASSWORD') ?: '';
 $db_name = getenv('MYSQLDATABASE') ?: 'cookBook';
 
 try {
-    // Create connection
-    $conn = new mysqli($db_host, $db_user, $db_pass, $db_name, $db_port);
+    // Create connection using socket
+    $conn = new mysqli('localhost:/Applications/XAMPP/xamppfiles/var/mysql/mysql.sock', $db_user, $db_pass, $db_name);
     
     // Check connection
     if ($conn->connect_error) {
