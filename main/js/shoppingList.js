@@ -64,15 +64,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 item.classList.remove('completed');
             }
             
+            // Create form data
+            const formData = new FormData();
+            formData.append('update_item', '1');
+            formData.append('item_id', itemId);
+            formData.append('completed', completed);
+            
             // Update item status on server
             fetch('shopping-list.php', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: `update_item=1&item_id=${itemId}&completed=${completed}`
+                body: formData
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
             .then(data => {
                 if(data.success) {
                     // Update counters
@@ -90,10 +98,24 @@ document.addEventListener('DOMContentLoaded', function() {
                     );
                 } else {
                     console.error('Error updating item:', data.message);
+                    // Revert checkbox state on error
+                    this.checked = !this.checked;
+                    if(completed) {
+                        item.classList.remove('completed');
+                    } else {
+                        item.classList.add('completed');
+                    }
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
+                // Revert checkbox state on error
+                this.checked = !this.checked;
+                if(completed) {
+                    item.classList.remove('completed');
+                } else {
+                    item.classList.add('completed');
+                }
             });
         });
     });

@@ -85,33 +85,26 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["item-name"])) {
 }
 
 if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["update_item"])) {
+    error_log("Updating shopping list item");
     $item_id = intval($_POST["item_id"]);
     $completed = intval($_POST["completed"]);
     
-    $sql_verify = "SELECT id FROM shopping_list_items WHERE id = ? AND user_id = ?";
+    error_log("Item ID: " . $item_id . ", Completed: " . $completed);
     
-    if($stmt_verify = mysqli_prepare($conn, $sql_verify)) {
-        mysqli_stmt_bind_param($stmt_verify, "ii", $item_id, $_SESSION["id"]);
-        
-        if(mysqli_stmt_execute($stmt_verify)) {
-            $result_verify = mysqli_stmt_get_result($stmt_verify);
-            
-            if(mysqli_num_rows($result_verify) == 1) {
-                $sql_update = "UPDATE shopping_list_items SET completed = ?, updated_at = NOW() WHERE id = ?";
-                
-                if($stmt_update = mysqli_prepare($conn, $sql_update)) {
-                    mysqli_stmt_bind_param($stmt_update, "ii", $completed, $item_id);
-                    
-                    if(mysqli_stmt_execute($stmt_update)) {
-                        header('Content-Type: application/json');
-                        echo json_encode(['success' => true]);
-                        exit;
-                    }
-                }
-            }
+    $sql = "UPDATE shopping_list_items SET completed = ?, updated_at = NOW() WHERE id = ? AND user_id = ?";
+    if($stmt = mysqli_prepare($conn, $sql)) {
+        mysqli_stmt_bind_param($stmt, "iii", $completed, $item_id, $_SESSION["id"]);
+        if(mysqli_stmt_execute($stmt)) {
+            error_log("Item updated successfully");
+            header('Content-Type: application/json');
+            echo json_encode(['success' => true]);
+            exit;
+        } else {
+            error_log("Error updating item: " . mysqli_error($conn));
         }
+    } else {
+        error_log("Error preparing update statement: " . mysqli_error($conn));
     }
-    
     header('Content-Type: application/json');
     echo json_encode(['success' => false, 'message' => 'Error updating item']);
     exit;
@@ -182,7 +175,7 @@ foreach($shopping_items as $item) {
 }
 $remaining_items = $total_items - $completed_items;
 
-// Add this before the HTML output
+// Add this at the very top of the file, before any HTML output
 if(isset($_GET['get_count'])) {
     error_log("Getting shopping list count for user: " . $_SESSION["id"]);
     $sql = "SELECT COUNT(*) as count FROM shopping_list_items WHERE user_id = ? AND completed = 0";
