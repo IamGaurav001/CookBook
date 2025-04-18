@@ -1,9 +1,13 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
+// Enable error reporting for debugging
 error_reporting(E_ALL);
+ini_set('display_errors', 0); // Don't display errors to the user
+ini_set('log_errors', 1); // Log errors instead
 
-session_start();
+// Start session if not already started
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
     header("location: auth.php");
@@ -34,6 +38,29 @@ if($stmt = mysqli_prepare($conn, $sql)) {
                 }
             }
         }
+    }
+}
+
+// Check if this is an AJAX request
+function is_ajax() {
+    return isset($_SERVER['HTTP_X_REQUESTED_WITH']) && 
+           strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+}
+
+// Function to send JSON response
+function send_json_response($data) {
+    header('Content-Type: application/json');
+    echo json_encode($data);
+    exit;
+}
+
+// Function to handle errors
+function handle_error($message) {
+    if (is_ajax()) {
+        send_json_response(['success' => false, 'message' => $message]);
+    } else {
+        // For non-AJAX requests, you might want to handle differently
+        die($message);
     }
 }
 
@@ -84,30 +111,26 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["item-name"])) {
     }
 }
 
+// Update the item update handler
 if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["update_item"])) {
-    error_log("Updating shopping list item");
-    $item_id = intval($_POST["item_id"]);
-    $completed = intval($_POST["completed"]);
-    
-    error_log("Item ID: " . $item_id . ", Completed: " . $completed);
-    
-    $sql = "UPDATE shopping_list_items SET completed = ?, updated_at = NOW() WHERE id = ? AND user_id = ?";
-    if($stmt = mysqli_prepare($conn, $sql)) {
-        mysqli_stmt_bind_param($stmt, "iii", $completed, $item_id, $_SESSION["id"]);
-        if(mysqli_stmt_execute($stmt)) {
-            error_log("Item updated successfully");
-            header('Content-Type: application/json');
-            echo json_encode(['success' => true]);
-            exit;
+    try {
+        $item_id = intval($_POST["item_id"]);
+        $completed = intval($_POST["completed"]);
+        
+        $sql = "UPDATE shopping_list_items SET completed = ?, updated_at = NOW() WHERE id = ? AND user_id = ?";
+        if($stmt = mysqli_prepare($conn, $sql)) {
+            mysqli_stmt_bind_param($stmt, "iii", $completed, $item_id, $_SESSION["id"]);
+            if(mysqli_stmt_execute($stmt)) {
+                send_json_response(['success' => true]);
+            } else {
+                handle_error('Database error: ' . mysqli_error($conn));
+            }
         } else {
-            error_log("Error updating item: " . mysqli_error($conn));
+            handle_error('Database error: ' . mysqli_error($conn));
         }
-    } else {
-        error_log("Error preparing update statement: " . mysqli_error($conn));
+    } catch (Exception $e) {
+        handle_error('An error occurred: ' . $e->getMessage());
     }
-    header('Content-Type: application/json');
-    echo json_encode(['success' => false, 'message' => 'Error updating item']);
-    exit;
 }
 
 if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["delete_item"])) {
@@ -175,31 +198,28 @@ foreach($shopping_items as $item) {
 }
 $remaining_items = $total_items - $completed_items;
 
-// Add this at the very top of the file, before any HTML output
+// Update the get_count handler
 if(isset($_GET['get_count'])) {
-    error_log("Getting shopping list count for user: " . $_SESSION["id"]);
-    $sql = "SELECT COUNT(*) as count FROM shopping_list_items WHERE user_id = ? AND completed = 0";
-    if($stmt = mysqli_prepare($conn, $sql)) {
-        mysqli_stmt_bind_param($stmt, "i", $_SESSION["id"]);
-        if(mysqli_stmt_execute($stmt)) {
-            $result = mysqli_stmt_get_result($stmt);
-            if($row = mysqli_fetch_assoc($result)) {
-                error_log("Shopping list count: " . $row['count']);
-                header('Content-Type: application/json');
-                echo json_encode(['success' => true, 'count' => $row['count']]);
-                exit;
+    try {
+        $sql = "SELECT COUNT(*) as count FROM shopping_list_items WHERE user_id = ? AND completed = 0";
+        if($stmt = mysqli_prepare($conn, $sql)) {
+            mysqli_stmt_bind_param($stmt, "i", $_SESSION["id"]);
+            if(mysqli_stmt_execute($stmt)) {
+                $result = mysqli_stmt_get_result($stmt);
+                if($row = mysqli_fetch_assoc($result)) {
+                    send_json_response(['success' => true, 'count' => $row['count']]);
+                } else {
+                    send_json_response(['success' => false, 'message' => 'No items found']);
+                }
             } else {
-                error_log("No rows returned for shopping list count");
+                handle_error('Database error: ' . mysqli_error($conn));
             }
         } else {
-            error_log("Error executing shopping list count query: " . mysqli_error($conn));
+            handle_error('Database error: ' . mysqli_error($conn));
         }
-    } else {
-        error_log("Error preparing shopping list count statement: " . mysqli_error($conn));
+    } catch (Exception $e) {
+        handle_error('An error occurred: ' . $e->getMessage());
     }
-    header('Content-Type: application/json');
-    echo json_encode(['success' => false, 'message' => 'Error getting count']);
-    exit;
 }
 ?>
 

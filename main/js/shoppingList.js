@@ -73,49 +73,52 @@ document.addEventListener('DOMContentLoaded', function() {
             // Update item status on server
             fetch('shopping-list.php', {
                 method: 'POST',
-                body: formData
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `update_item=1&item_id=${itemId}&completed=${completed}`
             })
             .then(response => {
                 if (!response.ok) {
-                    throw new Error('Network response was not ok');
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 return response.json();
             })
             .then(data => {
-                if(data.success) {
+                if (data.success) {
+                    // Update the UI
+                    if (completed) {
+                        item.classList.add('completed');
+                    } else {
+                        item.classList.remove('completed');
+                    }
+                    
                     // Update counters
                     updateCounters();
                     
-                    // Trigger storage event to update dashboard
-                    localStorage.setItem('shoppingListUpdated', Date.now());
-                    
-                    // Show toast notification
+                    // Show success message
                     showToast(
-                        completed ? 'Item Completed' : 'Item Uncompleted', 
+                        completed ? 'Item Completed' : 'Item Uncompleted',
                         completed ? 'Item marked as completed' : 'Item marked as not completed',
                         completed ? 'check-circle' : 'info-circle',
                         completed ? 'text-green-500' : 'text-blue-500'
                     );
                 } else {
-                    console.error('Error updating item:', data.message);
-                    // Revert checkbox state on error
-                    this.checked = !this.checked;
-                    if(completed) {
-                        item.classList.remove('completed');
-                    } else {
-                        item.classList.add('completed');
-                    }
+                    throw new Error(data.message || 'Failed to update item');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                // Revert checkbox state on error
-                this.checked = !this.checked;
-                if(completed) {
-                    item.classList.remove('completed');
-                } else {
-                    item.classList.add('completed');
-                }
+                // Revert the checkbox state
+                checkbox.checked = !completed;
+                // Show error message
+                showToast(
+                    'Error',
+                    error.message || 'Failed to update item status',
+                    'exclamation-circle',
+                    'text-red-500'
+                );
             });
         });
     });
