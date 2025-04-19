@@ -27,6 +27,7 @@ CREATE TABLE IF NOT EXISTS recipes (
     diet_type VARCHAR(255),
     image_path VARCHAR(255),
     notes TEXT,
+    visibility ENUM('public', 'private') DEFAULT 'private',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
@@ -94,29 +95,47 @@ CREATE TABLE IF NOT EXISTS meal_plan_items (
 CREATE TABLE IF NOT EXISTS shopping_lists (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
-    plan_id INT,
+    plan_id INT DEFAULT NULL,
     name VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (plan_id) REFERENCES meal_plans(id) ON DELETE SET NULL
+    FOREIGN KEY (plan_id) REFERENCES meal_plans(id) ON DELETE SET NULL,
+    
+    INDEX (user_id),
+    INDEX (plan_id)
 );
 
 CREATE TABLE IF NOT EXISTS shopping_list_items (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
-    list_id INT NOT NULL,
+    list_id INT DEFAULT NULL,
     name VARCHAR(255) NOT NULL,
-    quantity DECIMAL(10,2) DEFAULT 1.00,
-    unit VARCHAR(50),
-    category VARCHAR(50) DEFAULT 'other',
-    notes TEXT,
-    completed TINYINT(1) DEFAULT 0,
+    quantity DECIMAL(10,2) DEFAULT NULL,
+    unit VARCHAR(50) DEFAULT NULL,
+    category VARCHAR(50) NOT NULL DEFAULT 'other',
+    notes TEXT DEFAULT NULL,
+    completed TINYINT(1) NOT NULL DEFAULT 0,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (list_id) REFERENCES shopping_lists(id) ON DELETE CASCADE,
+
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (list_id) REFERENCES shopping_lists(id) ON DELETE SET NULL,
+
     INDEX idx_user_list (user_id, list_id),
     INDEX idx_category (category),
     INDEX idx_completed (completed)
 );
+
+   CREATE TABLE IF NOT EXISTS shared_recipes (
+       id INT AUTO_INCREMENT PRIMARY KEY,
+       recipe_id INT NOT NULL,
+       shared_by_user_id INT NOT NULL,
+       shared_with_user_id INT NOT NULL,
+       permission_level ENUM('view', 'edit') DEFAULT 'view',
+       shared_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+       FOREIGN KEY (recipe_id) REFERENCES recipes(id) ON DELETE CASCADE,
+       FOREIGN KEY (shared_by_user_id) REFERENCES users(id) ON DELETE CASCADE,
+       FOREIGN KEY (shared_with_user_id) REFERENCES users(id) ON DELETE CASCADE
+   );

@@ -320,7 +320,7 @@ $isLoggedIn = isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true;
                     </div>
                 </div>
                 <button class="bg-yellow-300 hover:bg-opacity-90 text-[#375A64] font-medium py-3 px-6 rounded-lg shadow-md">
-                    <a href="./pages/community.html">Join Community</a>
+                    <a href="./pages/community.php">Join Community</a>
                 </button>
             </div>
             <div class="md:w-1/2 grid grid-cols-2 gap-4">

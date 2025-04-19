@@ -149,16 +149,16 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
                 
                 if(in_array($filetype, $allowed)) {
                     $new_filename = uniqid() . "." . $ext;
-                    $upload_dir = "../img/recipes/";
+                    $upload_dir = "/Applications/XAMPP/xamppfiles/htdocs/CookBook_copy/main/img/recipes/";
                     
                     if(!is_dir($upload_dir)) {
-                        mkdir($upload_dir, 0755, true);
+                        mkdir($upload_dir, 0777, true);
                     }
+
+                    $full_path = $upload_dir . $new_filename;
                     
-                    $image_path = $upload_dir . $new_filename;
-                    
-                    if(move_uploaded_file($_FILES["recipe-image"]["tmp_name"], $image_path)) {
-                        $image_path = "img/recipes/" . $new_filename; // Store relative path in database
+                    if(move_uploaded_file($_FILES["recipe-image"]["tmp_name"], $full_path)) {
+                        $image_path = "img/recipes/" . $new_filename;
                     } else {
                         $error_message = "Error: There was a problem uploading your file. Please try again.";
                         $image_path = NULL;
@@ -172,25 +172,104 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
                 mysqli_begin_transaction($conn);
                 
                 try {
-                    $sql = "INSERT INTO recipes (user_id, name, category, prep_time, servings, calories, protein, carbs, fiber, diet_type, image_path, notes, created_at) 
-                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())";
+                    $visibility = isset($_POST['visibility']) ? $_POST['visibility'] : 'private';
                     
-                    if($stmt = mysqli_prepare($conn, $sql)) {
-                        mysqli_stmt_bind_param($stmt, "issiiiiiisss", 
-                            $param_user_id, 
-                            $param_name, 
-                            $param_category, 
-                            $param_prep_time, 
-                            $param_servings, 
-                            $param_calories,
-                            $param_protein,
-                            $param_carbs,
-                            $param_fiber,
-                            $param_diet_type, 
-                            $param_image_path, 
-                            $param_notes
-                        );
-                        
+                    if(isset($_POST['recipe_id']) && !empty($_POST['recipe_id'])) {
+                        $sql = "UPDATE recipes SET 
+                                name = ?, 
+                                category = ?, 
+                                prep_time = ?, 
+                                servings = ?, 
+                                calories = ?, 
+                                protein = ?, 
+                                carbs = ?, 
+                                fiber = ?, 
+                                diet_type = ?, 
+                                notes = ?,
+                                visibility = ?
+                                WHERE id = ? AND user_id = ?";
+                                
+                        if($stmt = mysqli_prepare($conn, $sql)) {
+                            mysqli_stmt_bind_param($stmt, "ssiiiiiiisssi", 
+                                $param_name, 
+                                $param_category, 
+                                $param_prep_time, 
+                                $param_servings, 
+                                $param_calories, 
+                                $param_protein, 
+                                $param_carbs, 
+                                $param_fiber, 
+                                $param_diet_type, 
+                                $param_notes,
+                                $visibility,
+                                $param_id, 
+                                $param_user_id
+                            );
+                            
+                            $param_name = $recipe_name;
+                            $param_category = $recipe_category;
+                            $param_prep_time = $prep_time;
+                            $param_servings = $servings;
+                            $param_calories = $calories;
+                            $param_protein = $protein;
+                            $param_carbs = $carbs;
+                            $param_fiber = $fiber;
+                            $param_diet_type = $diet_type;
+                            $param_notes = $notes;
+                            $param_id = $_POST['recipe_id'];
+                            $param_user_id = $_SESSION["id"];
+                            
+                            if(mysqli_stmt_execute($stmt)) {
+                                $recipe_id = $_POST['recipe_id'];
+                                
+                                $sql_ingredient = "DELETE FROM recipe_ingredients WHERE recipe_id = ?";
+                                $stmt_ingredient = mysqli_prepare($conn, $sql_ingredient);
+                                mysqli_stmt_bind_param($stmt_ingredient, "i", $recipe_id);
+                                mysqli_stmt_execute($stmt_ingredient);
+                                
+                                $sql_ingredient = "INSERT INTO recipe_ingredients (recipe_id, ingredient) VALUES (?, ?)";
+                                $stmt_ingredient = mysqli_prepare($conn, $sql_ingredient);
+                                
+                                foreach($ingredients as $ingredient) {
+                                    if(!empty(trim($ingredient))) {
+                                        mysqli_stmt_bind_param($stmt_ingredient, "is", $recipe_id, $ingredient);
+                                        mysqli_stmt_execute($stmt_ingredient);
+                                    }
+                                }
+                                
+                                mysqli_stmt_close($stmt_ingredient);
+                                
+                                $sql_instruction = "DELETE FROM recipe_instructions WHERE recipe_id = ?";
+                                $stmt_instruction = mysqli_prepare($conn, $sql_instruction);
+                                mysqli_stmt_bind_param($stmt_instruction, "i", $recipe_id);
+                                mysqli_stmt_execute($stmt_instruction);
+                                
+                                $sql_instruction = "INSERT INTO recipe_instructions (recipe_id, step_number, instruction) VALUES (?, ?, ?)";
+                                $stmt_instruction = mysqli_prepare($conn, $sql_instruction);
+                                
+                                foreach($instructions as $key => $instruction) {
+                                    if(!empty(trim($instruction))) {
+                                        $step_number = $key + 1;
+                                        mysqli_stmt_bind_param($stmt_instruction, "iis", $recipe_id, $step_number, $instruction);
+                                        mysqli_stmt_execute($stmt_instruction);
+                                    }
+                                }
+                                
+                                mysqli_stmt_close($stmt_instruction);
+                                
+                                mysqli_commit($conn);
+                                $recipe_added = true;
+                            } else {
+                                throw new Exception("Error executing recipe update: " . mysqli_error($conn));
+                            }
+                        } else {
+                            throw new Exception("Error preparing recipe update statement: " . mysqli_error($conn));
+                        }
+                    } else {
+                        $sql = "INSERT INTO recipes (user_id, name, category, prep_time, servings, calories, protein, carbs, fiber, diet_type, image_path, notes, visibility, created_at) 
+                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())";
+                                
+                        // Set all parameter values first
                         $param_user_id = $_SESSION["id"];
                         $param_name = $recipe_name;
                         $param_category = $recipe_category;
@@ -201,40 +280,60 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
                         $param_carbs = $carbs;
                         $param_fiber = $fiber;
                         $param_diet_type = $diet_type;
-                        $param_image_path = $image_path;
                         $param_notes = $notes;
-                        
-                        if(mysqli_stmt_execute($stmt)) {
-                            $recipe_id = mysqli_insert_id($conn);
-                            
-                            $sql_ingredient = "INSERT INTO recipe_ingredients (recipe_id, ingredient) VALUES (?, ?)";
-                            $stmt_ingredient = mysqli_prepare($conn, $sql_ingredient);
-                            
-                            foreach($ingredients as $ingredient) {
-                                if(!empty(trim($ingredient))) {
-                                    mysqli_stmt_bind_param($stmt_ingredient, "is", $recipe_id, $ingredient);
-                                    mysqli_stmt_execute($stmt_ingredient);
+                        $visibility = isset($_POST['visibility']) ? $_POST['visibility'] : 'private';
+
+                        if ($stmt = mysqli_prepare($conn, $sql)) {
+                            mysqli_stmt_bind_param($stmt, "issiiiiiiisss",
+                                $param_user_id,
+                                $param_name,
+                                $param_category,
+                                $param_prep_time,
+                                $param_servings,
+                                $param_calories,
+                                $param_protein,
+                                $param_carbs,
+                                $param_fiber,
+                                $param_diet_type,
+                                $image_path,
+                                $param_notes,
+                                $visibility
+                            );
+
+                            if (mysqli_stmt_execute($stmt)) {
+                                $recipe_id = mysqli_insert_id($conn);
+
+                                // Save ingredients
+                                $sql_ingredient = "INSERT INTO recipe_ingredients (recipe_id, ingredient) VALUES (?, ?)";
+                                $stmt_ingredient = mysqli_prepare($conn, $sql_ingredient);
+                                foreach ($ingredients as $ingredient) {
+                                    if (!empty(trim($ingredient))) {
+                                        mysqli_stmt_bind_param($stmt_ingredient, "is", $recipe_id, $ingredient);
+                                        mysqli_stmt_execute($stmt_ingredient);
+                                    }
                                 }
-                            }
-                            
-                            $sql_instruction = "INSERT INTO recipe_instructions (recipe_id, step_number, instruction) VALUES (?, ?, ?)";
-                            $stmt_instruction = mysqli_prepare($conn, $sql_instruction);
-                            
-                            foreach($instructions as $key => $instruction) {
-                                if(!empty(trim($instruction))) {
-                                    $step_number = $key + 1;
-                                    mysqli_stmt_bind_param($stmt_instruction, "iis", $recipe_id, $step_number, $instruction);
-                                    mysqli_stmt_execute($stmt_instruction);
+                                mysqli_stmt_close($stmt_ingredient);
+
+                                // Save instructions
+                                $sql_instruction = "INSERT INTO recipe_instructions (recipe_id, step_number, instruction) VALUES (?, ?, ?)";
+                                $stmt_instruction = mysqli_prepare($conn, $sql_instruction);
+                                foreach ($instructions as $key => $instruction) {
+                                    if (!empty(trim($instruction))) {
+                                        $step_number = $key + 1;
+                                        mysqli_stmt_bind_param($stmt_instruction, "iis", $recipe_id, $step_number, $instruction);
+                                        mysqli_stmt_execute($stmt_instruction);
+                                    }
                                 }
+                                mysqli_stmt_close($stmt_instruction);
+
+                                mysqli_commit($conn);
+                                $recipe_added = true;
+                            } else {
+                                throw new Exception("Error inserting recipe: " . mysqli_error($conn));
                             }
-                            
-                            mysqli_commit($conn);
-                            $recipe_added = true;
                         } else {
-                            throw new Exception("Error executing recipe insert: " . mysqli_error($conn));
+                            throw new Exception("Error preparing insert statement: " . mysqli_error($conn));
                         }
-                    } else {
-                        throw new Exception("Error preparing recipe statement: " . mysqli_error($conn));
                     }
                 } catch (Exception $e) {
                     mysqli_rollback($conn);
@@ -708,6 +807,14 @@ if($stmt = mysqli_prepare($conn, $sql)) {
                     <textarea id="recipe-notes" name="recipe-notes" rows="3" class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-yellow-300" placeholder="Any additional notes or tips for this recipe"></textarea>
                 </div>
                 
+                <div class="mb-6">
+                    <label for="visibility" class="block text-sm font-medium text-gray-700 mb-1">Recipe Visibility</label>
+                    <select name="visibility" id="visibility" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent">
+                        <option value="private">Private (Only visible to you)</option>
+                        <option value="public">Public (Visible in community)</option>
+                    </select>
+                </div>
+                
                 <div class="flex justify-end gap-3">
                     <button type="button" id="cancel-add-recipe" class="bg-white border border-gray-200 text-text px-6 py-2 rounded-lg font-medium hover:bg-gray-50 cursor-pointer">
                         Cancel
@@ -725,7 +832,7 @@ if($stmt = mysqli_prepare($conn, $sql)) {
     <div class="bg-gradient-to-t from-yellow-100 via-yellow-200 to-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto modal-animation transform scale-95 transition-transform duration-500 ease-in-out">
         <div class="relative">
             <div class="h-64 md:h-80 w-full">
-                <img id="modal-image" src="../img/Alfredo.png" alt="Recipe" class="w-full h-full object-cover rounded-t-xl">
+                <img id="modal-image" src="" alt="Recipe" class="w-full h-full object-cover rounded-t-xl">
             </div>
             <button id="close-view-modal" class="absolute top-4 right-4 bg-white rounded-full p-2 shadow-lg text-black hover:text-yellow-500 focus:outline-none transition-transform transform hover:scale-110">
                 <i class="fas fa-times text-xl"></i>
@@ -821,9 +928,7 @@ if($stmt = mysqli_prepare($conn, $sql)) {
             </div>
         </div>
     </div>
-</div>
-
-
+    </div>
     <script src="../js/add-recipe.js"></script>
 </body>
 </html>
