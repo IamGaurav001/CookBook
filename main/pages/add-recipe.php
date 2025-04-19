@@ -26,6 +26,9 @@ if(isset($_GET['id']) && is_numeric($_GET['id'])) {
             $result = mysqli_stmt_get_result($stmt);
             
             if($row = mysqli_fetch_assoc($result)) {
+                // Debug log the raw data
+                error_log("Raw recipe data: " . print_r($row, true));
+                
                 $recipe_data = $row;
                 
                 $ingredients = array();
@@ -60,6 +63,15 @@ if(isset($_GET['id']) && is_numeric($_GET['id'])) {
                 
                 $recipe_data['ingredients'] = $ingredients;
                 $recipe_data['instructions'] = $instructions;
+                
+                // Ensure all nutrition fields are included and debug them
+                $recipe_data['protein'] = isset($row['protein']) ? $row['protein'] : null;
+                $recipe_data['calories'] = isset($row['calories']) ? $row['calories'] : null;
+                $recipe_data['carbs'] = isset($row['carbs']) ? $row['carbs'] : null;
+                $recipe_data['fiber'] = isset($row['fiber']) ? $row['fiber'] : null;
+                
+                // Debug log the final data being sent
+                error_log("Final recipe data being sent: " . print_r($recipe_data, true));
                 
                 echo json_encode(array('success' => true, 'recipe' => $recipe_data));
                 exit;

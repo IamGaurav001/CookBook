@@ -168,7 +168,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function fetchRecipeDetails(recipeId) {
     console.log("Fetching recipe details for ID:", recipeId)
 
-    fetch(`add-recipe.php?id=${recipeId}`)
+    fetch(`get-recipe-data.php?id=${recipeId}`)
       .then((response) => {
         console.log("Response status:", response.status)
         if (!response.ok) {
@@ -179,6 +179,7 @@ document.addEventListener("DOMContentLoaded", () => {
       .then((data) => {
         console.log("Recipe data received:", data)
         if (data.success) {
+          console.log("Protein value:", data.recipe.protein)
           populateRecipeModal(data.recipe)
           viewRecipeModal.classList.remove("hidden")
         } else {
@@ -194,17 +195,21 @@ document.addEventListener("DOMContentLoaded", () => {
   // Populate recipe modal with recipe details
   function populateRecipeModal(recipe) {
     console.log("Populating modal with recipe:", recipe)
+    console.log("Protein value in populate:", recipe.protein)
 
     // Set basic recipe information
     document.getElementById("modal-title").textContent = recipe.name || "Untitled Recipe"
     document.getElementById("modal-prep-time").textContent = (recipe.prep_time || "N/A") + " minutes"
-    document.getElementById("modal-calories").textContent = recipe.calories
-      ? recipe.calories + " calories"
-      : "Not specified"
+    document.getElementById("modal-calories").textContent = recipe.calories ? recipe.calories + " calories" : "Not specified"
     document.getElementById("modal-servings").textContent = (recipe.servings || "N/A") + " servings"
 
-    // Set nutrition information
-    document.getElementById("modal-protein").textContent = recipe.nutrition?.protein + " g"
+    // Set nutrition information with more detailed logging
+    const proteinElement = document.getElementById("modal-protein")
+    console.log("Protein element:", proteinElement)
+    console.log("Protein value before setting:", recipe.protein)
+    proteinElement.textContent = recipe.protein ? recipe.protein + " g" : "Not specified"
+    console.log("Protein element text after setting:", proteinElement.textContent)
+
     document.getElementById("modal-carbs").textContent = recipe.carbs ? recipe.carbs + " g" : "Not specified"
     document.getElementById("modal-fiber").textContent = recipe.fiber ? recipe.fiber + " g" : "Not specified"
 

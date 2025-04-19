@@ -558,7 +558,7 @@ if ($stmt = mysqli_prepare($conn, $sql_recent)) {
                                 <img src="../img/recipe-placeholder.jpg" alt="<?php echo htmlspecialchars($recipe['name']); ?>" class="w-full h-full object-cover">
                                 <?php endif; ?>
                                 <div class="recipe-overlay absolute inset-0 flex items-center justify-center">
-                                    <button class="bg-yellow-300 text-black px-4 py-2 rounded-lg font-medium view-recipe" data-id="<?php echo $recipe['id']; ?>">
+                                    <button class="bg-yellow-300 text-black px-4 py-2 rounded-lg font-medium view-recipe cursor-pointer"  data-id="<?php echo $recipe['id']; ?>">
                                         View Recipe
                                     </button>
                                 </div>
