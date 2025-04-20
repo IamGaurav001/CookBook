@@ -163,7 +163,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
                     $new_filename = uniqid() . "." . $ext;
                     
                     // Define the upload directory
-                    $upload_dir = "/Applications/XAMPP/xamppfiles/htdocs/CookBook/main/img/recipes";
+                    $upload_dir = __DIR__ . "/../../img/recipes";
                     
                     $full_path = $upload_dir . "/" . $new_filename;
                     
