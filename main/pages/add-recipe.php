@@ -163,23 +163,9 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
                     $new_filename = uniqid() . "." . $ext;
                     
                     // Define the upload directory
-                    $upload_dir = __DIR__ . "/../img/recipes/";
+                    $upload_dir = "/Applications/XAMPP/xamppfiles/htdocs/CookBook/main/img/recipes";
                     
-                    // Create the directory if it doesn't exist
-                    if (!file_exists($upload_dir)) {
-                        if (!mkdir($upload_dir, 0755, true)) {
-                            $error_message = "Error: Failed to create upload directory.";
-                        }
-                    }
-                    
-                    // Ensure the directory is writable
-                    if (!is_writable($upload_dir)) {
-                        if (!chmod($upload_dir, 0755)) {
-                            $error_message = "Error: Upload directory is not writable.";
-                        }
-                    }
-                    
-                    $full_path = $upload_dir . $new_filename;
+                    $full_path = $upload_dir . "/" . $new_filename;
                     
                     if(move_uploaded_file($_FILES["recipe-image"]["tmp_name"], $full_path)) {
                         $image_path = "img/recipes/" . $new_filename;

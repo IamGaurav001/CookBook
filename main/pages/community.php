@@ -649,8 +649,11 @@ if($result = mysqli_query($conn, $sql)) {
             document.getElementById('modalNotes').textContent = recipe.notes || 'No notes available';
 
             // Set image
-            const imagePath = recipe.image_path ? '../img/recipes/' + recipe.image_path.split('/').pop() : '../img/recipe-placeholder.jpg';
-            document.getElementById('modalRecipeImage').src = imagePath;
+            const imagePath = '../img/recipes/';
+            const placeholderImage = '../img/recipes/recipe-placeholder.jpg';
+            const imageName = recipe.image_path ? recipe.image_path.split('/').pop() : 'recipe-placeholder.jpg';
+            const imageUrl = imagePath + imageName;
+            document.getElementById('modalRecipeImage').src = imageUrl;
             document.getElementById('modalRecipeImage').alt = recipe.name;
 
             // Fetch and display ingredients

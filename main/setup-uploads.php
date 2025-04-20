@@ -1,5 +1,5 @@
 <?php
-$upload_dir = __DIR__ . "/main/img/recipes/";
+$upload_dir = __DIR__ . "/img/recipes/";
 
 // Create the directory if it doesn't exist
 if (!file_exists($upload_dir)) {
@@ -19,8 +19,8 @@ if (chmod($upload_dir, 0755)) {
     exit(1);
 }
 
-// Create .htaccess to prevent direct access to uploaded files
-$htaccess_content = "Order deny,allow\nDeny from all";
+// Create .htaccess to protect uploaded files
+$htaccess_content = "Order deny,allow\nDeny from all\n<FilesMatch \"\.(jpg|jpeg|png|gif)$\">\n    Allow from all\n</FilesMatch>";
 $htaccess_file = $upload_dir . ".htaccess";
 
 if (file_put_contents($htaccess_file, $htaccess_content)) {

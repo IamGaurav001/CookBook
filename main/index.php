@@ -224,7 +224,7 @@ $isLoggedIn = isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true;
                                 </div>
                             </div>
                         </div>
-                        <p class="text-text italic">"Culinary Canvas has completely transformed how I approach cooking. The meal planning feature saves me hours each week, and I love being able to share recipes with friends!"</p>
+                        <p class="text-text italic">"CookBook has completely transformed how I approach cooking. The meal planning feature saves me hours each week, and I love being able to share recipes with friends!"</p>
                     </div>
                 </div>
                 
