@@ -123,12 +123,6 @@ CookBook/
 ## 📝 License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 📞 Contact
-- Email: info@cookbook.com
-- Phone: +91 79893096
-- Address: 123 CookBook St, HYD, 500054
-
 ## 🙏 Acknowledgments
 - Font Awesome for icons
 - Tailwind CSS for styling
-- Unsplash for images 
