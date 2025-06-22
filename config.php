@@ -3,6 +3,13 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
+// Unset any environment variables that might interfere with the connection
+foreach ($_ENV as $key => $value) {
+    if (strpos($key, 'MYSQL_') === 0) {
+        unset($_ENV[$key]);
+    }
+}
+
 // ✅ Railway public MySQL connection details
 $db_host = 'shinkansen.proxy.rlwy.net'; // Public host from Railway
 $db_port = 50253;
@@ -12,8 +19,6 @@ $db_name = 'railway';
 
 try {
     // 🌐 Create MySQL connection
-    var_dump($db_host, $db_port);
-    die("Stopping for debug");
     $conn = new mysqli($db_host, $db_user, $db_pass, $db_name, $db_port);
 
     // ❌ Check for connection error
