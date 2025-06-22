@@ -16,6 +16,173 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
 
 require_once "../../config.php";
 
+// Handle download request
+if(isset($_GET['download'])) {
+    // Get shopping list items
+    $shopping_items = array();
+    $sql = "SELECT * FROM shopping_list_items WHERE user_id = ? ORDER BY category, completed, created_at DESC";
+    
+    if($stmt = mysqli_prepare($conn, $sql)) {
+        mysqli_stmt_bind_param($stmt, "i", $_SESSION["id"]);
+        
+        if(mysqli_stmt_execute($stmt)) {
+            $result = mysqli_stmt_get_result($stmt);
+            
+            while($row = mysqli_fetch_assoc($result)) {
+                $shopping_items[] = $row;
+            }
+        }
+    }
+
+    // Organize items by category
+    $items_by_category = array();
+    foreach($shopping_items as $item) {
+        $category = $item['category'];
+        if(!isset($items_by_category[$category])) {
+            $items_by_category[$category] = array();
+        }
+        $items_by_category[$category][] = $item;
+    }
+
+    // Calculate totals
+    $total_items = count($shopping_items);
+    $completed_items = 0;
+    foreach($shopping_items as $item) {
+        if($item['completed']) {
+            $completed_items++;
+        }
+    }
+    $remaining_items = $total_items - $completed_items;
+
+    // Create HTML content
+    $html = '
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>My Shopping List</title>
+        <style>
+            @media print {
+                @page {
+                    margin: 1cm;
+                }
+                body {
+                    font-family: Arial, sans-serif;
+                    margin: 0;
+                    padding: 20px;
+                    line-height: 1.6;
+                }
+                .no-print {
+                    display: none;
+                }
+            }
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 20px;
+                line-height: 1.6;
+                max-width: 800px;
+                margin: 0 auto;
+            }
+            h1 {
+                color: #333;
+                text-align: center;
+                margin-bottom: 20px;
+                border-bottom: 2px solid #333;
+                padding-bottom: 10px;
+            }
+            h2 {
+                color: #666;
+                margin-top: 20px;
+                border-bottom: 1px solid #ddd;
+                padding-bottom: 5px;
+            }
+            .item {
+                margin: 5px 0;
+                padding: 5px;
+                page-break-inside: avoid;
+            }
+            .completed {
+                text-decoration: line-through;
+                color: #999;
+            }
+            .summary {
+                margin-top: 30px;
+                padding-top: 10px;
+                border-top: 2px solid #333;
+            }
+            .status {
+                display: inline-block;
+                width: 20px;
+                text-align: center;
+            }
+            .notes {
+                color: #666;
+                font-style: italic;
+            }
+            .print-instructions {
+                background-color: #f5f5f5;
+                padding: 10px;
+                border-radius: 5px;
+                margin-bottom: 20px;
+                text-align: center;
+            }
+            .print-button {
+                display: block;
+                width: 200px;
+                margin: 20px auto;
+                padding: 10px;
+                background-color: #4CAF50;
+                color: white;
+                text-align: center;
+                text-decoration: none;
+                border-radius: 5px;
+                font-weight: bold;
+            }
+            .print-button:hover {
+                background-color: #45a049;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>My Shopping List</h1>
+        <p style="text-align: center; color: #666;">Generated on: ' . date('Y-m-d H:i:s') . '</p>
+        
+        <div class="print-instructions no-print">
+            <p>To save as PDF, click the button below or use your browser\'s print function (Ctrl+P or Cmd+P)</p>
+            <a href="javascript:window.print()" class="print-button">Print / Save as PDF</a>
+        </div>';
+
+    foreach($items_by_category as $category => $items) {
+        $html .= '<h2>' . strtoupper($category) . '</h2>';
+        foreach($items as $item) {
+            $status = $item['completed'] ? '✓' : '□';
+            $class = $item['completed'] ? 'completed' : '';
+            $html .= '<div class="item ' . $class . '">';
+            $html .= '<span class="status">' . $status . '</span> ';
+            $html .= $item['name'];
+            
+            if(!empty($item['quantity']) && !empty($item['unit'])) {
+                $html .= ' (' . $item['quantity'] . ' ' . $item['unit'] . ')';
+            } elseif(!empty($item['quantity'])) {
+                $html .= ' (' . $item['quantity'] . ')';
+            }
+            
+            if(!empty($item['notes'])) {
+                $html .= '<span class="notes"> - Note: ' . $item['notes'] . '</span>';
+            }
+            
+            $html .= '</div>';
+        }
+    }
+
+    // Set headers for download
+    header('Content-Type: text/html');
+    header('Content-Disposition: attachment; filename="shopping_list.html"');
+    echo $html;
+    exit;
+}
+
 $item_added = false;
 $error_message = "";
 
@@ -455,6 +622,10 @@ if(isset($_GET['get_count'])) {
                             My Shopping List
                         </h2>
                         <div class="flex flex-col sm:flex-row gap-3">
+                            <button id="download-list-btn" class="bg-white hover:bg-gray-100 text-black border border-gray-300 font-medium py-2 px-4 rounded-lg shadow-sm flex items-center justify-center cursor-pointer">
+                                <i class="fas fa-download mr-2"></i>
+                                Download List
+                            </button>
                             <button id="add-item-btn" class="bg-black hover:bg-yellow-400 text-white hover:text-black font-medium py-2 px-4 rounded-lg shadow-sm flex items-center justify-center cursor-pointer">
                                 <i class="fas fa-plus mr-2"></i>
                                 Add Item

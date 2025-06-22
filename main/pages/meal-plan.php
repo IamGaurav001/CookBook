@@ -1326,14 +1326,6 @@ if($stmt_recipes = mysqli_prepare($conn, $sql_recipes)) {
                             <input type="checkbox" name="auto-generate" class="mr-2" checked>
                             <span>Auto-generate meal plan structure</span>
                         </label>
-                        <label class="flex items-center">
-                            <input type="checkbox" name="use-favorites" class="mr-2">
-                            <span>Include favorite recipes</span>
-                        </label>
-                        <label class="flex items-center">
-                            <input type="checkbox" name="shopping-list" class="mr-2" checked>
-                            <span>Generate shopping list</span>
-                        </label>
                     </div>
                 </div>
                 

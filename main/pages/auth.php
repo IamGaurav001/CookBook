@@ -5,16 +5,13 @@ error_reporting(E_ALL);
 
 session_start();
 
-// Include session configuration
 require_once "../../config.php";
 
-// Check if user is already logged in
 if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true){
     header("location: dashboard.php");
     exit;
 }
 
-// Initialize variables
 $name = $email = $password = $confirm_password = $dietary_preference = "";
 $name_err = $email_err = $password_err = $confirm_password_err = $login_err = "";
 

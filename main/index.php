@@ -202,7 +202,6 @@ $isLoggedIn = isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true;
 <section id="reviews" class="py-16 bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2 class="text-3xl font-serif font-bold text-center mb-16 text-[#375A64]">What Our Users Say</h2>
-        
         <!-- Carousel container -->
         <div class="relative">
             <div class="carousel flex overflow-x-hidden w-full">
@@ -214,7 +213,7 @@ $isLoggedIn = isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true;
                                 JD
                             </div>
                             <div>
-                                <h4 class="font-bold text-primary">Jane Doe</h4>
+                                <h4 class="font-bold text-primary">Gaurav Kumar Dubey</h4>
                                 <div class="flex text-yellow-300">
                                     <i class="fas fa-star"></i>
                                     <i class="fas fa-star"></i>
@@ -236,7 +235,7 @@ $isLoggedIn = isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true;
                                 MS
                             </div>
                             <div>
-                                <h4 class="font-bold text-black">Michael Smith</h4>
+                                <h4 class="font-bold text-black">Vivek</h4>
                                 <div class="flex text-yellow-300">
                                     <i class="fas fa-star"></i>
                                     <i class="fas fa-star"></i>
@@ -258,7 +257,7 @@ $isLoggedIn = isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true;
                                 AL
                             </div>
                             <div>
-                                <h4 class="font-bold text-black">Amanda Lee</h4>
+                                <h4 class="font-bold text-black">Aditya</h4>
                                 <div class="flex text-yellow-300">
                                     <i class="fas fa-star"></i>
                                     <i class="fas fa-star"></i>

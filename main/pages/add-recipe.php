@@ -163,7 +163,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
                     $new_filename = uniqid() . "." . $ext;
                     
                     // Define the upload directory
-                    $upload_dir = __DIR__ . "/../../img/recipes";
+                    $upload_dir = "/Applications/XAMPP/xamppfiles/htdocs/CookBook/main/img/recipes";
                     
                     $full_path = $upload_dir . "/" . $new_filename;
                     
@@ -760,7 +760,7 @@ if($stmt = mysqli_prepare($conn, $sql)) {
                             <option value="">Select diet type</option>
                             <option value="Vegetarian">Vegetarian</option>
                             <option value="Vegan">Vegan</option>
-                            <option value="Pescatarian">Pescatarian</option>
+                            <option value="Pescatarian">Non Vegetarian</option>
                             <option value="Keto">Keto</option>
                             <option value="High Protein">High Protein</option>
                             <option value="Low Carb">Low Carb</option>
@@ -844,7 +844,7 @@ if($stmt = mysqli_prepare($conn, $sql)) {
             <div class="h-64 md:h-80 w-full">
                 <img id="modal-image" src="" alt="Recipe" class="w-full h-full object-cover rounded-t-xl">
             </div>
-            <button id="close-view-modal" class="absolute top-4 right-4 bg-white rounded-full p-2 shadow-lg text-black hover:text-yellow-500 focus:outline-none transition-transform transform hover:scale-110">
+            <button id="close-view-modal" class="absolute top-4 right-4 bg-white rounded-full p-2 shadow-lg text-black hover:text-yellow-500 focus:outline-none transition-transform transform hover:scale-110 cursor-pointer">
                 <i class="fas fa-times text-xl"></i>
             </button>
         </div>
