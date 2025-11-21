@@ -11,33 +11,45 @@ foreach ($_ENV as $key => $value) {
 }
 
 // ✅ Railway public MySQL connection details
-$db_host = 'shinkansen.proxy.rlwy.net'; // Public host from Railway
-$db_port = 50253;
-$db_user = 'root';
-$db_pass = 'PdtMhBXYJCincDyhpKkqVXjbrYfywsWA';
-$db_name = 'railway';
+// ✅ Database connection details from Environment Variables
+$db_host = getenv('DB_HOST') ?: 'localhost';
+$db_port = getenv('DB_PORT') ?: 3306;
+$db_user = getenv('DB_USER') ?: 'root';
+$db_pass = getenv('DB_PASS') ?: '';
+$db_name = getenv('DB_NAME') ?: 'cookbook';
 
 try {
-    // 🌐 Create MySQL connection
-    $conn = new mysqli($db_host, $db_user, $db_pass, $db_name, $db_port);
+    // 🌐 Create MySQL connection with SSL support
+    $conn = mysqli_init();
+    if (!$conn) {
+        throw new Exception("mysqli_init failed");
+    }
 
-    // ❌ Check for connection error
-    if ($conn->connect_error) {
+    // 🔒 Configure SSL if ca.pem exists
+    $ca_cert = __DIR__ . '/ca.pem';
+    if (file_exists($ca_cert)) {
+        // mysqli_ssl_set(connection, key, cert, ca, capath, cipher)
+        $conn->ssl_set(NULL, NULL, $ca_cert, NULL, NULL);
+    }
+
+    // 🔌 Connect to the database
+    // Note: real_connect returns boolean, check $conn->connect_error on failure
+    if (!$conn->real_connect($db_host, $db_user, $db_pass, $db_name, $db_port)) {
         throw new Exception("Connection failed: " . $conn->connect_error);
     }
 
     // ✅ Set UTF-8 character encoding
     $conn->set_charset("utf8mb4");
 
-    // ✅ Optional: Show success message
-    // echo "✅ Connected to Railway MySQL successfully!<br>";
+    // ✅ Optional: Show success message (Disable in production)
+    // echo "✅ Connected to MySQL successfully!<br>";
 
     // 🔍 Optional: Show all tables in the DB
     // $result = $conn->query("SHOW TABLES");
     // while ($row = $result->fetch_row()) {
     //     echo "📦 Table: $row[0]<br>";
     // }
-
+x
 } catch (Exception $e) {
     // Log and show database error
     error_log("Database connection error: " . $e->getMessage());
