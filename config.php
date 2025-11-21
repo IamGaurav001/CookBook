@@ -19,7 +19,7 @@ $db_user = getenv('DB_USER') ?: getenv('User') ?: 'root';
 $db_pass = getenv('DB_PASS') ?: getenv('Password') ?: '';
 $db_name = getenv('DB_NAME') ?: getenv('Database_name') ?: getenv('Database') ?: 'cookbook';
 
-$db_name = getenv('DB_NAME') ?: 'cookbook';
+
 
 // 🔍 Debugging: Log the connection details (Mask password)
 error_log("Attempting to connect to DB_HOST: " . $db_host);
