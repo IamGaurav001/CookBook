@@ -18,6 +18,14 @@ $db_user = getenv('DB_USER') ?: 'root';
 $db_pass = getenv('DB_PASS') ?: '';
 $db_name = getenv('DB_NAME') ?: 'cookbook';
 
+$db_name = getenv('DB_NAME') ?: 'cookbook';
+
+// 🔍 Debugging: Log the connection details (Mask password)
+error_log("Attempting to connect to DB_HOST: " . $db_host);
+error_log("Using DB_PORT: " . $db_port);
+error_log("Using DB_USER: " . $db_user);
+error_log("CA Cert Path: " . __DIR__ . '/ca.pem');
+
 try {
     // 🌐 Create MySQL connection with SSL support
     $conn = mysqli_init();
