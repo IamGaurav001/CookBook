@@ -49,7 +49,8 @@ try {
     // while ($row = $result->fetch_row()) {
     //     echo "📦 Table: $row[0]<br>";
     // }
-x
+    //     echo "📦 Table: $row[0]<br>";
+    // }
 } catch (Exception $e) {
     // Log and show database error
     error_log("Database connection error: " . $e->getMessage());
