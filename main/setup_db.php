@@ -1,5 +1,5 @@
 <?php
-require_once 'config.php';
+require_once '../config.php';
 
 // SQL to create tables (excluding 'USE railway' to avoid errors)
 $sql = "
