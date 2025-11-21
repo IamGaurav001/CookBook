@@ -12,11 +12,12 @@ foreach ($_ENV as $key => $value) {
 
 // ✅ Railway public MySQL connection details
 // ✅ Database connection details from Environment Variables
-$db_host = getenv('DB_HOST') ?: 'localhost';
-$db_port = getenv('DB_PORT') ?: 3306;
-$db_user = getenv('DB_USER') ?: 'root';
-$db_pass = getenv('DB_PASS') ?: '';
-$db_name = getenv('DB_NAME') ?: 'cookbook';
+// We check multiple keys in case they were named differently in Render
+$db_host = getenv('DB_HOST') ?: getenv('Host') ?: 'localhost';
+$db_port = getenv('DB_PORT') ?: getenv('Port') ?: 3306;
+$db_user = getenv('DB_USER') ?: getenv('User') ?: 'root';
+$db_pass = getenv('DB_PASS') ?: getenv('Password') ?: '';
+$db_name = getenv('DB_NAME') ?: getenv('Database_name') ?: getenv('Database') ?: 'cookbook';
 
 $db_name = getenv('DB_NAME') ?: 'cookbook';
 
